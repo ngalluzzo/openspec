@@ -1,0 +1,254 @@
+openspec: "1.0"
+documents:
+  - id: zod-dialect.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: dialect.package:zod
+      owner: dialect.package:zod
+      selectors:
+        - id: zod.schemaExpressions
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: typescript.expression
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.facet.value.provider
+                    - zod
+                - ===:
+                    - var: row.facet.value.role
+                    - value.expression
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    unit:
+                      var:
+                        - row.facet.value.unit
+                        - null
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:ZodDialectSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ZodSchemaExpressionFacetSelectorResult
+
+        - id: zod.schemaExpressionsForTarget
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: typescript.expression
+                target:
+                  $expr:
+                    var: parameter.target
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.facet.value.provider
+                    - zod
+                - ===:
+                    - var: row.facet.value.role
+                    - value.expression
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    unit:
+                      var:
+                        - row.facet.value.unit
+                        - null
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:ZodDialectTargetSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ZodSchemaExpressionFacetSelectorResult
+
+        - id: zod.schemaExpressionsForUnit
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: typescript.expression
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.facet.value.provider
+                    - zod
+                - ===:
+                    - var: row.facet.value.role
+                    - value.expression
+                - ===:
+                    - var: row.facet.value.unit
+                    - var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    unit:
+                      var: row.facet.value.unit
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:ZodDialectUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ZodSchemaExpressionFacetSelectorResult
+
+        - id: zod.schemasForUnit
+          sources:
+            schema:
+              kind: facets
+              filter:
+                kind:
+                  $expr: zod.schema
+                value:
+                  unit:
+                    $expr:
+                      var: parameter.unit
+            field:
+              kind: facets
+              optional: true
+              filter:
+                kind:
+                  $expr: zod.field
+          where:
+            $expr:
+              or:
+                - "!":
+                    - var:
+                        - row.field
+                        - null
+                - ===:
+                    - var: row.field.value.schema
+                    - var: row.schema.value.storageEntity
+          groupBy:
+            $expr:
+              var: row.schema.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.schema.id
+                    unit:
+                      var: row.schema.value.unit
+                    storageEntity:
+                      var: row.schema.value.storageEntity
+                    name:
+                      var: row.schema.value.name
+                    fields:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - var: item.field.value
+                        - true
+                        - var: item.field
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:ZodSyntaxUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ZodSchemasSelectorResult
+
+        - id: zod.storageSyntaxRenderInput
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.syntaxUnit
+                kind:
+                  $expr: syntax.unit
+            asset:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.asset
+                kind:
+                  $expr: asset.asset
+            schema:
+              kind: selector
+              optional: true
+              selector:
+                $expr: zod.schemasForUnit
+              params:
+                $expr:
+                  os_object:
+                    - unit:
+                        var: parameter.syntaxUnit
+          groupBy:
+            $expr:
+              var: row.unit.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - unit:
+                      var: row.unit.attributes
+                    asset:
+                      var: row.asset.attributes
+                    schemas:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - var: item.schema
+                        - true
+                        - var: item.schema
+          paramsContract:
+            kind: model
+            model: model:ZodSyntaxRenderSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ZodSyntaxRenderInput

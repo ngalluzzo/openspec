@@ -1,0 +1,91 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.principal.v1
+package:
+  id: "@openspec/principal"
+documentModels:
+  - model:PrincipalDocument
+validation:
+  - id: principal.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.principal.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: principal.owner.invalid
+        message: Principal documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-principals
+        scope: selector
+        selector: principal.all
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: principal.declarations.empty
+        message: Principal documents must declare at least one principal.
+
+      - id: principal-id-format
+        scope: selector
+        selector: principal.all
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: principal.id.invalid
+        message: >
+          Principal ids must be lowercase namespaced identifiers
+          (e.g. identity.user, identity.admin, identity.service).
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: principal-kind-valid
+        scope: selector
+        selector: principal.all
+        forEach: true
+        assert:
+          $expr:
+            or:
+              - ===:
+                  - var: item.kind
+                  - human
+              - ===:
+                  - var: item.kind
+                  - service
+              - ===:
+                  - var: item.kind
+                  - device
+              - ===:
+                  - var: item.kind
+                  - api-key
+        code: principal.kind.invalid
+        message: >
+          Principal kind must be one of: human, service, device, api-key.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+                kind:
+                  var: item.kind

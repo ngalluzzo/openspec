@@ -1,0 +1,15 @@
+{
+	"name": "@openspec/protocols-protocol",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/protocol.protocol.openspec.yml",
+			"spec/protocol.model.openspec.yml"
+		]
+	}
+}

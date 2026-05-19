@@ -1,0 +1,745 @@
+openspec: "1.0"
+documents:
+  - id: source.postgres.schema.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.source.postgres.schema.v1
+      owner: protocol.protocol:openspec.source.postgres.schema.v1
+      lowering:
+        - id: source.postgres.origin
+          source:
+            as: import
+          facts:
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "origin.origin:"
+                  - kind: path
+                    path: document.sourceId
+              factKind: origin.origin
+              attributes:
+                kind: object
+                fields:
+                  nodeId:
+                    kind: path
+                    path: document.owner
+                  id:
+                    kind: path
+                    path: document.sourceId
+                  kind:
+                    kind: literal
+                    value: source.postgres.schema
+                  owner:
+                    kind: path
+                    path: document.owner
+                  name:
+                    kind: literal
+                    value: Postgres CRM schema
+                  locator:
+                    kind: path
+                    path: document.source.path
+                    optional: true
+                  metadata:
+                    kind: object
+                    fields:
+                      source:
+                        kind: path
+                        path: document.source
+                        optional: true
+
+        - id: source.postgres.tables
+          source:
+            as: import
+          facts:
+            - kind: forEachEntry
+              path: document.snapshot.tables
+              keyAs: tableName
+              valueAs: table
+              facts:
+                - kind: node
+                  id:
+                    kind: concat
+                    items:
+                      - "origin.element:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".table."
+                      - kind: path
+                        path: tableName
+                  factKind: origin.element
+                  attributes:
+                    kind: object
+                    fields:
+                      id:
+                        kind: concat
+                        items:
+                          - kind: path
+                            path: document.sourceId
+                          - ".table."
+                          - kind: path
+                            path: tableName
+                      origin:
+                        kind: path
+                        path: document.owner
+                      kind:
+                        kind: literal
+                        value: postgres.table
+                      owner:
+                        kind: path
+                        path: document.owner
+                      name:
+                        kind: path
+                        path: tableName
+                      nativeId:
+                        kind: path
+                        path: tableName
+                      metadata:
+                        kind: object
+                        fields:
+                          raw:
+                            kind: path
+                            path: table
+                - kind: node
+                  id:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                  factKind: entity.declaration
+                  attributes:
+                    kind: object
+                    fields:
+                      id:
+                        kind: concat
+                        items:
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: tableName
+                      name:
+                        kind: path
+                        path: tableName
+                      owner:
+                        kind: path
+                        path: document.owner
+                - kind: edge
+                  id:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: document.owner
+                      - ".entity."
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                  factKind: entity.owner.declaration
+                  from:
+                    kind: path
+                    path: document.owner
+                  to:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                - kind: node
+                  id:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                      - ".field.id"
+                  factKind: entity.field
+                  attributes:
+                    kind: object
+                    fields:
+                      name:
+                        kind: literal
+                        value: id
+                      type:
+                        kind: literal
+                        value: string
+                      required:
+                        kind: literal
+                        value: true
+                      identity:
+                        kind: literal
+                        value: true
+                      unique:
+                        kind: literal
+                        value: true
+                - kind: edge
+                  id:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                      - ".field.id"
+                  factKind: entity.declaration.field
+                  from:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                  to:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                      - ".field.id"
+                - kind: edge
+                  id:
+                    kind: concat
+                    items:
+                      - "origin.lineage:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".identity."
+                      - kind: path
+                        path: tableName
+                  factKind: origin.lineage
+                  from:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                      - ".field.id"
+                  to:
+                    kind: concat
+                    items:
+                      - "origin.element:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".table."
+                      - kind: path
+                        path: tableName
+                  attributes:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: import.synthetic
+                - kind: edge
+                  id:
+                    kind: concat
+                    items:
+                      - "origin.lineage:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".entity."
+                      - kind: path
+                        path: tableName
+                  factKind: origin.lineage
+                  from:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                  to:
+                    kind: concat
+                    items:
+                      - "origin.element:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".table."
+                      - kind: path
+                        path: tableName
+                  attributes:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: import.normalized
+                - kind: facet
+                  id:
+                    kind: concat
+                    items:
+                      - "facet:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".table."
+                      - kind: path
+                        path: tableName
+                  factKind: postgres.table.name
+                  target:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                  value:
+                    kind: path
+                    path: tableName
+                - kind: facet
+                  id:
+                    kind: concat
+                    items:
+                      - "facet:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".synthetic-id."
+                      - kind: path
+                        path: tableName
+                  factKind: import.synthetic
+                  target:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: tableName
+                      - ".field.id"
+                  value:
+                    kind: object
+                    fields:
+                      reason:
+                        kind: literal
+                        value: source snapshot does not include primary key details
+                - kind: forEachEntry
+                  path: table.columns
+                  keyAs: columnName
+                  valueAs: column
+                  optional: true
+                  facts:
+                    - kind: node
+                      when:
+                        kind: path
+                        path: column.references
+                        optional: true
+                      id:
+                        kind: concat
+                        items:
+                          - "origin.element:"
+                          - kind: path
+                            path: document.sourceId
+                          - ".column."
+                          - kind: path
+                            path: tableName
+                          - "."
+                          - kind: path
+                            path: columnName
+                      factKind: origin.element
+                      attributes:
+                        kind: object
+                        fields:
+                          id:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: document.sourceId
+                              - ".column."
+                              - kind: path
+                                path: tableName
+                              - "."
+                              - kind: path
+                                path: columnName
+                          origin:
+                            kind: path
+                            path: document.owner
+                          kind:
+                            kind: literal
+                            value: postgres.column
+                          owner:
+                            kind: path
+                            path: document.owner
+                          name:
+                            kind: path
+                            path: columnName
+                          nativeId:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: tableName
+                              - "."
+                              - kind: path
+                                path: columnName
+                          metadata:
+                            kind: object
+                            fields:
+                              table:
+                                kind: path
+                                path: tableName
+                              raw:
+                                kind: path
+                                path: column
+                    - kind: node
+                      when:
+                        kind: path
+                        path: column.references
+                        optional: true
+                      id:
+                        kind: concat
+                        items:
+                          - "relation:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: tableName
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: columnName
+                      factKind: relation.declaration
+                      attributes:
+                        kind: object
+                        fields:
+                          id:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: document.sourceId
+                              - "."
+                              - kind: kebab
+                                value:
+                                  kind: path
+                                  path: tableName
+                              - "."
+                              - kind: kebab
+                                value:
+                                  kind: path
+                                  path: columnName
+                          name:
+                            kind: path
+                            path: columnName
+                          from:
+                            kind: concat
+                            items:
+                              - "entity:"
+                              - kind: path
+                                path: document.sourceId
+                              - "."
+                              - kind: kebab
+                                value:
+                                  kind: path
+                                  path: tableName
+                          to:
+                            kind: concat
+                            items:
+                              - "entity:"
+                              - kind: path
+                                path: document.sourceId
+                              - "."
+                              - kind: kebab
+                                value:
+                                  kind: path
+                                  path: column.references
+                          cardinality:
+                            kind: literal
+                            value: one-to-many
+                          direction:
+                            kind: literal
+                            value: unidirectional
+                          via:
+                            kind: path
+                            path: columnName
+                    - kind: edge
+                      when:
+                        kind: path
+                        path: column.references
+                        optional: true
+                      id:
+                        kind: concat
+                        items:
+                          - "relation:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: tableName
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: columnName
+                          - ".from"
+                      factKind: relation.endpoint.from
+                      from:
+                        kind: concat
+                        items:
+                          - "relation:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: tableName
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: columnName
+                      to:
+                        kind: concat
+                        items:
+                          - "entity:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: tableName
+                    - kind: edge
+                      when:
+                        kind: path
+                        path: column.references
+                        optional: true
+                      id:
+                        kind: concat
+                        items:
+                          - "relation:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: tableName
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: columnName
+                          - ".to"
+                      factKind: relation.endpoint.to
+                      from:
+                        kind: concat
+                        items:
+                          - "relation:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: tableName
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: columnName
+                      to:
+                        kind: concat
+                        items:
+                          - "entity:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: column.references
+                    - kind: edge
+                      when:
+                        kind: path
+                        path: column.references
+                        optional: true
+                      id:
+                        kind: concat
+                        items:
+                          - "origin.lineage:"
+                          - kind: path
+                            path: document.sourceId
+                          - ".relation."
+                          - kind: path
+                            path: tableName
+                          - "."
+                          - kind: path
+                            path: columnName
+                      factKind: origin.lineage
+                      from:
+                        kind: concat
+                        items:
+                          - "relation:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: tableName
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: columnName
+                      to:
+                        kind: concat
+                        items:
+                          - "origin.element:"
+                          - kind: path
+                            path: document.sourceId
+                          - ".column."
+                          - kind: path
+                            path: tableName
+                          - "."
+                          - kind: path
+                            path: columnName
+                      attributes:
+                        kind: object
+                        fields:
+                          kind:
+                            kind: literal
+                            value: import.normalized
+                    - kind: facet
+                      when:
+                        kind: path
+                        path: column.references
+                        optional: true
+                      id:
+                        kind: concat
+                        items:
+                          - "facet:"
+                          - kind: path
+                            path: document.sourceId
+                          - ".column."
+                          - kind: path
+                            path: tableName
+                          - "."
+                          - kind: path
+                            path: columnName
+                      factKind: postgres.column.name
+                      target:
+                        kind: concat
+                        items:
+                          - "relation:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: tableName
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: columnName
+                      value:
+                        kind: path
+                        path: columnName
+
+      selectors:
+        - id: source.postgres.schema.origins
+          sources:
+            origin:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: origin.origin
+          where:
+            $expr:
+              ===:
+                - var: row.origin.attributes.kind
+                - source.postgres.schema
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.origin.attributes
+
+      validate:
+        - id: source.postgres.schema.validation
+          rules:
+            - id: owner-source-id-consistent
+              selector: source.postgres.schema.origins
+              forEach: true
+              assert:
+                $expr:
+                  and:
+                    - ===:
+                        - var: item.nodeId
+                        - cat:
+                            - "origin.origin:"
+                            - var: item.id
+                    - ===:
+                        - var: item.owner
+                        - var: item.nodeId
+              code: source.postgres.schema.ownerSourceId.mismatch
+              message: Postgres schema source documents must keep owner and sourceId consistent.
+              details:
+                $expr:
+                  os_object:
+                    - owner:
+                        var:
+                          - item.owner
+                          - null
+                      sourceId:
+                        var:
+                          - item.id
+                          - null
+                      nodeId:
+                        var:
+                          - item.nodeId
+                          - null

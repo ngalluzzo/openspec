@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/operation-fulfillment-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/operation-fulfillment.pattern.openspec.yml"]
+		}
+	}
+}

@@ -1,0 +1,222 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.flow.v1
+package:
+  id: "@openspec/flow"
+documentModels:
+  - model:FlowDocument
+validation:
+  - id: flow.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.flow.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: flow.owner.invalid
+        message: Flow documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-flows
+        scope: selector
+        selector: flow.flows
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: flow.flows.empty
+        message: Flow documents must declare at least one flow.
+
+      - id: flow-id-format
+        scope: selector
+        selector: flow.flows
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: flow.id.invalid
+        message: Flow ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - flow:
+                  var: item.id
+
+      - id: flow-kind-format
+        scope: selector
+        selector: flow.flows
+        forEach: true
+        when:
+          $expr:
+            var:
+              - item.kind
+              - null
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$
+        code: flow.kind.invalid
+        message: Flow kind must be a namespaced identifier when present.
+        details:
+          $expr:
+            os_object:
+              - flow:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: flow-has-activities
+        scope: selector
+        selector: flow.flows
+        forEach: true
+        assert:
+          $expr:
+            var:
+              - item.activities.0
+              - null
+        code: flow.activities.empty
+        message: Every flow must declare at least one activity.
+        details:
+          $expr:
+            os_object:
+              - flow:
+                  var: item.id
+
+      - id: activity-id-format
+        scope: selector
+        selector: flow.activities
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: flow.activity.id.invalid
+        message: Flow activity ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - flow:
+                  var: item.flow
+                activity:
+                  var: item.id
+
+      - id: activity-kind-format
+        scope: selector
+        selector: flow.activities
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$
+        code: flow.activity.kind.invalid
+        message: Flow activity kind must be a namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - flow:
+                  var: item.flow
+                activity:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: link-id-format
+        scope: selector
+        selector: flow.links
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: flow.link.id.invalid
+        message: Flow link ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - flow:
+                  var: item.flow
+                link:
+                  var: item.id
+
+      - id: link-kind-format
+        scope: selector
+        selector: flow.links
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$
+        code: flow.link.kind.invalid
+        message: Flow link kind must be a namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - flow:
+                  var: item.flow
+                link:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: link-from-format
+        scope: selector
+        selector: flow.links
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.from
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: flow.link.from.invalid
+        message: Flow link from must be a canonical nodeId.
+        details:
+          $expr:
+            os_object:
+              - flow:
+                  var: item.flow
+                link:
+                  var: item.id
+                from:
+                  var: item.from
+
+      - id: link-to-format
+        scope: selector
+        selector: flow.links
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.to
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: flow.link.to.invalid
+        message: Flow link to must be a canonical nodeId.
+        details:
+          $expr:
+            os_object:
+              - flow:
+                  var: item.flow
+                link:
+                  var: item.id
+                to:
+                  var: item.to

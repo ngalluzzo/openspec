@@ -1,0 +1,511 @@
+openspec: "1.0"
+documents:
+  - id: operation.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.operation.v1
+      owner: protocol.protocol:openspec.operation.v1
+      lowering:
+        - id: operation.groups
+          source:
+            path: groups
+            as: group
+          facts:
+            # operation.group node
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - operation.group
+                    - var: group.name
+              factKind:
+                $expr: operation.group
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: group.name
+                      name:
+                        var: group.name
+                      owner:
+                        var: document.owner
+                      description:
+                        var:
+                          - group.description
+                          - null
+
+            # operation.owner.group edge — owner → group
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .operation.group.
+                    - var: group.name
+              factKind:
+                $expr: operation.owner.group
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - operation.group
+                    - var: group.name
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      group:
+                        var: group.name
+
+            # operation and edge facts for each operation within the group
+            - kind: forEach
+              path: group.operations
+              as: operation
+              optional: true
+              facts:
+                # operation.operation node
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - operation.operation
+                        - var: group.name
+                        - var: operation.name
+                  factKind:
+                    $expr: operation.operation
+                  attributes:
+                    $expr:
+                      os_object:
+                        - id:
+                            cat:
+                              - var: group.name
+                              - .
+                              - var: operation.name
+                          name:
+                            var: operation.name
+                          group:
+                            var: group.name
+                          owner:
+                            var: document.owner
+                          kind:
+                            var: operation.kind
+                          subject:
+                            var:
+                              - operation.subject
+                              - null
+                          input:
+                            var:
+                              - operation.input
+                              - null
+                          output:
+                            var:
+                              - operation.output
+                              - null
+                          requires:
+                            var:
+                              - operation.requires
+                              - null
+                          emits:
+                            var:
+                              - operation.emits
+                              - null
+                          effects:
+                            var:
+                              - operation.effects
+                              - null
+                          description:
+                            var:
+                              - operation.description
+                              - null
+
+                # operation.group.operation edge — group → operation
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - operation.group
+                            - var: group.name
+                        - .operation.
+                        - var: operation.name
+                  factKind:
+                    $expr: operation.group.operation
+                  from:
+                    $expr:
+                      os_node_id:
+                        - operation.group
+                        - var: group.name
+                  to:
+                    $expr:
+                      os_node_id:
+                        - operation.operation
+                        - var: group.name
+                        - var: operation.name
+                  attributes:
+                    $expr:
+                      os_object:
+                        - group:
+                            var: group.name
+                          operation:
+                            cat:
+                              - var: group.name
+                              - .
+                              - var: operation.name
+
+                # operation.subject edge — operation → subject entity (when present)
+                - kind: edge
+                  when:
+                    $expr:
+                      var:
+                        - operation.subject
+                        - null
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - operation.operation
+                            - var: group.name
+                            - var: operation.name
+                        - .subject.
+                        - var: operation.subject
+                  factKind:
+                    $expr: operation.subject
+                  from:
+                    $expr:
+                      os_node_id:
+                        - operation.operation
+                        - var: group.name
+                        - var: operation.name
+                  to:
+                    $expr:
+                      var: operation.subject
+
+                # operation.requires edges — operation → capability (one per entry)
+                - kind: forEach
+                  path: operation.requires
+                  as: capability
+                  optional: true
+                  facts:
+                    - kind: edge
+                      id:
+                        $expr:
+                          cat:
+                            - os_node_id:
+                                - operation.operation
+                                - var: group.name
+                                - var: operation.name
+                            - .requires.
+                            - var: capability
+                      factKind:
+                        $expr: operation.requires
+                      from:
+                        $expr:
+                          os_node_id:
+                            - operation.operation
+                            - var: group.name
+                            - var: operation.name
+                      to:
+                        $expr:
+                          var: capability
+
+                # operation.emits edges — operation → signal (one per entry)
+                - kind: forEach
+                  path: operation.emits
+                  as: signal
+                  optional: true
+                  facts:
+                    - kind: edge
+                      id:
+                        $expr:
+                          cat:
+                            - os_node_id:
+                                - operation.operation
+                                - var: group.name
+                                - var: operation.name
+                            - .emits.
+                            - var: signal
+                      factKind:
+                        $expr: operation.emits
+                      from:
+                        $expr:
+                          os_node_id:
+                            - operation.operation
+                            - var: group.name
+                            - var: operation.name
+                      to:
+                        $expr:
+                          var: signal
+
+                # operation.effects edges — operation → state machine (one per entry)
+                - kind: forEach
+                  path: operation.effects
+                  as: machine
+                  optional: true
+                  facts:
+                    - kind: edge
+                      id:
+                        $expr:
+                          cat:
+                            - os_node_id:
+                                - operation.operation
+                                - var: group.name
+                                - var: operation.name
+                            - .effects.
+                            - var: machine
+                      factKind:
+                        $expr: operation.effects
+                      from:
+                        $expr:
+                          os_node_id:
+                            - operation.operation
+                            - var: group.name
+                            - var: operation.name
+                      to:
+                        $expr:
+                          var: machine
+
+      selectors:
+        # All declared groups — flat list.
+        - id: operation.groups
+          sources:
+            group:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: operation.group
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.group.attributes
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:OperationSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:OperationGroupsSelectorResult
+
+        # All declared operations — flat list.
+        - id: operation.operations
+          sources:
+            operation:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: operation.operation
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.operation.attributes
+          orderBy:
+            - $expr:
+                var: row.value.group
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:OperationSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:OperationOperationsSelectorResult
+
+        # All groups with their nested operations — used by generators.
+        - id: operation.catalog
+          sources:
+            group:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: operation.group
+            operation:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.group.id
+              filter:
+                kind:
+                  $expr: operation.group.operation
+                direction:
+                  $expr: out
+              optional: true
+          groupBy:
+            $expr:
+              var: row.group.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.group.attributes.id
+                    name:
+                      var: row.group.attributes.name
+                    owner:
+                      var: row.group.attributes.owner
+                    description:
+                      var:
+                        - row.group.attributes.description
+                        - null
+                    operations:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - var: item.operation.attributes
+                        - false
+                        - var:
+                            - item.operation
+                            - null
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:OperationSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:OperationCatalogSelectorResult
+
+        # Single group by name, with its operations.
+        - id: operation.group
+          sources:
+            group:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - operation.group
+                      - var: parameter.group
+                kind:
+                  $expr: operation.group
+            operation:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.group.id
+              filter:
+                kind:
+                  $expr: operation.group.operation
+                direction:
+                  $expr: out
+              optional: true
+          groupBy:
+            $expr:
+              var: row.group.id
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.group.attributes.id
+                    name:
+                      var: row.group.attributes.name
+                    owner:
+                      var: row.group.attributes.owner
+                    description:
+                      var:
+                        - row.group.attributes.description
+                        - null
+                    operations:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - var: item.operation.attributes
+                        - false
+                        - var:
+                            - item.operation
+                            - null
+          paramsContract:
+            kind: model
+            model: model:OperationGroupSelectorParams
+          returnsContract:
+            kind: model
+            model: model:OperationGroupSelectorResult
+
+        # Single operation by compound ID (group.name).
+        - id: operation.byId
+          sources:
+            operation:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.operation
+                kind:
+                  $expr: operation.operation
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.operation.attributes
+          paramsContract:
+            kind: model
+            model: model:OperationByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:OperationByIdSelectorResult
+
+        - id: operation.fulfillments
+          sources:
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+            binding:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.subject.from
+                kind:
+                  $expr: binding.binding
+            slot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.binding.id
+          where:
+            $expr:
+              ===:
+                - var: row.binding.attributes.kind
+                - operation.fulfillment
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.binding.attributes.id
+                    owner:
+                      var: row.binding.attributes.owner
+                    operation:
+                      var: row.subject.to
+                    target:
+                      var: row.slot.to
+                    value:
+                      var:
+                        - row.binding.attributes.value
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.operation
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:OperationSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:OperationFulfillmentsSelectorResult

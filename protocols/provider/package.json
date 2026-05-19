@@ -1,0 +1,17 @@
+{
+	"name": "@openspec/protocols-provider",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/provider.protocol.openspec.yml",
+			"spec/provider.model.openspec.yml",
+			"spec/provider.graph.openspec.yml",
+			"spec/provider.derivation.openspec.yml"
+		]
+	}
+}

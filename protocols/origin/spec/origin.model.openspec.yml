@@ -1,0 +1,270 @@
+openspec: "1.0"
+documents:
+  - id: origin.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.origin.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: OriginSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: OriginByNodeIdSelectorParams
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+
+        - kind: object
+          name: OriginElementsForOriginSelectorParams
+          fields:
+            - name: origin
+              type: nonEmptyString
+
+        - kind: object
+          name: OriginLineageForTargetSelectorParams
+          fields:
+            - name: target
+              type: nonEmptyString
+
+        # ── Shared contracts ──────────────────────────────────────────────────
+
+        - kind: object
+          name: OriginLocatorContract
+          fields:
+            - name: kind
+              type: nonEmptyString
+            - name: uri
+              type: nonEmptyString
+              required: false
+            - name: path
+              type: nonEmptyString
+              required: false
+            - name: nativeId
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        # ── Document contracts ────────────────────────────────────────────────
+
+        - kind: object
+          name: OriginDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: locator
+              type:
+                kind: ref
+                name: OriginLocatorContract
+              required: false
+            - name: version
+              type: nonEmptyString
+              required: false
+            - name: capturedAt
+              type: nonEmptyString
+              required: false
+            - name: fingerprint
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: OriginElementDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: origin
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: nativeId
+              type: nonEmptyString
+              required: false
+            - name: locator
+              type:
+                kind: ref
+                name: OriginLocatorContract
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: OriginLineageDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: mapping
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: OriginDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: origins
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: OriginDeclaration
+            - name: elements
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: OriginElementDeclaration
+              required: false
+            - name: lineage
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: OriginLineageDeclaration
+              required: false
+
+        # ── Selector contracts ────────────────────────────────────────────────
+
+        - kind: object
+          name: OriginContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: locator
+              type:
+                kind: ref
+                name: OriginLocatorContract
+              required: false
+            - name: version
+              type: nonEmptyString
+              required: false
+            - name: capturedAt
+              type: nonEmptyString
+              required: false
+            - name: fingerprint
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: OriginElementContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: origin
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: nativeId
+              type: nonEmptyString
+              required: false
+            - name: locator
+              type:
+                kind: ref
+                name: OriginLocatorContract
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: OriginLineageContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: mapping
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: alias
+          name: OriginOriginsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: OriginContract
+
+        - kind: alias
+          name: OriginByNodeIdSelectorResult
+          type:
+            kind: ref
+            name: OriginContract
+
+        - kind: alias
+          name: OriginElementsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: OriginElementContract
+
+        - kind: alias
+          name: OriginElementByNodeIdSelectorResult
+          type:
+            kind: ref
+            name: OriginElementContract
+
+        - kind: alias
+          name: OriginLineageSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: OriginLineageContract

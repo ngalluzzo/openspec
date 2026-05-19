@@ -1,0 +1,14 @@
+{
+	"name": "@openspec/storage-schema-output-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"documents": [
+			"spec/storage-schema-output.pattern.openspec.yml",
+			"spec/storage-schema-output.model.openspec.yml",
+			"spec/storage-schema-output.graph.openspec.yml",
+			"spec/storage-schema-output.derivation.openspec.yml"
+		]
+	}
+}

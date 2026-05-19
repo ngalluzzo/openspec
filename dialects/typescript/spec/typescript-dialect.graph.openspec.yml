@@ -1,0 +1,1004 @@
+openspec: "1.0"
+documents:
+  - id: typescript-dialect.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: dialect.package:typescript
+      owner: dialect.package:typescript
+      selectors:
+        - id: typescript.typeDeclarationFacetsFromModel
+          sources:
+            slot:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.slot
+            declaration:
+              kind: selector
+              selector:
+                $expr: model.declarations
+              params:
+                $expr:
+                  os_object: []
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.slot.attributes.role
+                    - type.declaration
+                - ===:
+                    - var: row.slot.attributes.target
+                    - cat:
+                        - "model:"
+                        - var: row.declaration.owner
+                        - "."
+                        - var: row.declaration.name
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      cat:
+                        - var: row.slot.attributes.unitNodeId
+                        - .
+                        - var: row.declaration.name
+                    unit:
+                      var: row.slot.attributes.unitNodeId
+                    target:
+                      var: row.slot.attributes.target
+                    name:
+                      var: row.declaration.name
+                    declaration:
+                      var: row.declaration
+                    fields:
+                      var:
+                        - row.declaration.fields
+                        - []
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+        - id: typescript.cliProgramCommands
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.unit
+            command:
+              kind: selector
+              selector:
+                $expr: cli.commandDispatches
+              params:
+                $expr:
+                  os_object: []
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.unit.attributes.role
+                    - cli.program.surface
+                - ===:
+                    - var: row.command.owner
+                    - var: row.unit.attributes.owner
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      cat:
+                        - var: row.unit.attributes.id
+                        - .
+                        - var: row.command.operationId
+                    unit:
+                      var: row.unit.id
+                    target:
+                      var: row.command.entrypoint
+                    owner:
+                      var: row.command.owner
+                    command:
+                      var: row.command.command
+                    dispatch:
+                      var: row.command.dispatch
+                    operationId:
+                      var: row.command.operationId
+                    optionTypeName:
+                      cat:
+                        - pascal_case:
+                            - var: row.command.operationId
+                        - Options
+                    actionName:
+                      cat:
+                        - camel_case:
+                            - var: row.command.operationId
+                        - Action
+                    description:
+                      var:
+                        - row.command.surface.description
+                        - null
+                    options:
+                      os_map:
+                        - os_entries:
+                            - var:
+                                - row.command.surface.options
+                                - {}
+                        - option
+                        - os_object:
+                            - name:
+                                var: option.key
+                              description:
+                                var:
+                                  - option.value.description
+                                  - null
+                              defaultValue:
+                                var:
+                                  - option.value.defaultValue
+                                  - null
+                              required:
+                                var:
+                                  - option.value.required
+                                  - false
+                              valueType:
+                                var:
+                                  - option.value.valueType
+                                  - string
+                              values:
+                                var:
+                                  - option.value.values
+                                  - null
+                        - true
+                        - var: option
+          orderBy:
+            - $expr:
+                var: row.value.command
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+        - id: typescript.cliProgramSurfaces
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.unit
+            command:
+              kind: selector
+              selector:
+                $expr: typescript.cliProgramCommands
+              params:
+                $expr:
+                  os_object: []
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.unit.attributes.role
+                    - cli.program.surface
+                - ===:
+                    - var: row.command.unit
+                    - var: row.unit.id
+          groupBy:
+            $expr:
+              var: row.unit.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.unit.attributes.id
+                    unit:
+                      var: row.unit.id
+                    target:
+                      var: row.unit.id
+                    owner:
+                      var: row.unit.attributes.owner
+                    factoryName:
+                      var: row.unit.attributes.metadata.factoryName
+                    handlerMapTypeName:
+                      var: row.unit.attributes.metadata.handlerMapTypeName
+                    programName:
+                      var: row.unit.attributes.metadata.programName
+                    description:
+                      var:
+                        - row.unit.attributes.metadata.description
+                        - null
+                    programTypeName:
+                      var:
+                        - row.unit.attributes.metadata.programTypeName
+                        - Command
+                    programImportModule:
+                      var:
+                        - row.unit.attributes.metadata.programImportModule
+                        - commander
+                    commands:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - var: item.command
+                        - true
+                        - var: item.command
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+        - id: typescript.adapterImplementationMethods
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.unit
+            adapter:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: adapter.declaration
+            capability:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.capability
+            method:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.method
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.unit.attributes.role
+                    - adapter.implementation.surface
+                - ===:
+                    - var: row.unit.attributes.subject
+                    - var: row.adapter.id
+                - or:
+                    - ===:
+                        - var: row.adapter.attributes.capability
+                        - var: row.capability.id
+                    - ===:
+                        - var: row.adapter.attributes.capability
+                        - var: row.capability.attributes.id
+                - ===:
+                    - var: row.method.attributes.capability
+                    - var: row.capability.attributes.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      cat:
+                        - var: row.unit.attributes.id
+                        - .
+                        - var: row.method.attributes.name
+                    unit:
+                      var: row.unit.id
+                    surfaceMetadata:
+                      var:
+                        - row.unit.attributes.metadata
+                        - null
+                    adapter:
+                      var: row.adapter.attributes
+                    capability:
+                      var: row.capability.attributes
+                    method:
+                      var: row.method.attributes
+                    inputProperties:
+                      os_map:
+                        - os_entries:
+                            - var:
+                                - row.method.attributes.inputs
+                                - {}
+                        - input
+                        - os_object:
+                            - name:
+                                var: input.key
+                              contract:
+                                var: input.value
+                        - true
+                        - var: input
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+        - id: typescript.adapterImplementationSurfaces
+          sources:
+            method:
+              kind: selector
+              selector:
+                $expr: typescript.adapterImplementationMethods
+              params:
+                $expr:
+                  os_object: []
+          groupBy:
+            $expr:
+              var: row.method.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.method.unit
+                    unit:
+                      var: row.method.unit
+                    adapter:
+                      var: row.method.adapter
+                    capability:
+                      var: row.method.capability
+                    metadata:
+                      var:
+                        - row.method.adapter.metadata
+                        - null
+                    surfaceMetadata:
+                      var:
+                        - row.method.surfaceMetadata
+                        - null
+                    methods:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - capability:
+                                var: item.method.method.capability
+                              owner:
+                                var: item.method.method.owner
+                              name:
+                                var: item.method.method.name
+                              inputs:
+                                var:
+                                  - item.method.method.inputs
+                                  - null
+                              output:
+                                var:
+                                  - item.method.method.output
+                                  - null
+                              inputProperties:
+                                var:
+                                  - item.method.inputProperties
+                                  - []
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+        - id: typescript.capabilityAdapterContractMethods
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.unit
+            capability:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.capability
+            method:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.method
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.unit.attributes.role
+                    - capability.adapter-contract.surface
+                - ===:
+                    - var: row.unit.attributes.subject
+                    - var: row.capability.id
+                - ===:
+                    - var: row.method.attributes.capability
+                    - var: row.capability.attributes.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      cat:
+                        - var: row.unit.attributes.id
+                        - .
+                        - var: row.method.attributes.name
+                    unit:
+                      var: row.unit.id
+                    surfaceMetadata:
+                      var:
+                        - row.unit.attributes.metadata
+                        - null
+                    capability:
+                      var: row.capability.attributes
+                    method:
+                      var: row.method.attributes
+                    inputProperties:
+                      os_map:
+                        - os_entries:
+                            - var:
+                                - row.method.attributes.inputs
+                                - {}
+                        - input
+                        - os_object:
+                            - name:
+                                var: input.key
+                              contract:
+                                var: input.value
+                        - true
+                        - var: input
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+        - id: typescript.capabilityAdapterContractSurfaces
+          sources:
+            method:
+              kind: selector
+              selector:
+                $expr: typescript.capabilityAdapterContractMethods
+              params:
+                $expr:
+                  os_object: []
+          groupBy:
+            $expr:
+              var: row.method.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.method.unit
+                    unit:
+                      var: row.method.unit
+                    capability:
+                      var: row.method.capability
+                    surfaceMetadata:
+                      var:
+                        - row.method.surfaceMetadata
+                        - null
+                    methods:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - capability:
+                                var: item.method.method.capability
+                              owner:
+                                var: item.method.method.owner
+                              name:
+                                var: item.method.method.name
+                              inputs:
+                                var:
+                                  - item.method.method.inputs
+                                  - null
+                              output:
+                                var:
+                                  - item.method.method.output
+                                  - null
+                              inputProperties:
+                                var:
+                                  - item.method.inputProperties
+                                  - []
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+        - id: typescript.hostDispatchSurfaceDispatches
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.unit
+            dispatch:
+              kind: selector
+              selector:
+                $expr: host.methodDispatches
+              params:
+                $expr:
+                  os_object: []
+            invocation:
+              kind: selector
+              selector:
+                $expr: procedure.invocations
+              params:
+                $expr:
+                  os_object: []
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.unit.attributes.role
+                    - host.dispatch.surface
+                - ===:
+                    - var: row.dispatch.environment
+                    - var: row.unit.attributes.metadata.environment
+                - ===:
+                    - var: row.invocation.flow
+                    - var: row.unit.attributes.metadata.flow
+                - ===:
+                    - var: row.invocation.method
+                    - var: row.dispatch.method
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      cat:
+                        - var: row.unit.attributes.id
+                        - .
+                        - var: row.dispatch.dispatch
+                    unit:
+                      var: row.unit.id
+                    owner:
+                      var: row.unit.attributes.owner
+                    environment:
+                      var: row.dispatch.environment
+                    flow:
+                      var: row.invocation.flow
+                    dispatch:
+                      var: row.dispatch.dispatch
+                    method:
+                      var: row.dispatch.method
+                    key:
+                      camel_case:
+                        - var: row.dispatch.dispatch
+          orderBy:
+            - $expr:
+                var: row.value.key
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+        - id: typescript.hostDispatchSurfaces
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.unit
+            dispatch:
+              kind: selector
+              selector:
+                $expr: typescript.hostDispatchSurfaceDispatches
+              params:
+                $expr:
+                  os_object: []
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.unit.attributes.role
+                    - host.dispatch.surface
+                - ===:
+                    - var: row.dispatch.unit
+                    - var: row.unit.id
+          groupBy:
+            $expr:
+              var: row.unit.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.unit.attributes.id
+                    unit:
+                      var: row.unit.id
+                    target:
+                      var: row.unit.id
+                    owner:
+                      var: row.unit.attributes.owner
+                    metadata:
+                      var:
+                        - row.unit.attributes.metadata
+                        - {}
+                    dispatches:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - var: item.dispatch
+                        - true
+                        - var: item.dispatch
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+        - id: typescript.importsForUnit
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: typescript.import
+          where:
+            $expr:
+              ===:
+                - var: row.facet.value.unit
+                - var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    unit:
+                      var: row.facet.value.unit
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:TypeScriptImportFacetSelectorResult
+
+        - id: typescript.declarationsForUnit
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: typescript.declaration
+          where:
+            $expr:
+              ===:
+                - var: row.facet.value.unit
+                - var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    unit:
+                      var: row.facet.value.unit
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:TypeScriptDeclarationFacetSelectorResult
+
+        - id: typescript.recipesForUnit
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: typescript.recipe
+          where:
+            $expr:
+              ===:
+                - var: row.facet.value.unit
+                - var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    unit:
+                      var: row.facet.value.unit
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var:
+                  - row.value.value.order
+                  - 0
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:TypeScriptRecipeInvocationSelectorResult
+
+        - id: typescript.expressionsForTarget
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: typescript.expression
+                target:
+                  $expr:
+                    var: parameter.target
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    unit:
+                      var:
+                        - row.facet.value.unit
+                        - null
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectTargetSelectorParams
+          returnsContract:
+            kind: model
+            model: model:TypeScriptExpressionFacetSelectorResult
+
+        - id: typescript.typesForTarget
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: typescript.type
+                target:
+                  $expr:
+                    var: parameter.target
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    unit:
+                      var:
+                        - row.facet.value.unit
+                        - null
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TypeScriptDialectTargetSelectorParams
+          returnsContract:
+            kind: model
+            model: model:TypeScriptTypeFacetSelectorResult
+
+        - id: typescript.syntaxRenderInput
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.syntaxUnit
+                kind:
+                  $expr: syntax.unit
+            asset:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.asset
+                kind:
+                  $expr: asset.asset
+            import:
+              kind: facets
+              optional: true
+              filter:
+                kind:
+                  $expr: typescript.import
+                value:
+                  unit:
+                    $expr:
+                      var: parameter.syntaxUnit
+            declaration:
+              kind: facets
+              optional: true
+              filter:
+                kind:
+                  $expr: typescript.declaration
+                value:
+                  unit:
+                    $expr:
+                      var: parameter.syntaxUnit
+            recipe:
+              kind: facets
+              optional: true
+              filter:
+                kind:
+                  $expr: typescript.recipe
+                value:
+                  unit:
+                    $expr:
+                      var: parameter.syntaxUnit
+            selection:
+              kind: nodes
+              optional: true
+              filter:
+                kind:
+                  $expr: provider.selection
+          where:
+            $expr:
+              and:
+                - or:
+                    - "!":
+                        - var:
+                            - row.import
+                            - null
+                    - ===:
+                        - var: row.import.value.unit
+                        - var: row.unit.id
+                - or:
+                    - "!":
+                        - var:
+                            - row.declaration
+                            - null
+                    - ===:
+                        - var: row.declaration.value.unit
+                        - var: row.unit.id
+                - or:
+                    - "!":
+                        - var:
+                            - row.recipe
+                            - null
+                    - ===:
+                        - var: row.recipe.value.unit
+                        - var: row.unit.id
+                - or:
+                    - "!":
+                        - var:
+                            - row.selection
+                            - null
+                    - ===:
+                        - var: row.selection.attributes.target
+                        - var: row.unit.id
+          groupBy:
+            $expr:
+              var: row.unit.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - unit:
+                      var: row.unit.attributes
+                    asset:
+                      var: row.asset.attributes
+                    selections:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - var: item.selection.attributes
+                        - true
+                        - var: item.selection
+                    imports:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - id:
+                                var: item.import.id
+                              kind:
+                                var: item.import.kind
+                              target:
+                                var: item.import.target
+                              unit:
+                                var: item.import.value.unit
+                              value:
+                                var: item.import.value
+                        - true
+                        - var: item.import
+                    declarations:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - id:
+                                var: item.declaration.id
+                              kind:
+                                var: item.declaration.kind
+                              target:
+                                var: item.declaration.target
+                              unit:
+                                var: item.declaration.value.unit
+                              value:
+                                var: item.declaration.value
+                        - true
+                        - var: item.declaration
+                    recipes:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - id:
+                                var: item.recipe.id
+                              kind:
+                                var: item.recipe.kind
+                              target:
+                                var: item.recipe.target
+                              unit:
+                                var: item.recipe.value.unit
+                              value:
+                                var: item.recipe.value
+                        - true
+                        - var: item.recipe
+          paramsContract:
+            kind: model
+            model: model:TypeScriptSyntaxRenderSelectorParams
+          returnsContract:
+            kind: model
+            model: model:TypeScriptSyntaxRenderInput

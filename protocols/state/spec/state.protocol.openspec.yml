@@ -1,0 +1,137 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.state.v1
+package:
+  id: "@openspec/state"
+documentModels:
+  - model:StateDocument
+validation:
+  - id: state.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.state.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: state.owner.invalid
+        message: State documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-machines
+        scope: selector
+        selector: state.machines
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: state.machines.empty
+        message: State documents must declare at least one state machine.
+
+      - id: machine-has-values
+        scope: selector
+        selector: state.machines
+        forEach: true
+        assert:
+          $expr:
+            var:
+              - item.values.0
+              - null
+        code: state.machine.values.empty
+        message: Every state machine must declare at least one value.
+        details:
+          $expr:
+            os_object:
+              - machine:
+                  var: item.id
+
+      - id: machine-has-initial-value
+        scope: selector
+        selector: state.machines
+        forEach: true
+        assert:
+          $expr:
+            os_some:
+              - var: item.values
+              - value
+              - var:
+                  - value.initial
+                  - false
+        code: state.machine.initial.missing
+        message: >
+          Every state machine must declare exactly one initial value.
+          Add initial: true to the value that an entity starts in.
+        details:
+          $expr:
+            os_object:
+              - machine:
+                  var: item.id
+
+      - id: machine-one-initial-value
+        scope: selector
+        selector: state.machines
+        forEach: true
+        assert:
+          $expr:
+            "!":
+              - ">":
+                  - os_count:
+                      - os_filter:
+                          - var: item.values
+                          - value
+                          - var:
+                              - value.initial
+                              - false
+                  - 1
+        code: state.machine.initial.multiple
+        message: A state machine cannot declare more than one initial value.
+        details:
+          $expr:
+            os_object:
+              - machine:
+                  var: item.id
+
+      - id: transition-to-not-initial
+        scope: selector
+        selector: state.machines
+        forEach: true
+        assert:
+          $expr:
+            "!":
+              - os_some:
+                  - var:
+                      - item.transitions
+                      - null
+                  - transition
+                  - os_some:
+                      - var: item.values
+                      - value
+                      - and:
+                          - ===:
+                              - var: value.name
+                              - var: transition.to
+                          - var:
+                              - value.initial
+                              - false
+        code: state.transition.to.initial.forbidden
+        message: >
+          Transitions cannot target an initial value.
+          Initial values are entry points, not destinations of transitions.
+        details:
+          $expr:
+            os_object:
+              - machine:
+                  var: item.id

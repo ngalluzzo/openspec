@@ -1,0 +1,28 @@
+{
+	"name": "@openspec/typescript-recipe-apply-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/typescript-recipe-apply.generated.ts",
+			"import": "./src/sdk/typescript-recipe-apply.generated.ts",
+			"default": "./src/sdk/typescript-recipe-apply.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/typescript-recipe-apply-types.generated.ts",
+			"import": "./src/sdk/typescript-recipe-apply-types.generated.ts",
+			"default": "./src/sdk/typescript-recipe-apply-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"dependencies": {
+		"@openspec/typescript-dialect": "workspace:*"
+	},
+	"openspec": {
+		"documents": [
+			"spec/typescript-recipe-apply.capability.openspec.yml",
+			"spec/typescript-recipe-apply.output.openspec.yml"
+		]
+	}
+}

@@ -1,0 +1,102 @@
+openspec: "1.0"
+documents:
+  - id: http-dialect.model
+    protocol: openspec.model.v1
+    document:
+      owner: dialect.package:http
+      declarations:
+        - kind: object
+          name: HttpDialectSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: HttpTransportFacetValue
+          fields:
+            - name: scheme
+              type:
+                kind: union
+                options:
+                  - kind: literal
+                    value: http
+                  - kind: literal
+                    value: https
+              required: false
+            - name: host
+              type: nonEmptyString
+              required: false
+            - name: port
+              type: number
+              required: false
+            - name: basePath
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: HttpRouteFacetValue
+          fields:
+            - name: method
+              type: nonEmptyString
+            - name: consumes
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: produces
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: HttpTransportFacetContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: transport
+              type: unknown
+            - name: value
+              type:
+                kind: ref
+                name: HttpTransportFacetValue
+
+        - kind: object
+          name: HttpRouteFacetContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: route
+              type: unknown
+            - name: value
+              type:
+                kind: ref
+                name: HttpRouteFacetValue
+
+        - kind: alias
+          name: HttpTransportFacetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: HttpTransportFacetContract
+
+        - kind: alias
+          name: HttpRouteFacetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: HttpRouteFacetContract

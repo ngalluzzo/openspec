@@ -1,0 +1,75 @@
+openspec: "1.0"
+documents:
+  - id: operation-entrypoint.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: operation.entrypoint
+        name: Operation Entrypoint Pattern
+      patterns:
+        - id: operation.entrypoint
+          owner: pattern.package:operation.entrypoint
+          name: Operation entrypoint
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .entrypoint
+                protocol: openspec.entrypoint.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  entrypoints:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      handler:
+                        expr:
+                          kind: path
+                          path: input.operation
+                      kind:
+                        expr:
+                          kind: path
+                          path: input.kind
+                          optional: true
+                          default:
+                            kind: literal
+                            value: operation.entrypoint
+                      name:
+                        expr:
+                          kind: path
+                          path: input.name
+                          optional: true
+                      context:
+                        expr:
+                          kind: path
+                          path: input.context
+                          optional: true
+                      input:
+                        expr:
+                          kind: path
+                          path: input.input
+                          optional: true
+                      output:
+                        expr:
+                          kind: path
+                          path: input.output
+                          optional: true
+                      metadata:
+                        expr:
+                          kind: path
+                          path: input.metadata
+                          optional: true
+                      description:
+                        expr:
+                          kind: path
+                          path: input.description
+                          optional: true

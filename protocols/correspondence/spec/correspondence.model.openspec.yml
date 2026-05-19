@@ -1,0 +1,38 @@
+openspec: "1.0"
+documents:
+  - id: correspondence.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.correspondence.v1
+      declarations:
+        - kind: object
+          name: CorrespondenceGroup
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: canonical
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: attributes
+              type: unknown
+              required: false
+            - name: members
+              type:
+                kind: array
+                item: nonEmptyString
+
+        - kind: object
+          name: CorrespondenceDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+              required: false
+            - name: groups
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: CorrespondenceGroup

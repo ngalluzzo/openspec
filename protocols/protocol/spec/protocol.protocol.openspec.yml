@@ -1,0 +1,548 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.protocol.v1
+package:
+  id: "@openspec/protocol"
+documentModels:
+  - model:openspec.protocol.document
+lowering:
+  - id: protocol.declarations
+    source:
+      as: declaration
+    facts:
+      - kind: node
+        id:
+          $expr:
+            os_node_id:
+              - protocol.protocol
+              - var: declaration.id
+        factKind:
+          $expr: protocol.protocol
+        attributes:
+          $expr:
+            os_object:
+              - id:
+                  var: declaration.id
+                version:
+                  var:
+                    - declaration.version
+                    - null
+                package:
+                  var: declaration.package.id
+                documentModels:
+                  var:
+                    - declaration.documentModels
+                    - null
+                metadata:
+                  var:
+                    - declaration.metadata
+                    - null
+                facts:
+                  var:
+                    - declaration.facts
+                    - null
+                satisfies:
+                  var:
+                    - declaration.satisfies
+                    - null
+      - kind: node
+        id:
+          $expr:
+            os_node_id:
+              - protocol.package
+              - var: declaration.package.id
+        factKind:
+          $expr: protocol.package
+        attributes:
+          $expr:
+            os_object:
+              - id:
+                  var: declaration.package.id
+                version:
+                  var:
+                    - declaration.package.version
+                    - null
+                dependencies:
+                  var:
+                    - declaration.package.dependencies
+                    - null
+      - kind: edge
+        id:
+          $expr:
+            cat:
+              - protocol.package.protocol.
+              - var: declaration.package.id
+              - .
+              - var: declaration.id
+        factKind:
+          $expr: protocol.package.protocol
+        from:
+          $expr:
+            os_node_id:
+              - protocol.package
+              - var: declaration.package.id
+        to:
+          $expr:
+            os_node_id:
+              - protocol.protocol
+              - var: declaration.id
+      - kind: facet
+        id:
+          $expr:
+            cat:
+              - os_node_id:
+                  - protocol.protocol
+                  - var: declaration.id
+              - .declaration
+        factKind:
+          $expr: protocol.declaration
+        target:
+          $expr:
+            os_node_id:
+              - protocol.protocol
+              - var: declaration.id
+        value:
+          $expr:
+            var: declaration
+      - kind: forEach
+        path: declaration.package.dependencies
+        as: dependency
+        optional: true
+        facts:
+          - kind: edge
+            id:
+              $expr:
+                cat:
+                  - protocol.package.dependency.
+                  - var: declaration.package.id
+                  - .
+                  - var: dependency.id
+            factKind:
+              $expr: protocol.package.dependency
+            from:
+              $expr:
+                os_node_id:
+                  - protocol.package
+                  - var: declaration.package.id
+            to:
+              $expr:
+                os_node_id:
+                  - protocol.package
+                  - var: dependency.id
+      - kind: forEach
+        path: declaration.satisfies
+        as: satisfiedProtocolId
+        optional: true
+        facts:
+          - kind: edge
+            id:
+              $expr:
+                cat:
+                  - protocol.protocol.satisfies.
+                  - var: declaration.id
+                  - .
+                  - var: satisfiedProtocolId
+            factKind:
+              $expr: protocol.protocol.satisfies
+            from:
+              $expr:
+                os_node_id:
+                  - protocol.protocol
+                  - var: declaration.id
+            to:
+              $expr:
+                os_node_id:
+                  - protocol.protocol
+                  - var: satisfiedProtocolId
+      - kind: forEach
+        path: declaration.lowering
+        as: map
+        optional: true
+        facts:
+          - kind: node
+            id:
+              $expr:
+                os_node_id:
+                  - protocol.lowering.map
+                  - var: declaration.id
+                  - var: map.id
+            factKind:
+              $expr: protocol.lowering.map
+            attributes:
+              $expr:
+                os_object:
+                  - id:
+                      var: map.id
+                    protocol:
+                      var: declaration.id
+                    source:
+                      var: map.source
+                    facts:
+                      var: map.facts
+          - kind: edge
+            id:
+              $expr:
+                cat:
+                  - protocol.protocol.lowering.map.
+                  - var: declaration.id
+                  - .
+                  - var: map.id
+            factKind:
+              $expr: protocol.protocol.lowering.map
+            from:
+              $expr:
+                os_node_id:
+                  - protocol.protocol
+                  - var: declaration.id
+            to:
+              $expr:
+                os_node_id:
+                  - protocol.lowering.map
+                  - var: declaration.id
+                  - var: map.id
+      - kind: forEach
+        path: declaration.selectors
+        as: selectorSet
+        optional: true
+        facts:
+          - kind: node
+            id:
+              $expr:
+                os_node_id:
+                  - protocol.selector.set
+                  - var: declaration.id
+                  - var: selectorSet.id
+            factKind:
+              $expr: protocol.selector.set
+            attributes:
+              $expr:
+                os_object:
+                  - id:
+                      var: selectorSet.id
+                    protocol:
+                      var: declaration.id
+                    selectors:
+                      var: selectorSet.selectors
+          - kind: edge
+            id:
+              $expr:
+                cat:
+                  - protocol.protocol.selector.set.
+                  - var: declaration.id
+                  - .
+                  - var: selectorSet.id
+            factKind:
+              $expr: protocol.protocol.selector.set
+            from:
+              $expr:
+                os_node_id:
+                  - protocol.protocol
+                  - var: declaration.id
+            to:
+              $expr:
+                os_node_id:
+                  - protocol.selector.set
+                  - var: declaration.id
+                  - var: selectorSet.id
+      - kind: forEach
+        path: declaration.validation
+        as: validationSuite
+        optional: true
+        facts:
+          - kind: node
+            id:
+              $expr:
+                os_node_id:
+                  - protocol.validation.suite
+                  - var: declaration.id
+                  - var: validationSuite.id
+            factKind:
+              $expr: protocol.validation.suite
+            attributes:
+              $expr:
+                os_object:
+                  - id:
+                      var: validationSuite.id
+                    protocol:
+                      var: declaration.id
+                    rules:
+                      var: validationSuite.rules
+          - kind: edge
+            id:
+              $expr:
+                cat:
+                  - protocol.protocol.validation.suite.
+                  - var: declaration.id
+                  - .
+                  - var: validationSuite.id
+            factKind:
+              $expr: protocol.protocol.validation.suite
+            from:
+              $expr:
+                os_node_id:
+                  - protocol.protocol
+                  - var: declaration.id
+            to:
+              $expr:
+                os_node_id:
+                  - protocol.validation.suite
+                  - var: declaration.id
+                  - var: validationSuite.id
+selectors:
+  - id: protocol.selectors
+    selectors:
+      - id: protocol.protocols
+        sources:
+          protocol:
+            kind: nodes
+            filter:
+              kind:
+                $expr: protocol.protocol
+        result:
+          cardinality: many
+          value:
+            $expr:
+              var: row.protocol.attributes
+        orderBy:
+          - $expr:
+              var: row.value.id
+        paramsContract:
+          kind: model
+          model: model:ProtocolSelectorNoParams
+        returnsContract:
+          kind: model
+          model: model:ProtocolProtocolsSelectorResult
+      - id: protocol.packages
+        sources:
+          package:
+            kind: nodes
+            filter:
+              kind:
+                $expr: protocol.package
+        result:
+          cardinality: many
+          value:
+            $expr:
+              var: row.package.attributes
+        orderBy:
+          - $expr:
+              var: row.value.id
+        paramsContract:
+          kind: model
+          model: model:ProtocolSelectorNoParams
+        returnsContract:
+          kind: model
+          model: model:ProtocolPackagesSelectorResult
+      - id: protocol.byId
+        sources:
+          protocol:
+            kind: nodes
+            filter:
+              kind:
+                $expr: protocol.protocol
+        where:
+          $expr:
+            ===:
+              - var: row.protocol.attributes.id
+              - var: parameter.id
+        result:
+          cardinality: optionalOne
+          value:
+            $expr:
+              var: row.protocol.attributes
+        paramsContract:
+          kind: model
+          model: model:ProtocolByIdSelectorParams
+        returnsContract:
+          kind: model
+          model: model:ProtocolByIdSelectorResult
+      - id: protocol.declarations
+        sources:
+          declaration:
+            kind: facets
+            filter:
+              kind:
+                $expr: protocol.declaration
+        result:
+          cardinality: many
+          value:
+            $expr:
+              var: row.declaration.value
+        orderBy:
+          - $expr:
+              var: row.value.id
+        paramsContract:
+          kind: model
+          model: model:ProtocolSelectorNoParams
+        returnsContract:
+          kind: model
+          model: model:ProtocolDeclarationsSelectorResult
+      - id: protocol.declarationByNodeId
+        sources:
+          declaration:
+            kind: facets
+            filter:
+              kind:
+                $expr: protocol.declaration
+              target:
+                $expr:
+                  var: parameter.nodeId
+        result:
+          cardinality: optionalOne
+          value:
+            $expr:
+              var: row.declaration.value
+        paramsContract:
+          kind: model
+          model: model:ProtocolDeclarationByNodeIdSelectorParams
+        returnsContract:
+          kind: model
+          model: model:ProtocolDeclarationByNodeIdSelectorResult
+      - id: protocol.lowering.maps
+        sources:
+          map:
+            kind: nodes
+            filter:
+              kind:
+                $expr: protocol.lowering.map
+        result:
+          cardinality: many
+          value:
+            $expr:
+              var: row.map.attributes
+        orderBy:
+          - $expr:
+              var: row.value.id
+        paramsContract:
+          kind: model
+          model: model:ProtocolSelectorNoParams
+        returnsContract:
+          kind: model
+          model: model:ProtocolLoweringMapsSelectorResult
+      - id: protocol.selector.sets
+        sources:
+          selectorSet:
+            kind: nodes
+            filter:
+              kind:
+                $expr: protocol.selector.set
+        result:
+          cardinality: many
+          value:
+            $expr:
+              var: row.selectorSet.attributes
+        orderBy:
+          - $expr:
+              var: row.value.id
+        paramsContract:
+          kind: model
+          model: model:ProtocolSelectorNoParams
+        returnsContract:
+          kind: model
+          model: model:ProtocolSelectorSetsSelectorResult
+      - id: protocol.validation.suites
+        sources:
+          suite:
+            kind: nodes
+            filter:
+              kind:
+                $expr: protocol.validation.suite
+        result:
+          cardinality: many
+          value:
+            $expr:
+              var: row.suite.attributes
+        orderBy:
+          - $expr:
+              var: row.value.id
+        paramsContract:
+          kind: model
+          model: model:ProtocolSelectorNoParams
+        returnsContract:
+          kind: model
+          model: model:ProtocolValidationSuitesSelectorResult
+      - id: protocol.missingSatisfies
+        sources:
+          edge:
+            kind: edges
+            filter:
+              kind:
+                $expr: protocol.protocol.satisfies
+          protocol:
+            kind: nodes
+            filter:
+              id:
+                $expr:
+                  var: row.edge.to
+            optional: true
+        where:
+          $expr:
+            "!":
+              - var:
+                  - row.protocol
+                  - null
+        result:
+          cardinality: many
+          value:
+            $expr:
+              os_object:
+                - edge:
+                    var: row.edge.id
+                  protocol:
+                    var: row.edge.to
+        paramsContract:
+          kind: model
+          model: model:ProtocolSelectorNoParams
+        returnsContract:
+          kind: model
+          model: model:ProtocolMissingSatisfiesSelectorResult
+validation:
+  - id: protocol.validation
+    rules:
+      - id: protocol-id-format
+        scope: selector
+        selector: protocol.protocols
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^openspec\.[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*\.v[0-9]+$
+        code: protocol.id.invalid
+        message: Protocol ids must use openspec namespaced version ids.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+      - id: protocol-package-id-format
+        scope: selector
+        selector: protocol.packages
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^@openspec\/[a-z][a-z0-9-]*$
+        code: protocol.package.id.invalid
+        message: Protocol packages must use @openspec package ids.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+      - id: satisfies-protocol-exists
+        scope: selector
+        selector: protocol.missingSatisfies
+        forEach: true
+        assert:
+          $expr: false
+        code: protocol.satisfies.missing
+        message: Protocol satisfies a protocol that is not declared.
+        details:
+          $expr:
+            os_object:
+              - edge:
+                  var: item.edge
+                protocol:
+                  var: item.protocol

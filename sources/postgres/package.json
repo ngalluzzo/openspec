@@ -1,0 +1,16 @@
+{
+  "name": "@openspec/source-postgres",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "openspec": {
+    "documents": [
+      "spec/postgres-schema.protocol.openspec.yml",
+      "spec/postgres-schema.model.openspec.yml",
+      "spec/postgres-schema.graph.openspec.yml"
+    ]
+  }
+}

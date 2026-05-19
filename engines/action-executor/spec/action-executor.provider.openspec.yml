@@ -1,0 +1,17 @@
+openspec: "1.0"
+documents:
+  - id: action-executor.provider
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: action-executor.provider
+          pattern: pattern.declaration:provider.adapters
+          inputs:
+            provider:
+              id: action-executor
+              name: Action executor provider
+            adapters:
+              - id: action.executor.default
+                capability: capability.capability:action.executor
+                kind: action.executor.default
+                description: Executes derived planning.action nodes and returns generated content outputs.

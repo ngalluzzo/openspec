@@ -1,0 +1,298 @@
+openspec: "1.0"
+documents:
+  - id: cli-program-output.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: cli.program-output
+        name: CLI Program Output Pattern
+      patterns:
+        - id: cli.program-output
+          owner: pattern.package:cli.program-output
+          name: CLI program output
+          metadata:
+            composes:
+              - openspec.entrypoint.v1
+              - openspec.facet.v1
+              - openspec.syntax.v1
+              - openspec.asset.v1
+              - openspec.projection.v1
+              - openspec.provider.v1
+            relation: Creates a CLI program syntax surface and requests rendering for it.
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .syntax
+                protocol: openspec.syntax.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  namespace:
+                    expr:
+                      kind: path
+                      path: input.namespace
+                      optional: true
+                      default:
+                        kind: path
+                        path: input.id
+                  units:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.unit.id
+                          optional: true
+                          default:
+                            kind: path
+                            path: input.id
+                      kind: cli.program.surface
+                      subject:
+                        expr:
+                          kind: path
+                          path: input.subject
+                          optional: true
+                          default:
+                            kind: path
+                            path: input.owner
+                      role: cli.program.surface
+                      metadata:
+                        expr:
+                          kind: object
+                          fields:
+                            factoryName:
+                              kind: path
+                              path: input.factoryName
+                            handlerMapTypeName:
+                              kind: path
+                              path: input.handlerMapTypeName
+                            programName:
+                              kind: path
+                              path: input.programName
+                            description:
+                              kind: path
+                              path: input.description
+                              optional: true
+                            programTypeName:
+                              kind: path
+                              path: input.programTypeName
+                              optional: true
+                              default:
+                                kind: literal
+                                value: Command
+                            programImportModule:
+                              kind: path
+                              path: input.programImportModule
+                              optional: true
+                              default:
+                                kind: literal
+                                value: commander
+                  slots:
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.unit.id
+                              optional: true
+                              default:
+                                kind: path
+                                path: input.id
+                            - kind: literal
+                              value: .factory
+                      unit:
+                        expr:
+                          kind: path
+                          path: input.unit.id
+                          optional: true
+                          default:
+                            kind: path
+                            path: input.id
+                      kind: typescript.factory.function.surface
+                      role: typescript.factory.function.surface
+                      target:
+                        expr:
+                          kind: path
+                          path: input.owner
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.unit.id
+                              optional: true
+                              default:
+                                kind: path
+                                path: input.id
+                            - kind: literal
+                              value: .handler-map
+                      unit:
+                        expr:
+                          kind: path
+                          path: input.unit.id
+                          optional: true
+                          default:
+                            kind: path
+                            path: input.id
+                      kind: cli.handler.map.surface
+                      role: cli.handler.map.surface
+                      target:
+                        expr:
+                          kind: path
+                          path: input.owner
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.unit.id
+                              optional: true
+                              default:
+                                kind: path
+                                path: input.id
+                            - kind: literal
+                              value: .command-bindings
+                      unit:
+                        expr:
+                          kind: path
+                          path: input.unit.id
+                          optional: true
+                          default:
+                            kind: path
+                            path: input.id
+                      kind: cli.command.surface
+                      role: cli.command.surface
+                      target:
+                        expr:
+                          kind: path
+                          path: input.owner
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .cli.provider.selection
+                protocol: openspec.provider.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  selectionRequests:
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .cli.program
+                      target:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: literal
+                              value: "syntax.unit:"
+                            - kind: path
+                              path: input.namespace
+                              optional: true
+                              default:
+                                kind: path
+                                path: input.id
+                            - kind: literal
+                              value: "."
+                            - kind: path
+                              path: input.unit.id
+                              optional: true
+                              default:
+                                kind: path
+                                path: input.id
+                      role: cli.program.syntax
+                      provider:
+                        expr:
+                          kind: path
+                          path: input.cliProvider
+                          optional: true
+                      dialect:
+                        expr:
+                          kind: path
+                          path: input.cliDialect
+                          optional: true
+                      params:
+                        expr:
+                          kind: path
+                          path: input.cliParams
+                          optional: true
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .projection.application
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      pattern: pattern.declaration:syntax.projection
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: path
+                            path: input.id
+                        syntaxUnit:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: literal
+                                value: "syntax.unit:"
+                              - kind: path
+                                path: input.namespace
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                              - kind: literal
+                                value: "."
+                              - kind: path
+                                path: input.unit.id
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                        dialect:
+                          expr:
+                            kind: literal
+                            value: typescript
+                        provider:
+                          expr:
+                            kind: path
+                            path: input.renderProvider
+                            optional: true
+                        params:
+                          expr:
+                            kind: path
+                            path: input.renderParams
+                            optional: true
+                        artifact:
+                          expr:
+                            kind: path
+                            path: input.artifact

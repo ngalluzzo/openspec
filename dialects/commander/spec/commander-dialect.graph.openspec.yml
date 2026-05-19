@@ -1,0 +1,134 @@
+openspec: "1.0"
+documents:
+  - id: commander-dialect.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: dialect.package:commander
+      selectors:
+        - id: commander.programs
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.unit
+            selection:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: provider.selection
+            command:
+              kind: selector
+              selector:
+                $expr: cli.commandDispatches
+              params:
+                $expr:
+                  os_object: []
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.unit.attributes.role
+                    - cli.program.surface
+                - ===:
+                    - var: row.selection.attributes.target
+                    - var: row.unit.id
+                - ===:
+                    - var: row.selection.attributes.role
+                    - cli.program.syntax
+                - ===:
+                    - var: row.selection.attributes.provider
+                    - provider.provider:commander
+                - ===:
+                    - var: row.command.owner
+                    - var: row.unit.attributes.owner
+          groupBy:
+            $expr:
+              var: row.unit.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.unit.attributes.id
+                    unit:
+                      var: row.unit.id
+                    target:
+                      var: row.unit.id
+                    owner:
+                      var: row.unit.attributes.owner
+                    providerSelection:
+                      var: row.selection.attributes.request
+                    factoryName:
+                      var: row.unit.attributes.metadata.factoryName
+                    programName:
+                      var: row.unit.attributes.metadata.programName
+                    description:
+                      var:
+                        - row.unit.attributes.metadata.description
+                        - null
+                    commands:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - id:
+                                var: item.command.id
+                              command:
+                                var: item.command.command
+                              actionName:
+                                cat:
+                                  - camel_case:
+                                      - var: item.command.operationId
+                                  - Action
+                              description:
+                                var:
+                                  - item.command.surface.description
+                                  - null
+                              options:
+                                os_map:
+                                  - os_entries:
+                                      - var:
+                                          - item.command.surface.options
+                                          - {}
+                                  - option
+                                  - os_object:
+                                      - name:
+                                          var: option.key
+                                        flag:
+                                          cat:
+                                            - "--"
+                                            - var: option.key
+                                            - " <value>"
+                                        valueType:
+                                          var:
+                                            - option.value.valueType
+                                            - string
+                                        required:
+                                          var:
+                                            - option.value.required
+                                            - false
+                                        description:
+                                          var:
+                                            - option.value.description
+                                            - null
+                                        defaultValue:
+                                          var:
+                                            - option.value.defaultValue
+                                            - null
+                                        values:
+                                          var:
+                                            - option.value.values
+                                            - null
+                        - true
+                        - var: item.command
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:CommanderDialectSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:CommanderProgramSelectorResult

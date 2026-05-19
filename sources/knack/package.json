@@ -1,0 +1,16 @@
+{
+  "name": "@openspec/source-knack",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "openspec": {
+    "documents": [
+      "spec/knack-objects.protocol.openspec.yml",
+      "spec/knack-objects.model.openspec.yml",
+      "spec/knack-objects.graph.openspec.yml"
+    ]
+  }
+}

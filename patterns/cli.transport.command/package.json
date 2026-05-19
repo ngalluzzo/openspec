@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/cli-transport-command-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/cli-transport-command.pattern.openspec.yml"]
+		}
+	}
+}

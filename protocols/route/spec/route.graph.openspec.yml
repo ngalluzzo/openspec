@@ -1,0 +1,255 @@
+openspec: "1.0"
+documents:
+  - id: route.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.route.v1
+      owner: protocol.protocol:openspec.route.v1
+      lowering:
+        - id: route.declarations
+          source:
+            path: routes
+            as: route
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - route.route
+                    - var: route.id
+              factKind:
+                $expr: route.route
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: route.id
+                      kind:
+                        var: route.kind
+                      owner:
+                        var: document.owner
+                      pattern:
+                        var: route.pattern
+                      params:
+                        var:
+                          - route.params
+                          - null
+                      priority:
+                        var:
+                          - route.priority
+                          - null
+                      metadata:
+                        var:
+                          - route.metadata
+                          - null
+                      description:
+                        var:
+                          - route.description
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .route.
+                    - var: route.id
+              factKind:
+                $expr: route.owner.route
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - route.route
+                    - var: route.id
+
+            - kind: forEach
+              path: route.params
+              as: param
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - route.param
+                        - var: route.id
+                        - var: param.name
+                  factKind:
+                    $expr: route.param
+                  attributes:
+                    $expr:
+                      os_object:
+                        - name:
+                            var: param.name
+                          type:
+                            var:
+                              - param.type
+                              - null
+                          source:
+                            var:
+                              - param.source
+                              - null
+                          required:
+                            var:
+                              - param.required
+                              - true
+                          description:
+                            var:
+                              - param.description
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - route.route
+                            - var: route.id
+                        - .param.
+                        - var: param.name
+                  factKind:
+                    $expr: route.route.param
+                  from:
+                    $expr:
+                      os_node_id:
+                        - route.route
+                        - var: route.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - route.param
+                        - var: route.id
+                        - var: param.name
+
+      selectors:
+        - id: route.routes
+          sources:
+            route:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: route.route
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.route.attributes
+          orderBy:
+            - $expr:
+                var: row.value.priority
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:RouteSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:RouteRoutesSelectorResult
+
+        - id: route.byId
+          sources:
+            route:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - route.route
+                      - var: parameter.route
+                kind:
+                  $expr: route.route
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.route.attributes
+          paramsContract:
+            kind: model
+            model: model:RouteByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:RouteByIdSelectorResult
+
+        - id: route.byKind
+          sources:
+            route:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: route.route
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.route.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.route.attributes.kind
+                  - var: parameter.kind
+          orderBy:
+            - $expr:
+                var: row.value.priority
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:RouteByKindSelectorParams
+          returnsContract:
+            kind: model
+            model: model:RouteByKindSelectorResult
+
+        - id: route.params
+          sources:
+            param:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: route.param
+            route:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.param.id
+              filter:
+                kind:
+                  $expr: route.route.param
+                direction:
+                  $expr: in
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - route:
+                      var: row.route.attributes.id
+                    name:
+                      var: row.param.attributes.name
+                    type:
+                      var:
+                        - row.param.attributes.type
+                        - null
+                    source:
+                      var:
+                        - row.param.attributes.source
+                        - null
+                    required:
+                      var: row.param.attributes.required
+                    description:
+                      var:
+                        - row.param.attributes.description
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.route
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:RouteSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:RouteParamsSelectorResult

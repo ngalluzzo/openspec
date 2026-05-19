@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/adapter-asset-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/adapter-asset.pattern.openspec.yml"]
+		}
+	}
+}

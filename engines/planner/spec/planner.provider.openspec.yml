@@ -1,0 +1,9 @@
+openspec: "1.0"
+documents:
+  - id: planner.provider
+    protocol: openspec.provider.v1
+    document:
+      owner: provider.provider:planner
+      providers:
+        - id: planner
+          name: OpenSpec Planner

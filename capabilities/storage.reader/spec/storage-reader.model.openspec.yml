@@ -1,0 +1,46 @@
+openspec: "1.0"
+documents:
+  - id: storage.reader.model
+    protocol: openspec.model.v1
+    document:
+      owner: capability.package:storage.reader
+
+      declarations:
+
+        - kind: object
+          name: ReadQuery
+          fields:
+            - name: root
+              type: nonEmptyString
+              description: Root path to resolve all locations against.
+            - name: patterns
+              type:
+                kind: array
+                items:
+                  kind: string
+              required: false
+              description: Glob patterns to filter which files are read. Reads all files if omitted.
+
+        - kind: object
+          name: ContentRead
+          fields:
+            - name: location
+              type: nonEmptyString
+              description: Relative location of the file within the root.
+            - name: content
+              type: nonEmptyString
+
+        - kind: object
+          name: ReadReport
+          fields:
+            - name: files
+              type:
+                kind: array
+                items:
+                  kind: ref
+                  name: ContentRead
+            - name: diagnostics
+              type:
+                kind: array
+                items:
+                  kind: unknown

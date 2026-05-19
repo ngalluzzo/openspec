@@ -1,0 +1,209 @@
+openspec: "1.0"
+documents:
+  - id: cli-transport-command.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: cli.transport.command
+        name: CLI Transport Command Pattern Package
+      patterns:
+        - id: cli.transport.command
+          owner: pattern.package:cli.transport.command
+          name: CLI transport command
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .entrypoint
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .entrypoint
+                      pattern: pattern.declaration:operation.entrypoint
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: path
+                            path: input.id
+                        operation:
+                          expr:
+                            kind: path
+                            path: input.operation
+                        kind:
+                          expr:
+                            kind: path
+                            path: input.entrypoint.kind
+                            optional: true
+                        name:
+                          expr:
+                            kind: path
+                            path: input.name
+                            optional: true
+                        context:
+                          expr:
+                            kind: path
+                            path: input.context
+                            optional: true
+                        input:
+                          expr:
+                            kind: path
+                            path: input.input
+                            optional: true
+                        output:
+                          expr:
+                            kind: path
+                            path: input.output
+                            optional: true
+                        metadata:
+                          expr:
+                            kind: path
+                            path: input.metadata
+                            optional: true
+                        description:
+                          expr:
+                            kind: path
+                            path: input.description
+                            optional: true
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .transport.binding
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .transport
+                      pattern: pattern.declaration:entrypoint.transport
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.id
+                              - kind: literal
+                                value: .transport
+                        entrypoint:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: literal
+                                value: "entrypoint.entrypoint:"
+                              - kind: path
+                                path: input.id
+                        transport:
+                          expr:
+                            kind: path
+                            path: input.transport
+                        params:
+                          expr:
+                            kind: path
+                            path: input.transportParams
+                            optional: true
+                        value:
+                          expr:
+                            kind: path
+                            path: input.transportValue
+                            optional: true
+                        metadata:
+                          expr:
+                            kind: path
+                            path: input.transportMetadata
+                            optional: true
+                        description:
+                          expr:
+                            kind: path
+                            path: input.transportDescription
+                            optional: true
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .surface
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .surface
+                      pattern: pattern.declaration:entrypoint.surface
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: path
+                            path: input.id
+                        kind:
+                          expr:
+                            kind: literal
+                            value: cli.command
+                        entrypoint:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: literal
+                                value: "entrypoint.entrypoint:"
+                              - kind: path
+                                path: input.id
+                        value:
+                          expr:
+                            kind: object
+                            fields:
+                              command:
+                                kind: path
+                                path: input.command
+                              description:
+                                kind: path
+                                path: input.description
+                                optional: true
+                              options:
+                                kind: path
+                                path: input.options
+                                optional: true
+                              metadata:
+                                kind: path
+                                path: input.surfaceMetadata
+                                optional: true

@@ -1,0 +1,144 @@
+openspec: "1.0"
+documents:
+  - id: binding.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.binding.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: BindingSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: BindingByIdSelectorParams
+          fields:
+            - name: binding
+              type: nonEmptyString
+
+        - kind: object
+          name: BindingByKindSelectorParams
+          fields:
+            - name: kind
+              type: nonEmptyString
+
+        - kind: object
+          name: BindingBySubjectSelectorParams
+          fields:
+            - name: subject
+              type: nonEmptyString
+
+        - kind: object
+          name: BindingBySlotSelectorParams
+          fields:
+            - name: slot
+              type: nonEmptyString
+
+        # ── Document contract ─────────────────────────────────────────────────
+
+        - kind: object
+          name: BindingDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: subject
+              type: nonEmptyString
+              required: false
+              description: Target node ID. When omitted, the binding uses params for resolution.
+            - name: params
+              type: unknown
+              required: false
+              description: Free-form criteria used when subject is absent to resolve the binding target at graph derivation time.
+            - name: slot
+              type: nonEmptyString
+            - name: value
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: BindingDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: bindings
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: BindingDeclaration
+
+        # ── Binding contract ──────────────────────────────────────────────────
+        # A binding is an authored typed association between two graph nodes.
+        # `subject` is the node doing the binding; `slot` is the structural node bound to.
+        # `kind` is defined at authoring time — not fixed by this protocol.
+        # `value` is an open payload whose schema is owned by the binding kind.
+
+        - kind: object
+          name: BindingContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: subject
+              type: nonEmptyString
+              required: false
+            - name: params
+              type: unknown
+              required: false
+            - name: slot
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: value
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: BindingBindingsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: BindingContract
+
+        - kind: alias
+          name: BindingByIdSelectorResult
+          type:
+            kind: ref
+            name: BindingContract
+
+        - kind: alias
+          name: BindingByKindSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: BindingContract
+
+        - kind: alias
+          name: BindingBySubjectSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: BindingContract
+
+        - kind: alias
+          name: BindingBySlotSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: BindingContract

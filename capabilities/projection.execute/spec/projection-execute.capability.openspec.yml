@@ -1,0 +1,23 @@
+openspec: "1.0"
+documents:
+  - id: projection.execute.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:projection.execute
+
+      capabilities:
+        - id: projection.execute
+          kind: projection.execution
+          description: Execute a single projection planning action and produce generated files.
+          methods:
+            project:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ProjectionExecuteInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ProjectionOutput

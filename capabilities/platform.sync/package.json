@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/platform-sync-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/platform-sync.generated.ts",
+			"import": "./src/sdk/platform-sync.generated.ts",
+			"default": "./src/sdk/platform-sync.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/platform-sync-types.generated.ts",
+			"import": "./src/sdk/platform-sync-types.generated.ts",
+			"default": "./src/sdk/platform-sync-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/platform-sync.model.openspec.yml",
+			"spec/platform-sync.capability.openspec.yml",
+			"spec/platform-sync.output.openspec.yml"
+		]
+	}
+}

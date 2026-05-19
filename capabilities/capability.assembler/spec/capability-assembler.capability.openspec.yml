@@ -1,0 +1,19 @@
+openspec: "1.0"
+documents:
+  - id: capability.assembler.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:capability.assembler
+
+      capabilities:
+        - id: capability.assembler
+          kind: capability.assembly
+          description: Resolve capability method dispatchers for procedure and flow execution.
+          methods:
+            assemble:
+              inputs:
+                input:
+                  type: unknown
+                  required: true
+              output:
+                type: unknown

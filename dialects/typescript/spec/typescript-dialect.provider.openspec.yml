@@ -1,0 +1,49 @@
+openspec: "1.0"
+documents:
+  - id: typescript-dialect.provider
+    protocol: openspec.provider.v1
+    document:
+      owner: dialect.package:typescript
+      providers:
+        - id: typescript
+          name: TypeScript Dialect
+          exports:
+            adapters:
+              - adapter.adapter:typescript.syntax.render
+      offerings:
+        - id: typescript.syntax.render
+          provider: provider.provider:typescript
+          role: module.render
+          dialect: typescript
+          adapter: adapter.adapter:typescript.syntax.render
+          projectionKind: projection.syntax.render
+          params:
+            dialect: typescript
+
+  - id: typescript-dialect.adapter
+    protocol: openspec.adapter.v1
+    document:
+      owner: provider.provider:typescript
+      adapters:
+        - id: typescript.syntax.render
+          capability: capability.capability:artifact.render
+          kind: projection.syntax.render
+          params:
+            dialect: typescript
+          description: Renders TypeScript syntax units from typed TypeScript dialect facets.
+
+  - id: typescript-dialect.projection
+    protocol: openspec.projection.v1
+    document:
+      owner: provider.provider:typescript
+      materializers:
+        - id: typescript.syntax.render
+          projectionKind: projection.syntax.render
+          adapter: adapter.adapter:typescript.syntax.render
+          selector: selector.declaration:typescript.syntaxRenderInput
+          paramsSource: projectionInputs
+          inputShape: model:TypeScriptSyntaxRenderInput
+          outputShape: model:TextFileArtifactRecipe
+          implementationMethod: render
+          inputMode: selectorResult
+          description: Renders one syntax unit and asset as a TypeScript text file.

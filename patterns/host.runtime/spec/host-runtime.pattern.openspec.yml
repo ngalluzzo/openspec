@@ -1,0 +1,42 @@
+openspec: "1.0"
+documents:
+  - id: host-runtime.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: host.runtime
+        name: Host Runtime Pattern
+      patterns:
+        - id: host.runtime
+          owner: pattern.package:host.runtime
+          name: Host runtime
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .host
+                protocol: openspec.host.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  environments:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      name:
+                        expr:
+                          kind: path
+                          path: input.name
+                          optional: true
+                      dispatches:
+                        expr:
+                          kind: path
+                          path: input.dispatches

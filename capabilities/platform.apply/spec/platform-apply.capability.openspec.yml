@@ -1,0 +1,23 @@
+openspec: "1.0"
+documents:
+  - id: platform.apply.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:platform.apply
+
+      capabilities:
+        - id: platform.apply
+          kind: platform.apply.execution
+          description: Apply a set of platform mutations to a live system (e.g. Knack, Airtable, Salesforce). Inverse of ExternalSourceAdapter — where external.source reads current state, platform.apply writes desired state. Receives the ordered PlatformMutation[] produced by a SyncProjectionAdapter.
+          methods:
+            apply:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: PlatformApplyInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: PlatformApplyOutput

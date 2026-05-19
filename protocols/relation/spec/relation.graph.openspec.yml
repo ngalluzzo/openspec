@@ -1,0 +1,229 @@
+openspec: "1.0"
+documents:
+  - id: relation.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.relation.v1
+      owner: protocol.protocol:openspec.relation.v1
+      lowering:
+        - id: relation.declarations
+          source:
+            path: relations
+            as: relation
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - relation
+                    - var: relation.id
+              factKind:
+                $expr: relation.declaration
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: relation.id
+                      name:
+                        var:
+                          - relation.name
+                          - relation.id
+                      from:
+                        os_node_id:
+                          - entity
+                          - var: relation.from
+                      to:
+                        os_node_id:
+                          - entity
+                          - var: relation.to
+                      cardinality:
+                        var: relation.cardinality
+                      direction:
+                        var:
+                          - relation.direction
+                          - unidirectional
+                      ownership:
+                        var:
+                          - relation.ownership
+                          - none
+                      via:
+                        var:
+                          - relation.via
+                          - null
+                      inverse:
+                        var:
+                          - relation.inverse
+                          - null
+                      required:
+                        var:
+                          - relation.required
+                          - false
+                      description:
+                        var:
+                          - relation.description
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - relation
+                        - var: relation.id
+                    - .from
+              factKind:
+                $expr: relation.endpoint.from
+              from:
+                $expr:
+                  os_node_id:
+                    - relation
+                    - var: relation.id
+              to:
+                $expr:
+                  os_node_id:
+                    - entity
+                    - var: relation.from
+              attributes:
+                $expr:
+                  os_object:
+                    - relation:
+                        var: relation.id
+                      entity:
+                        var: relation.from
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - relation
+                        - var: relation.id
+                    - .to
+              factKind:
+                $expr: relation.endpoint.to
+              from:
+                $expr:
+                  os_node_id:
+                    - relation
+                    - var: relation.id
+              to:
+                $expr:
+                  os_node_id:
+                    - entity
+                    - var: relation.to
+              attributes:
+                $expr:
+                  os_object:
+                    - relation:
+                        var: relation.id
+                      entity:
+                        var: relation.to
+
+      selectors:
+        - id: relation.all
+          sources:
+            relation:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: relation.declaration
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.relation.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:RelationSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:RelationAllSelectorResult
+
+        - id: relation.byId
+          sources:
+            relation:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  os_node_id:
+                    - relation
+                    - var: parameter.relation
+              filter:
+                kind:
+                  $expr: relation.declaration
+                direction:
+                  $expr: out
+          result:
+            cardinality: one
+            value:
+              $expr:
+                var: row.relation.attributes
+          paramsContract:
+            kind: model
+            model: model:RelationByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:RelationByIdSelectorResult
+
+        - id: relation.from
+          sources:
+            relation:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  os_node_id:
+                    - entity
+                    - var: parameter.entity
+              filter:
+                kind:
+                  $expr: relation.endpoint.from
+                direction:
+                  $expr: in
+              optional: true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.relation.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:RelationByEntitySelectorParams
+          returnsContract:
+            kind: model
+            model: model:RelationByEntitySelectorResult
+
+        - id: relation.to
+          sources:
+            relation:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  os_node_id:
+                    - entity
+                    - var: parameter.entity
+              filter:
+                kind:
+                  $expr: relation.endpoint.to
+                direction:
+                  $expr: in
+              optional: true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.relation.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:RelationByEntitySelectorParams
+          returnsContract:
+            kind: model
+            model: model:RelationByEntitySelectorResult

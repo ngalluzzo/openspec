@@ -1,0 +1,54 @@
+openspec: "1.0"
+documents:
+  - id: action.executor.model
+    protocol: openspec.model.v1
+    document:
+      owner: capability.package:action.executor
+
+      declarations:
+
+        - kind: object
+          name: ActionOutput
+          fields:
+            - name: location
+              type: nonEmptyString
+              description: Relative location of the produced content.
+            - name: content
+              type: nonEmptyString
+            - name: disposition
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: SyncActionSummary
+          fields:
+            - name: id
+              type: nonEmptyString
+              description: The sync.action id.
+            - name: created
+              type: number
+            - name: updated
+              type: number
+            - name: deleted
+              type: number
+            - name: noop
+              type: number
+            - name: breaking
+              type: number
+
+        - kind: object
+          name: SyncExecutorOutput
+          fields:
+            - name: preview
+              type: boolean
+            - name: summaries
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: SyncActionSummary
+            - name: diagnostics
+              type:
+                kind: array
+                item:
+                  kind: unknown

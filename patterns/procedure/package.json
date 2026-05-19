@@ -1,0 +1,38 @@
+{
+	"name": "@openspec/procedure-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/procedure-types.generated.ts",
+			"import": "./src/sdk/procedure-types.generated.ts",
+			"default": "./src/sdk/procedure-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"models": {
+			"documents": [
+				"spec/procedure.model.openspec.yml"
+			]
+		},
+		"patterns": {
+			"documents": [
+				"spec/procedure.pattern.openspec.yml"
+			]
+		},
+		"graphs": {
+			"documents": [
+				"spec/procedure.graph.openspec.yml"
+			]
+		}
+	},
+	"scripts": {
+		"typecheck": "tsc -b"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"typescript": "^5"
+	}
+}

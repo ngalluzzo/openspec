@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/capability-model-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/capability-model.pattern.openspec.yml"]
+		}
+	}
+}

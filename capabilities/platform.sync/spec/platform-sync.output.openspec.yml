@@ -1,0 +1,38 @@
+openspec: "1.0"
+documents:
+  - id: platform.sync.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: platform.sync.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:platform.sync
+            id: platform.sync
+            namespace: platform.sync
+            capability: capability.capability:platform.sync
+            models:
+              - name: PlatformMutation
+              - name: SyncAction
+              - name: SyncDiagnostic
+              - name: SyncInput
+              - name: SyncOutput
+            methods:
+              - name: sync
+            artifacts:
+              types:
+                path: capabilities/platform.sync/src/sdk/platform-sync-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/platform.sync/src/sdk/platform-sync.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./platform-sync-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: PlatformSyncAdapter
+              contractTypeName: PlatformSyncAdapterContract
+              contractConstName: platformSyncAdapterContract
+              implementFunctionName: implementPlatformSyncAdapter
+              aliasName: PlatformSync

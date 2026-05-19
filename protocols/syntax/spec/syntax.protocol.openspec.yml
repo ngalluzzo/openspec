@@ -1,0 +1,257 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.syntax.v1
+package:
+  id: "@openspec/syntax"
+documentModels:
+  - model:SyntaxDocument
+validation:
+  - id: syntax.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.syntax.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: syntax.owner.invalid
+        message: Syntax documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: namespace-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.syntax.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.namespace
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: syntax.namespace.invalid
+        message: Syntax documents must declare a lowercase namespaced namespace.
+        details:
+          $expr:
+            os_object:
+              - namespace:
+                  var:
+                    - document.document.namespace
+                    - null
+
+      - id: unit-kind-format
+        scope: selector
+        selector: syntax.units
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: syntax.unit.kind.invalid
+        message: Syntax unit kind must be a lowercase namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - unit:
+                  var: item.nodeId
+                kind:
+                  var: item.kind
+
+      - id: symbol-kind-format
+        scope: selector
+        selector: syntax.symbols
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: syntax.symbol.kind.invalid
+        message: Syntax symbol kind must be a lowercase namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - symbol:
+                  var: item.nodeId
+                kind:
+                  var: item.kind
+
+      - id: slot-kind-format
+        scope: selector
+        selector: syntax.slots
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: syntax.slot.kind.invalid
+        message: Syntax slot kind must be a lowercase namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - slot:
+                  var: item.nodeId
+                kind:
+                  var: item.kind
+
+      - id: fragment-kind-format
+        scope: selector
+        selector: syntax.fragments
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: syntax.fragment.kind.invalid
+        message: Syntax fragment kind must be a lowercase namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - fragment:
+                  var: item.nodeId
+                kind:
+                  var: item.kind
+
+      - id: reference-kind-format
+        scope: selector
+        selector: syntax.references
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: syntax.reference.kind.invalid
+        message: Syntax reference kind must be a lowercase namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - reference:
+                  var: item.nodeId
+                kind:
+                  var: item.kind
+
+      - id: dependency-kind-format
+        scope: selector
+        selector: syntax.dependencies
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: syntax.dependency.kind.invalid
+        message: Syntax dependency kind must be a lowercase namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - dependency:
+                  var: item.nodeId
+                kind:
+                  var: item.kind
+
+      - id: symbol-unit-link
+        scope: selector
+        selector: syntax.invalidSymbolUnitLinks
+        forEach: true
+        assert:
+          $expr: false
+        code: syntax.symbol.unit.missing
+        message: Syntax symbols must reference an existing syntax unit.
+        details:
+          $expr:
+            os_object:
+              - symbol:
+                  var: item.nodeId
+                unit:
+                  var: item.unit
+                unitNodeId:
+                  var: item.unitNodeId
+
+      - id: slot-unit-link
+        scope: selector
+        selector: syntax.invalidSlotUnitLinks
+        forEach: true
+        assert:
+          $expr: false
+        code: syntax.slot.unit.missing
+        message: Syntax slots must reference an existing syntax unit.
+        details:
+          $expr:
+            os_object:
+              - slot:
+                  var: item.nodeId
+                unit:
+                  var: item.unit
+                unitNodeId:
+                  var: item.unitNodeId
+
+      - id: fragment-unit-link
+        scope: selector
+        selector: syntax.invalidFragmentUnitLinks
+        forEach: true
+        assert:
+          $expr: false
+        code: syntax.fragment.unit.missing
+        message: Syntax fragments must reference an existing syntax unit.
+        details:
+          $expr:
+            os_object:
+              - fragment:
+                  var: item.nodeId
+                unit:
+                  var: item.unit
+                unitNodeId:
+                  var: item.unitNodeId
+
+      - id: reference-unit-link
+        scope: selector
+        selector: syntax.invalidReferenceUnitLinks
+        forEach: true
+        assert:
+          $expr: false
+        code: syntax.reference.unit.missing
+        message: Syntax references must reference an existing syntax unit.
+        details:
+          $expr:
+            os_object:
+              - reference:
+                  var: item.nodeId
+                unit:
+                  var: item.unit
+                unitNodeId:
+                  var: item.unitNodeId
+
+      - id: dependency-unit-link
+        scope: selector
+        selector: syntax.invalidDependencyUnitLinks
+        forEach: true
+        assert:
+          $expr: false
+        code: syntax.dependency.unit.missing
+        message: Syntax dependencies must reference an existing syntax unit.
+        details:
+          $expr:
+            os_object:
+              - dependency:
+                  var: item.nodeId
+                unit:
+                  var: item.unit
+                unitNodeId:
+                  var: item.unitNodeId

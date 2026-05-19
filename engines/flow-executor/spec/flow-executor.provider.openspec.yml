@@ -1,0 +1,22 @@
+openspec: "1.0"
+documents:
+  - id: flow-executor.provider
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: flow-executor.provider
+          pattern: pattern.declaration:provider.adapters
+          inputs:
+            provider:
+              id: flow-executor
+              name: Flow executor provider
+            adapters:
+              - id: flow.executor.default
+                capability: capability.capability:flow.executor
+                kind: flow.executor.default
+                description: >
+                  Reads procedure.invocations from the graph, evaluates inputMappings,
+                  and dispatches each step to its bound capability adapter via capability.assembler.
+                requires:
+                  - capability: capability.capability:capability.assembler
+                    as: assembler

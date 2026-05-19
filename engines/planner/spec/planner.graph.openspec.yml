@@ -1,0 +1,198 @@
+openspec: "1.0"
+documents:
+  - id: planner.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: planner
+      owner: provider.provider:planner
+
+      # ── Selectors ────────────────────────────────────────────────────────────
+
+      selectors:
+        - id: fulfillment.plans
+          sources:
+            request:
+              kind: facets
+              filter:
+                kind:
+                  $expr: capability.fulfillment
+            adapter:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: adapter.declaration
+            asset:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: asset.asset
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.request.value.artifact
+                    - var: row.asset.id
+                - or:
+                    - and:
+                        - ===:
+                            - var: row.adapter.id
+                            - var: row.request.value.adapter
+                        - ===:
+                            - var: row.adapter.attributes.kind
+                            - var: row.request.value.projectionKind
+                    - and:
+                        - os_is_empty:
+                            - var:
+                                - row.request.value.adapter
+                                - null
+                        - ===:
+                            - var: row.adapter.attributes.capability
+                            - var: row.request.target
+                        - ===:
+                            - var: row.adapter.attributes.kind
+                            - var: row.request.value.projectionKind
+                        - or:
+                            - os_is_empty:
+                                - var:
+                                    - row.request.value.params
+                                    - null
+                            - object_includes:
+                                - var:
+                                    - row.adapter.attributes.params
+                                    - {}
+                                - var:
+                                    - row.request.value.params
+                                    - {}
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.request.value.id
+                    owner:
+                      var: row.request.value.owner
+                    capability:
+                      var: row.request.target
+                    projectionKind:
+                      var: row.request.value.projectionKind
+                    params:
+                      var:
+                        - row.request.value.params
+                        - null
+                    artifactNodeId:
+                      var: row.asset.id
+                    artifactPath:
+                      var: row.asset.attributes.locator.path
+                    adapterId:
+                      var: row.adapter.attributes.id
+                    projectionInputs:
+                      var:
+                        - row.request.value.inputs
+                        - null
+                    source:
+                      var:
+                        - row.request.value.source
+                        - null
+                    externalSource:
+                      var:
+                        - row.request.value.externalSource
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: unknown
+          returnsContract:
+            kind: unknown
+
+        # All planning actions derived in the graph.
+        # These are emitted by derive rules (e.g. fulfillment.planning.action)
+        # and represent fully-resolved work items ready for execution.
+        - id: planning.actions
+          sources:
+            action:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: planning.action
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.action.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: unknown
+          returnsContract:
+            kind: unknown
+
+        # Self-join: actions where two different actions share the same
+        # artifactPath. A non-empty result means a binding collision upstream.
+        - id: planning.duplicateArtifactPaths
+          sources:
+            action:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: planning.action
+            other:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: planning.action
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.action.attributes.artifactPath
+                    - var: row.other.attributes.artifactPath
+                - "!":
+                    - ===:
+                        - var: row.action.attributes.id
+                        - var: row.other.attributes.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.action.attributes
+          orderBy:
+            - $expr:
+                var: row.value.artifactPath
+          paramsContract:
+            kind: unknown
+          returnsContract:
+            kind: unknown
+
+      # ── Validation ───────────────────────────────────────────────────────────
+
+      validation:
+        - id: planner.validation
+          rules:
+
+            # No two planning actions may write to the same artifact path.
+            # A non-empty planning.duplicateArtifactPaths result means two
+            # fulfillment bindings resolved to the same asset — a derive
+            # rule or authoring error upstream.
+            - id: no-duplicate-artifact-paths
+              scope: selector
+              selector: planning.duplicateArtifactPaths
+              assert:
+                $expr:
+                  "!":
+                    - var:
+                        - result.0
+                        - null
+              code: planner.action.artifactPath.duplicate
+              message: >
+                Two planning actions produce the same artifact path.
+                Check for duplicate fulfillment bindings targeting the same artifact.
+              details:
+                $expr:
+                  os_object:
+                    - artifactPath:
+                        var:
+                          - result.0.artifactPath
+                          - null

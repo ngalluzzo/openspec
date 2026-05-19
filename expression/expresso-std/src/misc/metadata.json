@@ -1,0 +1,8 @@
+{
+	"plugin": "@std/misc",
+	"version": "1.0.0",
+	"namespace": "@std",
+	"category": "misc",
+	"operators": {},
+	"generatedAt": "2026-01-17T01:07:12.299Z"
+}

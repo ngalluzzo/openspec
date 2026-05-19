@@ -1,0 +1,38 @@
+openspec: "1.0"
+documents:
+  - id: commander-dialect.provider
+    protocol: openspec.provider.v1
+    document:
+      owner: dialect.package:commander
+      providers:
+        - id: commander
+          name: Commander Dialect
+          exports:
+            adapters:
+              - adapter.adapter:commander.program.recipe
+      offerings:
+        - id: commander.cli.program.syntax
+          provider: provider.provider:commander
+          role: cli.program.syntax
+          dialect: commander
+          adapter: adapter.adapter:commander.program.recipe
+        - id: commander.program.recipe
+          provider: provider.provider:commander
+          role: typescript.module.recipe
+          dialect: commander
+          adapter: adapter.adapter:commander.program.recipe
+          params:
+            targetDialect: typescript
+
+  - id: commander-dialect.adapter
+    protocol: openspec.adapter.v1
+    document:
+      owner: provider.provider:commander
+      adapters:
+        - id: commander.program.recipe
+          capability: capability.capability:typescript.recipe.apply
+          kind: typescript.module.recipe
+          params:
+            dialect: commander
+            targetDialect: typescript
+          description: Applies Commander program recipe invocations into TypeScript modules.

@@ -1,0 +1,140 @@
+openspec: "1.0"
+documents:
+  - id: storage-schema-output.model
+    protocol: openspec.model.v1
+    document:
+      owner: pattern.package:storage.schema-output
+      declarations:
+        - kind: object
+          name: StorageSchemaOutputSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: StorageSchemaOutputPolicy
+          fields:
+            - name: includeSourceOnlyFields
+              type: boolean
+              required: false
+            - name: omitComputedFields
+              type: boolean
+              required: false
+            - name: idDefault
+              type: nonEmptyString
+              required: false
+            - name: relationOwnership
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: StorageSchemaSurfaceContract
+          fields:
+            - name: unit
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: subject
+              type: nonEmptyString
+              required: false
+            - name: policy
+              type:
+                kind: ref
+                name: StorageSchemaOutputPolicy
+              required: false
+
+        - kind: object
+          name: StorageEntityContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: surface
+              type: nonEmptyString
+            - name: source
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+
+        - kind: object
+          name: StorageFieldContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: surface
+              type: nonEmptyString
+            - name: entity
+              type: nonEmptyString
+            - name: source
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type: unknown
+            - name: nullable
+              type: boolean
+            - name: identity
+              type: boolean
+            - name: unique
+              type: boolean
+            - name: computed
+              type: boolean
+
+        - kind: object
+          name: StorageRelationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: surface
+              type: nonEmptyString
+            - name: source
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: cardinality
+              type: nonEmptyString
+            - name: direction
+              type: nonEmptyString
+            - name: ownership
+              type: nonEmptyString
+              required: false
+            - name: required
+              type: boolean
+              required: false
+
+        - kind: alias
+          name: StorageSchemaSurfacesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: StorageSchemaSurfaceContract
+
+        - kind: alias
+          name: StorageEntitiesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: StorageEntityContract
+
+        - kind: alias
+          name: StorageFieldsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: StorageFieldContract
+
+        - kind: alias
+          name: StorageRelationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: StorageRelationContract

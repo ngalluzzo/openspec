@@ -1,0 +1,32 @@
+{
+	"name": "@openspec/materializer",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.ts",
+			"default": "./src/index.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"patterns": {
+			"documents": [
+				"spec/materializer.provider.openspec.yml"
+			]
+		}
+	},
+	"dependencies": {
+		"@openspec/storage-reader-capability": "workspace:*",
+		"@openspec/storage-writer-capability": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"typescript": "^5"
+	},
+	"scripts": {
+		"typecheck": "tsc -b"
+	}
+}

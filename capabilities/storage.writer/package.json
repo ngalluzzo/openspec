@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/storage-writer-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/storage-writer.generated.ts",
+			"import": "./src/sdk/storage-writer.generated.ts",
+			"default": "./src/sdk/storage-writer.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/storage-writer-types.generated.ts",
+			"import": "./src/sdk/storage-writer-types.generated.ts",
+			"default": "./src/sdk/storage-writer-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/storage-writer.model.openspec.yml",
+			"spec/storage-writer.capability.openspec.yml",
+			"spec/storage-writer.output.openspec.yml"
+		]
+	}
+}

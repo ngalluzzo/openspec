@@ -1,0 +1,277 @@
+openspec: "1.0"
+documents:
+  - id: provider.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.provider.v1
+      declarations:
+        - kind: object
+          name: ProviderSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: ProviderByIdSelectorParams
+          fields:
+            - name: provider
+              type: nonEmptyString
+
+        - kind: object
+          name: ProviderSelectionByRequestParams
+          fields:
+            - name: request
+              type: nonEmptyString
+
+        - kind: object
+          name: ProviderSelectionOtherCandidatesParams
+          fields:
+            - name: request
+              type: nonEmptyString
+            - name: offering
+              type: nonEmptyString
+
+        - kind: object
+          name: ProviderDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+              required: false
+            - name: providers
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProviderInput
+              required: false
+            - name: offerings
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProviderOfferingInput
+              required: false
+            - name: selectionRequests
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProviderSelectionRequestInput
+              required: false
+
+        - kind: object
+          name: ProviderExports
+          fields:
+            - name: adapters
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+
+        - kind: object
+          name: ProviderInput
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: exports
+              type:
+                kind: ref
+                name: ProviderExports
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProviderOfferingInput
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: provider
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+            - name: dialect
+              type: nonEmptyString
+              required: false
+            - name: adapter
+              type: nonEmptyString
+              required: false
+            - name: projectionKind
+              type: nonEmptyString
+              required: false
+            - name: target
+              type: nonEmptyString
+              required: false
+            - name: params
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProviderSelectionRequestInput
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+            - name: dialect
+              type: nonEmptyString
+              required: false
+            - name: provider
+              type: nonEmptyString
+              required: false
+            - name: params
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProviderContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: exports
+              type:
+                kind: ref
+                name: ProviderExports
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProviderOfferingContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+              required: false
+            - name: provider
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+            - name: dialect
+              type: nonEmptyString
+              required: false
+            - name: adapter
+              type: nonEmptyString
+              required: false
+            - name: projectionKind
+              type: nonEmptyString
+              required: false
+            - name: target
+              type: nonEmptyString
+              required: false
+            - name: params
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProviderSelectionRequestContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+              required: false
+            - name: target
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+            - name: dialect
+              type: nonEmptyString
+              required: false
+            - name: provider
+              type: nonEmptyString
+              required: false
+            - name: params
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProviderSelectionContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: request
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+            - name: provider
+              type: nonEmptyString
+            - name: offering
+              type: nonEmptyString
+            - name: dialect
+              type: nonEmptyString
+              required: false
+            - name: adapter
+              type: nonEmptyString
+              required: false
+            - name: projectionKind
+              type: nonEmptyString
+              required: false
+            - name: params
+              type: unknown
+              required: false
+
+        - kind: alias
+          name: ProviderProvidersSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProviderContract
+
+        - kind: alias
+          name: ProviderByIdSelectorResult
+          type:
+            kind: ref
+            name: ProviderContract
+
+        - kind: alias
+          name: ProviderOfferingsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProviderOfferingContract
+
+        - kind: alias
+          name: ProviderSelectionRequestsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProviderSelectionRequestContract
+
+        - kind: alias
+          name: ProviderSelectionsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProviderSelectionContract

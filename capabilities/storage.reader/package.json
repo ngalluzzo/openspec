@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/storage-reader-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/storage-reader.generated.ts",
+			"import": "./src/sdk/storage-reader.generated.ts",
+			"default": "./src/sdk/storage-reader.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/storage-reader-types.generated.ts",
+			"import": "./src/sdk/storage-reader-types.generated.ts",
+			"default": "./src/sdk/storage-reader-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/storage-reader.model.openspec.yml",
+			"spec/storage-reader.capability.openspec.yml",
+			"spec/storage-reader.output.openspec.yml"
+		]
+	}
+}

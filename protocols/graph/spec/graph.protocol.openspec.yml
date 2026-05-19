@@ -1,0 +1,234 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.graph.v1
+package:
+  id: "@openspec/graph"
+lowering:
+  - id: graph.lowering.maps
+    source:
+      path: lowering
+      as: map
+      optional: true
+    facts:
+      - kind: node
+        id:
+          $expr:
+            os_node_id:
+              - protocol.lowering.map
+              - var: document.subject
+              - var: map.id
+        factKind:
+          $expr: protocol.lowering.map
+        attributes:
+          $expr:
+            os_object:
+              - id:
+                  var: map.id
+                protocol:
+                  var: document.subject
+                source:
+                  var: map.source
+                facts:
+                  var: map.facts
+      - kind: edge
+        when:
+          $expr:
+            var:
+              - document.owner
+              - null
+        id:
+          $expr:
+            cat:
+              - graph.protocol.lowering.map.
+              - var: document.subject
+              - .
+              - var: map.id
+        factKind:
+          $expr: graph.protocol.lowering.map
+        from:
+          $expr:
+            var: document.owner
+        to:
+          $expr:
+            os_node_id:
+              - protocol.lowering.map
+              - var: document.subject
+              - var: map.id
+
+  - id: graph.derive.rules
+    source:
+      path: derive
+      as: rule
+      optional: true
+    facts:
+      - kind: node
+        id:
+          $expr:
+            os_node_id:
+              - graph.derive.rule
+              - var: document.subject
+              - var: rule.id
+        factKind:
+          $expr: graph.derive.rule
+        attributes:
+          $expr:
+            os_object:
+              - id:
+                  var: rule.id
+                subject:
+                  var: document.subject
+                selector:
+                  var: rule.source.selector
+                as:
+                  var: rule.source.as
+                optional:
+                  var: rule.source.optional
+                after:
+                  var: rule.after
+                facts:
+                  var: rule.facts
+
+  - id: graph.validation.suites
+    source:
+      path: validate
+      as: suite
+      optional: true
+    facts:
+      - kind: node
+        id:
+          $expr:
+            os_node_id:
+              - protocol.validation.suite
+              - var: document.subject
+              - var: suite.id
+        factKind:
+          $expr: protocol.validation.suite
+        attributes:
+          $expr:
+            os_object:
+              - id:
+                  var: suite.id
+                protocol:
+                  var: document.subject
+                rules:
+                  var: suite.rules
+      - kind: edge
+        when:
+          $expr:
+            var:
+              - document.owner
+              - null
+        id:
+          $expr:
+            cat:
+              - graph.validation.suite.
+              - var: document.subject
+              - .
+              - var: suite.id
+        factKind:
+          $expr: graph.protocol.validation.suite
+        from:
+          $expr:
+            var: document.owner
+        to:
+          $expr:
+            os_node_id:
+              - protocol.validation.suite
+              - var: document.subject
+              - var: suite.id
+
+  - id: graph.selectors
+    source:
+      path: selectors
+      as: selector
+      optional: true
+    facts:
+      - kind: node
+        id:
+          $expr:
+            os_node_id:
+              - selector.declaration
+              - var: selector.id
+        factKind:
+          $expr: selector.declaration
+        attributes:
+          $expr:
+            os_object:
+              - set:
+                  var: document.subject
+                definition:
+                  var: selector
+      - kind: edge
+        when:
+          $expr:
+            var:
+              - document.owner
+              - null
+        id:
+          $expr:
+            cat:
+              - graph.selector.declaration.
+              - var: document.subject
+              - .
+              - var: selector.id
+        factKind:
+          $expr: graph.selector.declaration
+        from:
+          $expr:
+            var: document.owner
+        to:
+          $expr:
+            os_node_id:
+              - selector.declaration
+              - var: selector.id
+
+  - id: graph.views
+    source:
+      path: views
+      as: view
+      optional: true
+    facts:
+      - kind: node
+        id:
+          $expr:
+            os_node_id:
+              - selector.declaration
+              - var: view.id
+        factKind:
+          $expr: selector.declaration
+        attributes:
+          $expr:
+            os_object:
+              - set:
+                  var: document.subject
+                view:
+                  var: true
+                owner:
+                  var:
+                    - view.owner
+                    - null
+                definition:
+                  var: view
+      - kind: edge
+        when:
+          $expr:
+            var:
+              - document.owner
+              - null
+        id:
+          $expr:
+            cat:
+              - graph.view.declaration.
+              - var: document.subject
+              - .
+              - var: view.id
+        factKind:
+          $expr: graph.view.declaration
+        from:
+          $expr:
+            var: document.owner
+        to:
+          $expr:
+            os_node_id:
+              - selector.declaration
+              - var: view.id

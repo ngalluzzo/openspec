@@ -1,0 +1,60 @@
+openspec: "1.0"
+documents:
+  - id: drizzle-dialect.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: drizzle.syntax.render.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: dialect.package:drizzle
+            id: drizzle.syntax.render
+            namespace: drizzle.syntax.render
+            capability: capability.capability:drizzle.syntax.render
+            models:
+              - name: DrizzleSyntaxUnitSelectorParams
+              - name: DrizzleSyntaxRenderSelectorParams
+              - name: SyntaxUnitContract
+              - name: AssetContract
+              - name: DrizzleColumnContract
+              - name: DrizzleTableContract
+              - name: DrizzleRelationContract
+              - name: DrizzleSyntaxRenderInput
+              - name: DrizzleTablesSelectorResult
+              - name: DrizzleRelationsSelectorResult
+            methods:
+              - name: render
+            artifacts:
+              types:
+                path: dialects/drizzle/src/sdk/drizzle-dialect-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: dialects/drizzle/src/sdk/drizzle-syntax-render.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./drizzle-dialect-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: DrizzleSyntaxRenderAdapter
+              contractTypeName: DrizzleSyntaxRenderAdapterContract
+              contractConstName: drizzleSyntaxRenderAdapterContract
+              implementFunctionName: implementDrizzleSyntaxRenderAdapter
+              aliasName: DrizzleSyntaxRender
+
+  - id: drizzle-dialect.type-exports
+    protocol: openspec.facet.v1
+    document:
+      owner: dialect.package:drizzle
+      facets:
+        - id: drizzle.syntax.render.text-file-recipe-export
+          kind: typescript.declaration
+          target: syntax.unit:drizzle.syntax.render.types.types
+          value:
+            unit: syntax.unit:drizzle.syntax.render.types.types
+            kind: raw
+            role: external.type.exports
+            order: 10
+            value:
+              kind: raw
+              text: "export type { TextFileArtifactRecipe } from \"@openspec/artifact-render-capability/types\";"

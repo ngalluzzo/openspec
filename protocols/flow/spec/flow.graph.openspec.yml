@@ -1,0 +1,783 @@
+openspec: "1.0"
+documents:
+  - id: flow.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.flow.v1
+      owner: protocol.protocol:openspec.flow.v1
+      lowering:
+        - id: flow.flows
+          source:
+            path: flows
+            as: flow
+          facts:
+            # flow.flow node. Activities, links, ports, and outcomes are also
+            # stored inline so the main selector can return the authored shape
+            # without requiring a join.
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - flow.flow
+                    - var: flow.id
+              factKind:
+                $expr: flow.flow
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: flow.id
+                      name:
+                        var:
+                          - flow.name
+                          - null
+                      owner:
+                        var: document.owner
+                      kind:
+                        var:
+                          - flow.kind
+                          - null
+                      input:
+                        var:
+                          - flow.input
+                          - null
+                      output:
+                        var:
+                          - flow.output
+                          - null
+                      activities:
+                        var: flow.activities
+                      links:
+                        var:
+                          - flow.links
+                          - null
+                      outcomes:
+                        var:
+                          - flow.outcomes
+                          - null
+                      description:
+                        var:
+                          - flow.description
+                          - null
+                      metadata:
+                        var:
+                          - flow.metadata
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .flow.
+                    - var: flow.id
+              factKind:
+                $expr: flow.owner.flow
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - flow.flow
+                    - var: flow.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      flow:
+                        var: flow.id
+
+            # Flow-level input ports.
+            - kind: forEachEntry
+              path: flow.input
+              keyAs: portName
+              valueAs: port
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - flow.port
+                        - var: flow.id
+                        - input
+                        - var: portName
+                  factKind:
+                    $expr: flow.port
+                  attributes:
+                    $expr:
+                      os_object:
+                        - flow:
+                            var: flow.id
+                          name:
+                            var: portName
+                          direction: input
+                          scope: flow
+                          model:
+                            var:
+                              - port.model
+                              - null
+                          source:
+                            var:
+                              - port.source
+                              - null
+                          description:
+                            var:
+                              - port.description
+                              - null
+                          metadata:
+                            var:
+                              - port.metadata
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - flow.flow
+                            - var: flow.id
+                        - .input.
+                        - var: portName
+                  factKind:
+                    $expr: flow.flow.port
+                  from:
+                    $expr:
+                      os_node_id:
+                        - flow.flow
+                        - var: flow.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - flow.port
+                        - var: flow.id
+                        - input
+                        - var: portName
+
+            # Flow-level output ports.
+            - kind: forEachEntry
+              path: flow.output
+              keyAs: portName
+              valueAs: port
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - flow.port
+                        - var: flow.id
+                        - output
+                        - var: portName
+                  factKind:
+                    $expr: flow.port
+                  attributes:
+                    $expr:
+                      os_object:
+                        - flow:
+                            var: flow.id
+                          name:
+                            var: portName
+                          direction: output
+                          scope: flow
+                          model:
+                            var:
+                              - port.model
+                              - null
+                          source:
+                            var:
+                              - port.source
+                              - null
+                          description:
+                            var:
+                              - port.description
+                              - null
+                          metadata:
+                            var:
+                              - port.metadata
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - flow.flow
+                            - var: flow.id
+                        - .output.
+                        - var: portName
+                  factKind:
+                    $expr: flow.flow.port
+                  from:
+                    $expr:
+                      os_node_id:
+                        - flow.flow
+                        - var: flow.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - flow.port
+                        - var: flow.id
+                        - output
+                        - var: portName
+
+            # Activities.
+            - kind: forEach
+              path: flow.activities
+              as: activity
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - flow.activity
+                        - var: flow.id
+                        - var: activity.id
+                  factKind:
+                    $expr: flow.activity
+                  attributes:
+                    $expr:
+                      os_object:
+                        - id:
+                            var: activity.id
+                          name:
+                            var:
+                              - activity.name
+                              - null
+                          flow:
+                            var: flow.id
+                          owner:
+                            var: document.owner
+                          kind:
+                            var: activity.kind
+                          input:
+                            var:
+                              - activity.input
+                              - null
+                          output:
+                            var:
+                              - activity.output
+                              - null
+                          outcomes:
+                            var:
+                              - activity.outcomes
+                              - null
+                          condition:
+                            var:
+                              - activity.condition
+                              - null
+                          description:
+                            var:
+                              - activity.description
+                              - null
+                          metadata:
+                            var:
+                              - activity.metadata
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - flow.flow
+                            - var: flow.id
+                        - .activity.
+                        - var: activity.id
+                  factKind:
+                    $expr: flow.flow.activity
+                  from:
+                    $expr:
+                      os_node_id:
+                        - flow.flow
+                        - var: flow.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - flow.activity
+                        - var: flow.id
+                        - var: activity.id
+                  attributes:
+                    $expr:
+                      os_object:
+                        - flow:
+                            var: flow.id
+                          activity:
+                            var: activity.id
+
+                # Activity input ports.
+                - kind: forEachEntry
+                  path: activity.input
+                  keyAs: portName
+                  valueAs: port
+                  optional: true
+                  facts:
+                    - kind: node
+                      id:
+                        $expr:
+                          os_node_id:
+                            - flow.port
+                            - var: flow.id
+                            - var: activity.id
+                            - input
+                            - var: portName
+                      factKind:
+                        $expr: flow.port
+                      attributes:
+                        $expr:
+                          os_object:
+                            - flow:
+                                var: flow.id
+                              activity:
+                                var: activity.id
+                              name:
+                                var: portName
+                              direction: input
+                              scope: activity
+                              model:
+                                var:
+                                  - port.model
+                                  - null
+                              source:
+                                var:
+                                  - port.source
+                                  - null
+                              description:
+                                var:
+                                  - port.description
+                                  - null
+                              metadata:
+                                var:
+                                  - port.metadata
+                                  - null
+
+                    - kind: edge
+                      id:
+                        $expr:
+                          cat:
+                            - os_node_id:
+                                - flow.activity
+                                - var: flow.id
+                                - var: activity.id
+                            - .input.
+                            - var: portName
+                      factKind:
+                        $expr: flow.activity.port
+                      from:
+                        $expr:
+                          os_node_id:
+                            - flow.activity
+                            - var: flow.id
+                            - var: activity.id
+                      to:
+                        $expr:
+                          os_node_id:
+                            - flow.port
+                            - var: flow.id
+                            - var: activity.id
+                            - input
+                            - var: portName
+
+                # Activity output ports.
+                - kind: forEachEntry
+                  path: activity.output
+                  keyAs: portName
+                  valueAs: port
+                  optional: true
+                  facts:
+                    - kind: node
+                      id:
+                        $expr:
+                          os_node_id:
+                            - flow.port
+                            - var: flow.id
+                            - var: activity.id
+                            - output
+                            - var: portName
+                      factKind:
+                        $expr: flow.port
+                      attributes:
+                        $expr:
+                          os_object:
+                            - flow:
+                                var: flow.id
+                              activity:
+                                var: activity.id
+                              name:
+                                var: portName
+                              direction: output
+                              scope: activity
+                              model:
+                                var:
+                                  - port.model
+                                  - null
+                              source:
+                                var:
+                                  - port.source
+                                  - null
+                              description:
+                                var:
+                                  - port.description
+                                  - null
+                              metadata:
+                                var:
+                                  - port.metadata
+                                  - null
+
+                    - kind: edge
+                      id:
+                        $expr:
+                          cat:
+                            - os_node_id:
+                                - flow.activity
+                                - var: flow.id
+                                - var: activity.id
+                            - .output.
+                            - var: portName
+                      factKind:
+                        $expr: flow.activity.port
+                      from:
+                        $expr:
+                          os_node_id:
+                            - flow.activity
+                            - var: flow.id
+                            - var: activity.id
+                      to:
+                        $expr:
+                          os_node_id:
+                            - flow.port
+                            - var: flow.id
+                            - var: activity.id
+                            - output
+                            - var: portName
+
+            # Links between canonical nodes. Link endpoints are intentionally
+            # not limited to activities: a flow can link ports, activities,
+            # external graph nodes, or other flow elements.
+            - kind: forEach
+              path: flow.links
+              as: link
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - flow.link
+                        - var: flow.id
+                        - var: link.id
+                  factKind:
+                    $expr: flow.link
+                  attributes:
+                    $expr:
+                      os_object:
+                        - id:
+                            var: link.id
+                          flow:
+                            var: flow.id
+                          owner:
+                            var: document.owner
+                          kind:
+                            var: link.kind
+                          from:
+                            var: link.from
+                          to:
+                            var: link.to
+                          sourcePort:
+                            var:
+                              - link.sourcePort
+                              - null
+                          targetPort:
+                            var:
+                              - link.targetPort
+                              - null
+                          condition:
+                            var:
+                              - link.condition
+                              - null
+                          description:
+                            var:
+                              - link.description
+                              - null
+                          metadata:
+                            var:
+                              - link.metadata
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - flow.flow
+                            - var: flow.id
+                        - .link.
+                        - var: link.id
+                  factKind:
+                    $expr: flow.flow.link
+                  from:
+                    $expr:
+                      os_node_id:
+                        - flow.flow
+                        - var: flow.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - flow.link
+                        - var: flow.id
+                        - var: link.id
+                  attributes:
+                    $expr:
+                      os_object:
+                        - flow:
+                            var: flow.id
+                          link:
+                            var: link.id
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - flow.link
+                            - var: flow.id
+                            - var: link.id
+                        - .from.
+                        - var: link.from
+                  factKind:
+                    $expr: flow.link.from
+                  from:
+                    $expr:
+                      os_node_id:
+                        - flow.link
+                        - var: flow.id
+                        - var: link.id
+                  to:
+                    $expr:
+                      var: link.from
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - flow.link
+                            - var: flow.id
+                            - var: link.id
+                        - .to.
+                        - var: link.to
+                  factKind:
+                    $expr: flow.link.to
+                  from:
+                    $expr:
+                      os_node_id:
+                        - flow.link
+                        - var: flow.id
+                        - var: link.id
+                  to:
+                    $expr:
+                      var: link.to
+
+      selectors:
+        - id: flow.flows
+          sources:
+            flow:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: flow.flow
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.flow.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FlowSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:FlowFlowsSelectorResult
+
+        - id: flow.byId
+          sources:
+            flow:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - flow.flow
+                      - var: parameter.flow
+                kind:
+                  $expr: flow.flow
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.flow.attributes
+          paramsContract:
+            kind: model
+            model: model:FlowByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:FlowByIdSelectorResult
+
+        - id: flow.activities
+          sources:
+            activity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: flow.activity
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.activity.attributes
+          orderBy:
+            - $expr:
+                var: row.value.flow
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FlowSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:FlowActivitiesSelectorResult
+
+        - id: flow.activityById
+          sources:
+            activity:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.activity
+                kind:
+                  $expr: flow.activity
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.activity.attributes
+          paramsContract:
+            kind: model
+            model: model:FlowActivitySelectorParams
+          returnsContract:
+            kind: model
+            model: model:FlowActivityByIdSelectorResult
+
+        - id: flow.activitiesForFlow
+          sources:
+            activity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: flow.activity
+          where:
+            $expr:
+              ===:
+                - var: row.activity.attributes.flow
+                - var: parameter.flow
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.activity.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FlowActivitiesForFlowSelectorParams
+          returnsContract:
+            kind: model
+            model: model:FlowActivitiesSelectorResult
+
+        - id: flow.links
+          sources:
+            link:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: flow.link
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.link.attributes
+          orderBy:
+            - $expr:
+                var: row.value.flow
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FlowSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:FlowLinksSelectorResult
+
+        - id: flow.linksForFlow
+          sources:
+            link:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: flow.link
+          where:
+            $expr:
+              ===:
+                - var: row.link.attributes.flow
+                - var: parameter.flow
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.link.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FlowLinksForFlowSelectorParams
+          returnsContract:
+            kind: model
+            model: model:FlowLinksSelectorResult
+
+        - id: flow.ports
+          sources:
+            port:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: flow.port
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.port.attributes
+          orderBy:
+            - $expr:
+                var: row.value.flow
+            - $expr:
+                var:
+                  - row.value.activity
+                  - ""
+            - $expr:
+                var: row.value.direction
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:FlowSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:FlowPortsSelectorResult

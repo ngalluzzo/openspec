@@ -1,0 +1,162 @@
+openspec: "1.0"
+documents:
+  - id: adapter-asset.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: adapter.asset
+        name: Adapter Asset Pattern
+      patterns:
+        - id: adapter.asset
+          owner: pattern.package:adapter.asset
+          name: Adapter asset
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .asset
+                protocol: openspec.asset.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  namespace:
+                    expr:
+                      kind: path
+                      path: input.id
+                  assets:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.asset.id
+                          optional: true
+                          default:
+                            kind: literal
+                            value: implementation
+                      kind:
+                        expr:
+                          kind: path
+                          path: input.asset.kind
+                          optional: true
+                          default:
+                            kind: literal
+                            value: adapter.implementation
+                      locator:
+                        kind: file
+                        path:
+                          expr:
+                            kind: path
+                            path: input.asset.path
+                      role:
+                        expr:
+                          kind: path
+                          path: input.asset.role
+                          optional: true
+                      disposition:
+                        expr:
+                          kind: path
+                          path: input.asset.disposition
+                          optional: true
+                          default:
+                            kind: literal
+                            value: authored
+                      mediaType:
+                        expr:
+                          kind: path
+                          path: input.asset.mediaType
+                          optional: true
+                      language:
+                        expr:
+                          kind: path
+                          path: input.asset.language
+                          optional: true
+                      subjects:
+                        expr:
+                          kind: array
+                          items:
+                            - kind: path
+                              path: input.adapter
+                      metadata:
+                        expr:
+                          kind: path
+                          path: input.asset.metadata
+                          optional: true
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .binding
+                protocol: openspec.binding.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  bindings:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      kind:
+                        expr:
+                          kind: path
+                          path: input.kind
+                          optional: true
+                          default:
+                            kind: literal
+                            value: adapter.implementation.asset
+                      subject:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: literal
+                              value: "asset.asset:"
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: "."
+                            - kind: path
+                              path: input.asset.id
+                              optional: true
+                              default:
+                                kind: literal
+                                value: implementation
+                      slot:
+                        expr:
+                          kind: path
+                          path: input.adapter
+                      params:
+                        expr:
+                          kind: path
+                          path: input.params
+                          optional: true
+                      value:
+                        expr:
+                          kind: object
+                          fields:
+                            export:
+                              kind: path
+                              path: input.export
+                              optional: true
+                            dispatch:
+                              kind: path
+                              path: input.dispatch
+                              optional: true
+                            runtime:
+                              kind: path
+                              path: input.runtime
+                              optional: true
+                            metadata:
+                              kind: path
+                              path: input.metadata
+                              optional: true

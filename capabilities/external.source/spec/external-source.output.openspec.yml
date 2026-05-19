@@ -1,0 +1,35 @@
+openspec: "1.0"
+documents:
+  - id: external.source.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: external.source.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:external.source
+            id: external.source
+            namespace: external.source
+            capability: capability.capability:external.source
+            models:
+              - name: ExternalSourceInput
+              - name: ExternalSourceOutput
+            methods:
+              - name: read
+            artifacts:
+              types:
+                path: capabilities/external.source/src/sdk/external-source-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/external.source/src/sdk/external-source.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./external-source-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: ExternalSourceAdapter
+              contractTypeName: ExternalSourceAdapterContract
+              contractConstName: externalSourceAdapterContract
+              implementFunctionName: implementExternalSourceAdapter
+              aliasName: ExternalSource

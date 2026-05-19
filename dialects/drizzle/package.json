@@ -1,0 +1,47 @@
+{
+	"name": "@openspec/drizzle-dialect",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "bun test",
+		"typecheck": "tsc -b"
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.ts",
+			"default": "./src/index.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/drizzle-dialect-types.generated.ts",
+			"import": "./src/sdk/drizzle-dialect-types.generated.ts",
+			"default": "./src/sdk/drizzle-dialect-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"dependencies": {
+		"@openspec/artifact-render-capability": "workspace:*"
+	},
+	"openspec": {
+		"documents": [
+			"spec/drizzle-dialect.model.openspec.yml",
+			"spec/drizzle-dialect.capability.openspec.yml",
+			"spec/drizzle-dialect.graph.openspec.yml",
+			"spec/drizzle-dialect.derivation.openspec.yml",
+			"spec/drizzle-dialect.provider.openspec.yml",
+			"spec/drizzle-dialect.output.openspec.yml"
+		],
+		"adapters": {
+			"implementations": [
+				{
+					"id": "drizzle.syntax.render",
+					"kind": "projection.syntax.render",
+					"capability": "capability.capability:artifact.render",
+					"module": "./src/index.ts",
+					"export": "drizzleSyntaxRenderAdapter"
+				}
+			]
+		}
+	}
+}

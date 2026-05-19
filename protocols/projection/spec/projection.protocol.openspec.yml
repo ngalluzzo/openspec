@@ -1,0 +1,7 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.projection.v1
+package:
+  id: "@openspec/projection"
+documentModels:
+  - model:ProjectionContractDocument

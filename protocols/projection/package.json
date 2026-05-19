@@ -1,0 +1,16 @@
+{
+	"name": "@openspec/projection",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/projection.protocol.openspec.yml",
+			"spec/projection.model.openspec.yml",
+			"spec/projection.graph.openspec.yml"
+		]
+	}
+}

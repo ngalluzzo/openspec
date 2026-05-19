@@ -1,0 +1,84 @@
+openspec: "1.0"
+documents:
+  - id: projection.execute.model
+    protocol: openspec.model.v1
+    document:
+      owner: capability.package:projection.execute
+
+      declarations:
+
+        - kind: object
+          name: ProjectionFile
+          fields:
+            - name: path
+              type: nonEmptyString
+            - name: text
+              type: string
+            - name: mediaType
+              type: nonEmptyString
+            - name: disposition
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: ProjectionDiagnostic
+          fields:
+            - name: severity
+              type: nonEmptyString
+              required: false
+            - name: code
+              type: nonEmptyString
+            - name: message
+              type: string
+            - name: details
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProjectionOutput
+          fields:
+            - name: files
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProjectionFile
+            - name: diagnostics
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProjectionDiagnostic
+
+        - kind: object
+          name: ProjectionAction
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: projectionKind
+              type: nonEmptyString
+            - name: artifactPath
+              type: nonEmptyString
+            - name: artifactNodeId
+              type: nonEmptyString
+              required: false
+            - name: projectionInputs
+              type: unknown
+              required: false
+            - name: externalState
+              type: unknown
+              required: false
+              description: Snapshot of external state read by the externalSource adapter before projection. Shape is owned by the adapter pair (source + projection).
+
+        - kind: object
+          name: ProjectionExecuteInput
+          fields:
+            - name: action
+              type:
+                kind: ref
+                name: ProjectionAction
+            - name: graph
+              type: unknown
+            - name: runtime
+              type: unknown
+              required: false

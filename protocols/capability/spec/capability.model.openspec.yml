@@ -1,0 +1,217 @@
+openspec: "1.0"
+documents:
+  - id: capability.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.capability.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: CapabilitySelectorNoParams
+          fields: []
+
+        - kind: object
+          name: CapabilityByIdSelectorParams
+          fields:
+            - name: capability
+              type: nonEmptyString
+
+        - kind: object
+          name: CapabilityByKindSelectorParams
+          fields:
+            - name: kind
+              type: nonEmptyString
+
+        - kind: object
+          name: CapabilityMethodsByOwnerSelectorParams
+          fields:
+            - name: owner
+              type: nonEmptyString
+
+        # ── Document contract ─────────────────────────────────────────────────
+
+        - kind: object
+          name: CapabilityDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: capabilities
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: CapabilityContract
+
+        # ── Type constraints ───────────────────────────────────────────────────
+        # Restricts where and how a capability may be implemented.
+        # Each field accepts a single string or an array (any-of semantics).
+
+        - kind: object
+          name: CapabilityConstraints
+          fields:
+            - name: platform
+              type:
+                kind: union
+                options:
+                  - nonEmptyString
+                  - kind: array
+                    item: nonEmptyString
+              required: false
+            - name: language
+              type:
+                kind: union
+                options:
+                  - nonEmptyString
+                  - kind: array
+                    item: nonEmptyString
+              required: false
+            - name: framework
+              type:
+                kind: union
+                options:
+                  - nonEmptyString
+                  - kind: array
+                    item: nonEmptyString
+              required: false
+
+        # ── Input and output contracts ─────────────────────────────────────────
+        # Inputs describe named parameters (call-time or injected).
+        # `required` defaults to true; `role` tags the input for generators
+        # (e.g. role: context, role: auth).
+
+        - kind: object
+          name: CapabilityInputContract
+          fields:
+            - name: type
+              type: unknown
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: required
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: CapabilityOutputContract
+          fields:
+            - name: type
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Method contract ────────────────────────────────────────────────────
+        # A method is a named callable entry point on a capability.
+        # `inputs` is a record of named input parameters.
+        # Capability-level inputs (shared injected dependencies) are declared
+        # on the capability itself and apply to all methods.
+
+        - kind: object
+          name: CapabilityMethodContract
+          fields:
+            - name: capability
+              type: nonEmptyString
+              required: false
+            - name: owner
+              type: nonEmptyString
+              required: false
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: inputs
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: CapabilityInputContract
+              required: false
+            - name: output
+              type:
+                kind: ref
+                name: CapabilityOutputContract
+              required: false
+            - name: constraints
+              type:
+                kind: ref
+                name: CapabilityConstraints
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Capability contract ────────────────────────────────────────────────
+        # `id` is the namespaced identifier (e.g. user.service, order.repository).
+        # `kind` is the implementation category (e.g. service.http, repository.pg).
+        # `inputs` declares shared injected dependencies (available to all methods).
+        # `methods` is a record of named callable methods.
+        # `constraints` applies to the whole capability.
+
+        - kind: object
+          name: CapabilityContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: inputs
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: CapabilityInputContract
+              required: false
+            - name: methods
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: CapabilityMethodContract
+              required: false
+            - name: constraints
+              type:
+                kind: ref
+                name: CapabilityConstraints
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: CapabilityCapabilitiesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: CapabilityContract
+
+        - kind: alias
+          name: CapabilityByIdSelectorResult
+          type:
+            kind: ref
+            name: CapabilityContract
+
+        - kind: alias
+          name: CapabilityByKindSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: CapabilityContract
+
+        - kind: alias
+          name: CapabilityMethodsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: CapabilityMethodContract

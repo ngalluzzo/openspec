@@ -1,0 +1,22 @@
+openspec: "1.0"
+documents:
+  - id: prisma-dialect.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: dialect.package:prisma
+      capabilities:
+        - id: prisma.syntax.render
+          kind: projection.syntax.render
+          description: Render Prisma syntax facets into a Prisma schema artifact recipe.
+          methods:
+            render:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: PrismaSyntaxRenderInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: TextFileArtifactRecipe

@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/adapter-implementation-surface-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/adapter-implementation-surface.pattern.openspec.yml"]
+		}
+	}
+}

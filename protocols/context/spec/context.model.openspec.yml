@@ -1,0 +1,134 @@
+openspec: "1.0"
+documents:
+  - id: context.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.context.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: ContextSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: ContextByIdSelectorParams
+          fields:
+            - name: context
+              type: nonEmptyString
+
+        - kind: object
+          name: ContextByScopeSelectorParams
+          fields:
+            - name: scope
+              type: nonEmptyString
+
+        # ── Slot population sources ────────────────────────────────────────────
+        # Declares how a slot gets its value at evaluation time.
+        # `transport` — extracted from the transport binding (header, path param, etc.)
+        # `auth`      — resolved from the authentication layer (principal identity, claims)
+        # `env`       — resolved from the environment declaration
+        # `derived`   — computed from other context slots via an expression
+        # `provided`  — supplied by the caller at invocation time (explicit, not ambient)
+
+        - kind: enum
+          name: ContextSlotSource
+          values:
+            - transport
+            - auth
+            - env
+            - derived
+            - provided
+
+        # ── Slot contract ──────────────────────────────────────────────────────
+        # A slot is a single named value available within a context scope.
+        # `type`        — model type reference for the slot's value shape
+        # `source`      — where the value comes from at evaluation time
+        # `expression`  — populated when source is `derived`; expression over other slots
+        # `required`    — whether the slot must be present; defaults to true
+        # `description` — what this slot represents
+
+        - kind: object
+          name: ContextSlotContract
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type: unknown
+            - name: source
+              type:
+                kind: ref
+                name: ContextSlotSource
+            - name: expression
+              type: unknown
+              required: false
+            - name: required
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Scope ──────────────────────────────────────────────────────────────
+        # Context is declared within a named scope. A scope is the boundary within
+        # which a set of slots is available. Scopes are referenced by operations,
+        # obligations, and derivation rules to declare what ambient values they can see.
+        #
+        # `id`          — unique identifier for this context scope
+        # `name`        — human-readable name
+        # `slots`       — the ambient values available within this scope
+        # `extends`     — optional parent scope; slots from parent are inherited
+        # `description` — what this scope represents
+
+        - kind: enum
+          name: ContextScopeKind
+          values:
+            - request    # per-invocation — lives for the duration of a single operation call
+            - session    # per-session — lives across multiple invocations
+            - global     # process-level — available everywhere, never per-invocation
+
+        - kind: object
+          name: ContextScopeContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: kind
+              type:
+                kind: ref
+                name: ContextScopeKind
+            - name: slots
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ContextSlotContract
+            - name: extends
+              type: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: ContextAllSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ContextScopeContract
+
+        - kind: alias
+          name: ContextByIdSelectorResult
+          type:
+            kind: ref
+            name: ContextScopeContract
+
+        - kind: alias
+          name: ContextByScopeSelectorResult
+          type:
+            kind: ref
+            name: ContextScopeContract

@@ -1,0 +1,37 @@
+openspec: "1.0"
+documents:
+  - id: action.executor.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: action.executor.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:action.executor
+            id: action.executor
+            namespace: action.executor
+            capability: capability.capability:action.executor
+            models:
+              - name: ActionOutput
+              - name: SyncActionSummary
+              - name: SyncExecutorOutput
+            methods:
+              - name: execute
+              - name: sync
+            artifacts:
+              types:
+                path: capabilities/action.executor/src/sdk/action-executor-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/action.executor/src/sdk/action-executor.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./action-executor-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: ActionExecutorAdapter
+              contractTypeName: ActionExecutorAdapterContract
+              contractConstName: actionExecutorAdapterContract
+              implementFunctionName: implementActionExecutorAdapter
+              aliasName: ActionExecutor

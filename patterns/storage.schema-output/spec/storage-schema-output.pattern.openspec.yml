@@ -1,0 +1,202 @@
+openspec: "1.0"
+documents:
+  - id: storage-schema-output.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: storage.schema-output
+        name: Storage Schema Output Pattern
+      patterns:
+        - id: storage.schema-output
+          owner: pattern.package:storage.schema-output
+          name: Storage schema output
+          metadata:
+            composes:
+              - openspec.syntax.v1
+              - openspec.asset.v1
+              - openspec.projection.v1
+            relation: Creates a target-neutral storage schema syntax surface and requests rendering through provider-selected dialect syntax.
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .syntax
+                protocol: openspec.syntax.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  namespace:
+                    expr:
+                      kind: path
+                      path: input.namespace
+                      optional: true
+                      default:
+                        kind: path
+                        path: input.id
+                  units:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.unit.id
+                          optional: true
+                          default:
+                            kind: path
+                            path: input.id
+                      kind: storage.schema.surface
+                      subject:
+                        expr:
+                          kind: path
+                          path: input.subject
+                          optional: true
+                          default:
+                            kind: path
+                            path: input.owner
+                      role: storage.schema.surface
+                      metadata:
+                        expr:
+                          kind: object
+                          fields:
+                            source:
+                              kind: path
+                              path: input.source
+                              optional: true
+                            policy:
+                              kind: path
+                              path: input.policy
+                              optional: true
+                            target:
+                              kind: path
+                              path: input.target
+                              optional: true
+                            metadata:
+                              kind: path
+                              path: input.metadata
+                              optional: true
+                  symbols:
+                    expr:
+                      kind: path
+                      path: input.symbols
+                      optional: true
+                  slots:
+                    expr:
+                      kind: path
+                      path: input.slots
+                      optional: true
+                  fragments:
+                    expr:
+                      kind: path
+                      path: input.fragments
+                      optional: true
+                  references:
+                    expr:
+                      kind: path
+                      path: input.references
+                      optional: true
+                  dependencies:
+                    expr:
+                      kind: path
+                      path: input.dependencies
+                      optional: true
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .projection.application
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      pattern: pattern.declaration:syntax.projection
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: path
+                            path: input.id
+                        syntaxUnit:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: literal
+                                value: "syntax.unit:"
+                              - kind: path
+                                path: input.namespace
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                              - kind: literal
+                                value: "."
+                              - kind: path
+                                path: input.unit.id
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                        dialect:
+                          expr:
+                            kind: path
+                            path: input.dialect
+                            optional: true
+                        provider:
+                          expr:
+                            kind: path
+                            path: input.provider
+                            optional: true
+                        params:
+                          expr:
+                            kind: path
+                            path: input.params
+                            optional: true
+                        projection:
+                          expr:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: path
+                                path: input.projection.kind
+                                optional: true
+                                default:
+                                  kind: literal
+                                  value: projection.syntax.render
+                        artifact:
+                          expr:
+                            kind: path
+                            path: input.artifact
+                        metadata:
+                          expr:
+                            kind: object
+                            fields:
+                              source:
+                                kind: path
+                                path: input.source
+                                optional: true
+                              policy:
+                                kind: path
+                                path: input.policy
+                                optional: true
+                              target:
+                                kind: path
+                                path: input.target
+                                optional: true
+                              metadata:
+                                kind: path
+                                path: input.metadata
+                                optional: true

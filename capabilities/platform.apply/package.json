@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/platform-apply-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/platform-apply.generated.ts",
+			"import": "./src/sdk/platform-apply.generated.ts",
+			"default": "./src/sdk/platform-apply.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/platform-apply-types.generated.ts",
+			"import": "./src/sdk/platform-apply-types.generated.ts",
+			"default": "./src/sdk/platform-apply-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/platform-apply.model.openspec.yml",
+			"spec/platform-apply.capability.openspec.yml",
+			"spec/platform-apply.output.openspec.yml"
+		]
+	}
+}

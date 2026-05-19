@@ -1,0 +1,80 @@
+openspec: "1.0"
+documents:
+  - id: signal.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.signal.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: SignalSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: SignalByIdSelectorParams
+          fields:
+            - name: signal
+              type: nonEmptyString
+
+        - kind: object
+          name: SignalByKindSelectorParams
+          fields:
+            - name: kind
+              type: nonEmptyString
+
+        # ── Signal contract ────────────────────────────────────────────────────
+        # A signal is a named, typed, emittable occurrence.
+        # `id` is the unique namespaced identifier (e.g. user.created, order.placed).
+        # `kind` is the semantic category: event, command, or notification.
+        #   - event: something that has happened (past tense, immutable)
+        #   - command: a request for something to happen (imperative)
+        #   - notification: an informational broadcast (no required response)
+        # `payload` is a model nodeId reference for the signal's data shape.
+        # `subject` is the entity nodeId this signal is about (optional).
+
+        - kind: object
+          name: SignalContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: payload
+              type: nonEmptyString
+              required: false
+            - name: subject
+              type: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: SignalAllSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: SignalContract
+
+        - kind: alias
+          name: SignalByIdSelectorResult
+          type:
+            kind: ref
+            name: SignalContract
+
+        - kind: alias
+          name: SignalByKindSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: SignalContract

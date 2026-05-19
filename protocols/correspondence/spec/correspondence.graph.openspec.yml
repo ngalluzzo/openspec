@@ -1,0 +1,146 @@
+openspec: "1.0"
+documents:
+  - id: correspondence.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.correspondence.v1
+      owner: protocol.protocol:openspec.correspondence.v1
+      lowering:
+        - id: correspondence.groups
+          source:
+            path: groups
+            as: group
+          facts:
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "correspondence.group:"
+                  - kind: path
+                    path: document.owner
+                  - "."
+                  - kind: path
+                    path: group.id
+              factKind: correspondence.group
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: path
+                    path: group.id
+                  owner:
+                    kind: path
+                    path: document.owner
+                  namespace:
+                    kind: path
+                    path: document.namespace
+                    optional: true
+                  canonical:
+                    kind: path
+                    path: group.canonical
+                  kind:
+                    kind: path
+                    path: group.kind
+                  attributes:
+                    kind: path
+                    path: group.attributes
+                    optional: true
+                  members:
+                    kind: path
+                    path: group.members
+
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "correspondence.canonical:"
+                  - kind: path
+                    path: document.owner
+                  - "."
+                  - kind: path
+                    path: group.id
+                  - "."
+                  - kind: path
+                    path: group.canonical
+              factKind: correspondence.canonical
+              attributes:
+                kind: object
+                fields:
+                  owner:
+                    kind: path
+                    path: document.owner
+                  group:
+                    kind: path
+                    path: group.id
+                  kind:
+                    kind: path
+                    path: group.kind
+                  canonical:
+                    kind: path
+                    path: group.canonical
+
+            - kind: forEach
+              path: group.members
+              as: member
+              facts:
+                - kind: edge
+                  id:
+                    kind: concat
+                    items:
+                      - "correspondence.member:"
+                      - kind: path
+                        path: document.owner
+                      - "."
+                      - kind: path
+                        path: group.id
+                      - "."
+                      - kind: path
+                        path: member
+                  factKind: correspondence.member
+                  from:
+                    kind: concat
+                    items:
+                      - "correspondence.group:"
+                      - kind: path
+                        path: document.owner
+                      - "."
+                      - kind: path
+                        path: group.id
+                  to:
+                    kind: path
+                    path: member
+                  attributes:
+                    kind: object
+                    fields:
+                      owner:
+                        kind: path
+                        path: document.owner
+                      group:
+                        kind: path
+                        path: group.id
+                      kind:
+                        kind: path
+                        path: group.kind
+                      canonical:
+                        kind: path
+                        path: group.canonical
+                      member:
+                        kind: path
+                        path: member
+
+      selectors:
+        - id: correspondence.groups
+          sources:
+            group:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: correspondence.group
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.group.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id

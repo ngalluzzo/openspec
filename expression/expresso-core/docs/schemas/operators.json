@@ -1,0 +1,196 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "Expresso Operators",
+	"description": "Schema for all Expresso operators",
+	"version": "1.0.0",
+	"operators": {
+		"add_with_metadata": {
+			"type": "object",
+			"properties": {
+				"description": {
+					"type": "string",
+					"enum": ["Adds two numbers together"]
+				},
+				"category": {
+					"type": "string",
+					"enum": ["numeric"]
+				},
+				"tags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"version": {
+					"type": "string",
+					"enum": ["1.0.0"]
+				}
+			},
+			"input": {
+				"type": "object",
+				"description": "Input schema (Zod schema)"
+			},
+			"output": {
+				"type": "object",
+				"description": "Output schema (Zod schema)"
+			},
+			"examples": [
+				{
+					"description": "Add two positive numbers",
+					"input": {},
+					"rule": {
+						"add": [5, 3]
+					},
+					"output": 8
+				},
+				{
+					"description": "Add negative numbers",
+					"input": {},
+					"rule": {
+						"add": [-5, 3]
+					},
+					"output": -2
+				}
+			]
+		},
+		"async_add_with_metadata": {
+			"type": "object",
+			"properties": {
+				"description": {
+					"type": "string",
+					"enum": ["Asynchronously adds two numbers together"]
+				},
+				"category": {
+					"type": "string",
+					"enum": ["numeric"]
+				},
+				"tags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"version": {
+					"type": "string",
+					"enum": ["1.0.0"]
+				}
+			},
+			"input": {
+				"type": "object",
+				"description": "Input schema (Zod schema)"
+			},
+			"output": {
+				"type": "object",
+				"description": "Output schema (Zod schema)"
+			},
+			"examples": [
+				{
+					"description": "Async add two numbers",
+					"input": {},
+					"rule": {
+						"async_add": [5, 3]
+					},
+					"output": 8
+				}
+			]
+		},
+		"multiply_with_metadata": {
+			"type": "object",
+			"properties": {
+				"description": {
+					"type": "string",
+					"enum": ["Multiplies two numbers together"]
+				},
+				"category": {
+					"type": "string",
+					"enum": ["numeric"]
+				},
+				"tags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"version": {
+					"type": "string",
+					"enum": ["1.0.0"]
+				}
+			},
+			"input": {
+				"type": "object",
+				"description": "Input schema (Zod schema)"
+			},
+			"output": {
+				"type": "object",
+				"description": "Output schema (Zod schema)"
+			},
+			"examples": [
+				{
+					"description": "Multiply two positive numbers",
+					"input": {},
+					"rule": {
+						"multiply": [5, 3]
+					},
+					"output": 15
+				},
+				{
+					"description": "Multiply by negative number",
+					"input": {},
+					"rule": {
+						"multiply": [5, -3]
+					},
+					"output": -15
+				}
+			]
+		},
+		"divide_with_metadata": {
+			"type": "object",
+			"properties": {
+				"description": {
+					"type": "string",
+					"enum": ["Divides two numbers"]
+				},
+				"category": {
+					"type": "string",
+					"enum": ["numeric"]
+				},
+				"tags": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"version": {
+					"type": "string",
+					"enum": ["1.0.0"]
+				}
+			},
+			"input": {
+				"type": "object",
+				"description": "Input schema (Zod schema)"
+			},
+			"output": {
+				"type": "object",
+				"description": "Output schema (Zod schema)"
+			},
+			"examples": [
+				{
+					"description": "Divide two numbers",
+					"input": {},
+					"rule": {
+						"divide": [10, 2]
+					},
+					"output": 5
+				}
+			]
+		}
+	},
+	"categories": {
+		"numeric": [
+			"add_with_metadata",
+			"async_add_with_metadata",
+			"multiply_with_metadata",
+			"divide_with_metadata"
+		]
+	}
+}

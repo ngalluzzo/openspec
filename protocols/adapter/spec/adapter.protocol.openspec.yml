@@ -1,0 +1,125 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.adapter.v1
+package:
+  id: "@openspec/adapter"
+documentModels:
+  - model:AdapterDocument
+validation:
+  - id: adapter.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.adapter.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: adapter.owner.invalid
+        message: Adapter documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-adapters
+        scope: selector
+        selector: adapter.adapters
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: adapter.declarations.empty
+        message: Adapter documents must declare at least one adapter.
+
+      - id: adapter-id-format
+        scope: selector
+        selector: adapter.adapters
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: adapter.id.invalid
+        message: >
+          Adapter ids must be lowercase namespaced identifiers
+          (e.g. postgres.user-repository, stripe.payment-client).
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: adapter-capability-format
+        scope: selector
+        selector: adapter.adapters
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.capability
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: adapter.capability.invalid
+        message: Adapter capability must be a canonical nodeId of the contract this adapter implements.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+                capability:
+                  var: item.capability
+
+      - id: adapter-kind-format
+        scope: selector
+        selector: adapter.adapters
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: adapter.kind.invalid
+        message: >
+          Adapter kind must be a lowercase namespaced identifier
+          (e.g. repository.pg, service.http, client.stripe).
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: requirement-capability-format
+        scope: selector
+        selector: adapter.requirements
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.capability
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: adapter.requirement.capability.invalid
+        message: >
+          Adapter requirement capability must be a canonical nodeId of the contract required.
+          The environment resolves which adapter satisfies the requirement —
+          do not reference a specific adapter here.
+        details:
+          $expr:
+            os_object:
+              - adapter:
+                  var: item.adapter
+                as:
+                  var: item.as
+                capability:
+                  var: item.capability

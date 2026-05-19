@@ -1,0 +1,457 @@
+openspec: "1.0"
+documents:
+  - id: binding.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.binding.v1
+      owner: protocol.protocol:openspec.binding.v1
+      lowering:
+        - id: binding.declarations
+          source:
+            path: bindings
+            as: binding
+          facts:
+            # binding.binding node
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - binding.binding
+                    - var: binding.id
+              factKind:
+                $expr: binding.binding
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: binding.id
+                      kind:
+                        var: binding.kind
+                      params:
+                        var:
+                          - binding.params
+                          - null
+                      owner:
+                        var: document.owner
+                      value:
+                        var:
+                          - binding.value
+                          - null
+                      description:
+                        var:
+                          - binding.description
+                          - null
+
+            # binding.owner.binding edge — owner → binding
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .binding.
+                    - var: binding.id
+              factKind:
+                $expr: binding.owner.binding
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - binding.binding
+                    - var: binding.id
+
+            # binding.subject edge — binding → subject node
+            - kind: edge
+              when:
+                $expr:
+                  var:
+                    - binding.subject
+                    - null
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - binding.binding
+                        - var: binding.id
+                    - .subject.
+                    - var: binding.subject
+              factKind:
+                $expr: binding.subject
+              from:
+                $expr:
+                  os_node_id:
+                    - binding.binding
+                    - var: binding.id
+              to:
+                $expr:
+                  var: binding.subject
+
+            # binding.slot edge — binding → slot node
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - binding.binding
+                        - var: binding.id
+                    - .slot.
+                    - var: binding.slot
+              factKind:
+                $expr: binding.slot
+              from:
+                $expr:
+                  os_node_id:
+                    - binding.binding
+                    - var: binding.id
+              to:
+                $expr:
+                  var: binding.slot
+
+      selectors:
+        # All declared bindings.
+        - id: binding.bindings
+          sources:
+            binding:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: binding.binding
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+                from:
+                  $expr:
+                    var: row.binding.id
+              optional: true
+            slot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.binding.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.binding.attributes.id
+                    kind:
+                      var: row.binding.attributes.kind
+                    subject:
+                      var:
+                        - row.subject.to
+                        - null
+                    params:
+                      var:
+                        - row.binding.attributes.params
+                        - null
+                    slot:
+                      var: row.slot.to
+                    owner:
+                      var: row.binding.attributes.owner
+                    value:
+                      var:
+                        - row.binding.attributes.value
+                        - null
+                    description:
+                      var:
+                        - row.binding.attributes.description
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.kind
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:BindingSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:BindingBindingsSelectorResult
+
+        # Single binding by id.
+        - id: binding.byId
+          sources:
+            binding:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - binding.binding
+                      - var: parameter.binding
+                kind:
+                  $expr: binding.binding
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+                from:
+                  $expr:
+                    var: row.binding.id
+              optional: true
+            slot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.binding.id
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.binding.attributes.id
+                    kind:
+                      var: row.binding.attributes.kind
+                    subject:
+                      var:
+                        - row.subject.to
+                        - null
+                    params:
+                      var:
+                        - row.binding.attributes.params
+                        - null
+                    slot:
+                      var: row.slot.to
+                    owner:
+                      var: row.binding.attributes.owner
+                    value:
+                      var:
+                        - row.binding.attributes.value
+                        - null
+                    description:
+                      var:
+                        - row.binding.attributes.description
+                        - null
+          paramsContract:
+            kind: model
+            model: model:BindingByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:BindingByIdSelectorResult
+
+        # All bindings of a given kind — the primary cross-cutting query.
+        - id: binding.byKind
+          sources:
+            binding:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: binding.binding
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+                from:
+                  $expr:
+                    var: row.binding.id
+              optional: true
+            slot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.binding.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.binding.attributes.id
+                    kind:
+                      var: row.binding.attributes.kind
+                    subject:
+                      var:
+                        - row.subject.to
+                        - null
+                    params:
+                      var:
+                        - row.binding.attributes.params
+                        - null
+                    slot:
+                      var: row.slot.to
+                    owner:
+                      var: row.binding.attributes.owner
+                    value:
+                      var:
+                        - row.binding.attributes.value
+                        - null
+                    description:
+                      var:
+                        - row.binding.attributes.description
+                        - null
+            when:
+              $expr:
+                ===:
+                  - var: row.binding.attributes.kind
+                  - var: parameter.kind
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:BindingByKindSelectorParams
+          returnsContract:
+            kind: model
+            model: model:BindingByKindSelectorResult
+
+        # All bindings whose subject is a given nodeId.
+        # Used to find what a node is bound to (e.g. all bindings on this entrypoint).
+        - id: binding.bySubject
+          sources:
+            binding:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: parameter.subject
+              filter:
+                kind:
+                  $expr: binding.subject
+                direction:
+                  $expr: in
+              optional: true
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+                from:
+                  $expr:
+                    var: row.binding.id
+              optional: true
+            slot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.binding.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.binding.attributes.id
+                    kind:
+                      var: row.binding.attributes.kind
+                    subject:
+                      var:
+                        - row.subject.to
+                        - null
+                    params:
+                      var:
+                        - row.binding.attributes.params
+                        - null
+                    slot:
+                      var: row.slot.to
+                    owner:
+                      var: row.binding.attributes.owner
+                    value:
+                      var:
+                        - row.binding.attributes.value
+                        - null
+                    description:
+                      var:
+                        - row.binding.attributes.description
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.kind
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:BindingBySubjectSelectorParams
+          returnsContract:
+            kind: model
+            model: model:BindingBySubjectSelectorResult
+
+        # All bindings whose slot is a given nodeId.
+        # Used to find what is bound to a node (e.g. all bindings that use this route).
+        - id: binding.bySlot
+          sources:
+            binding:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: parameter.slot
+              filter:
+                kind:
+                  $expr: binding.slot
+                direction:
+                  $expr: in
+              optional: true
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+                from:
+                  $expr:
+                    var: row.binding.id
+              optional: true
+            slot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.binding.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.binding.attributes.id
+                    kind:
+                      var: row.binding.attributes.kind
+                    subject:
+                      var:
+                        - row.subject.to
+                        - null
+                    params:
+                      var:
+                        - row.binding.attributes.params
+                        - null
+                    slot:
+                      var: row.slot.to
+                    owner:
+                      var: row.binding.attributes.owner
+                    value:
+                      var:
+                        - row.binding.attributes.value
+                        - null
+                    description:
+                      var:
+                        - row.binding.attributes.description
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.kind
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:BindingBySlotSelectorParams
+          returnsContract:
+            kind: model
+            model: model:BindingBySlotSelectorResult

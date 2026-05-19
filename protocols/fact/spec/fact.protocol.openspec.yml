@@ -1,0 +1,126 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.fact.v1
+package:
+  id: "@openspec/fact"
+documentModels:
+  - model:FactDocument
+validation:
+  - id: fact.validation
+    rules:
+      - id: has-content
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.fact.v1
+        assert:
+          $expr:
+            or:
+              - "!":
+                  - os_is_empty:
+                      - var:
+                          - document.document.facts
+                          - null
+              - "!":
+                  - os_is_empty:
+                      - var:
+                          - document.document.derive
+                          - null
+        code: fact.document.empty
+        message: Fact documents must declare at least one fact kind or derivation rule.
+
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.fact.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: fact.owner.invalid
+        message: Fact documents must declare a canonical owner nodeId.
+
+      - id: fact-kind-id-format
+        scope: selector
+        selector: fact.kinds
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$
+        code: fact.kind.id.invalid
+        message: Fact kind ids must be namespaced identifiers with at least two segments.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: fact-kind-values
+        scope: selector
+        selector: fact.kinds
+        forEach: true
+        assert:
+          $expr:
+            or:
+              - ===:
+                  - var: item.kind
+                  - node
+              - ===:
+                  - var: item.kind
+                  - edge
+              - ===:
+                  - var: item.kind
+                  - facet
+        code: fact.kind.kind.invalid
+        message: Fact kind must be node, edge, or facet.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: derive-rule-id-format
+        scope: selector
+        selector: fact.derivations
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$
+        code: fact.derivation.id.invalid
+        message: Derivation rule ids must be namespaced identifiers with at least two segments.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: derive-rule-selector-format
+        scope: selector
+        selector: fact.derivations
+        forEach: true
+        assert:
+          $expr:
+            "!":
+              - os_is_empty:
+                  - var:
+                      - item.source.selector
+                      - null
+        code: fact.derivation.selector.missing
+        message: Derivation rules must declare a source selector.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id

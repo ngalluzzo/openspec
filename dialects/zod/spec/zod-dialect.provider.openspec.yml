@@ -1,0 +1,49 @@
+openspec: "1.0"
+documents:
+  - id: zod-dialect.provider
+    protocol: openspec.provider.v1
+    document:
+      owner: dialect.package:zod
+      providers:
+        - id: zod
+          name: Zod Dialect
+          exports:
+            adapters:
+              - adapter.adapter:zod.syntax.render
+      offerings:
+        - id: zod.syntax.render
+          provider: provider.provider:zod
+          role: module.render
+          dialect: zod
+          adapter: adapter.adapter:zod.syntax.render
+          projectionKind: projection.syntax.render
+          params:
+            dialect: zod
+
+  - id: zod-dialect.adapter
+    protocol: openspec.adapter.v1
+    document:
+      owner: provider.provider:zod
+      adapters:
+        - id: zod.syntax.render
+          capability: capability.capability:artifact.render
+          kind: projection.syntax.render
+          params:
+            dialect: zod
+          description: Renders Zod schema facets into a TypeScript/Zod schema file.
+
+  - id: zod-dialect.projection
+    protocol: openspec.projection.v1
+    document:
+      owner: provider.provider:zod
+      materializers:
+        - id: zod.syntax.render
+          projectionKind: projection.syntax.render
+          adapter: adapter.adapter:zod.syntax.render
+          selector: selector.declaration:zod.storageSyntaxRenderInput
+          paramsSource: projectionInputs
+          inputShape: model:ZodSyntaxRenderInput
+          outputShape: model:TextFileArtifactRecipe
+          implementationMethod: render
+          inputMode: selectorResult
+          description: Renders one storage schema syntax unit as a Zod schema file.

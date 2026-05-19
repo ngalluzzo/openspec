@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/action-executor-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/action-executor.generated.ts",
+			"import": "./src/sdk/action-executor.generated.ts",
+			"default": "./src/sdk/action-executor.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/action-executor-types.generated.ts",
+			"import": "./src/sdk/action-executor-types.generated.ts",
+			"default": "./src/sdk/action-executor-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/action-executor.model.openspec.yml",
+			"spec/action-executor.capability.openspec.yml",
+			"spec/action-executor.output.openspec.yml"
+		]
+	}
+}

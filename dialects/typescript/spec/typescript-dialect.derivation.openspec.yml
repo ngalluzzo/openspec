@@ -1,0 +1,2105 @@
+openspec: "1.0"
+documents:
+  - id: typescript-dialect.derivation
+    protocol: openspec.derivation.v1
+    document:
+      owner: provider.provider:typescript
+      rules:
+        - id: typescript.type.declarations.from-model
+          source:
+            selector: typescript.typeDeclarationFacetsFromModel
+            as: modelType
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: modelType.id
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: modelType.target
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: modelType.unit
+                  kind:
+                    kind: literal
+                    value: typeAlias
+                  name:
+                    kind: path
+                    path: modelType.name
+                  role:
+                    kind: literal
+                    value: type.declaration
+                  exported:
+                    kind: literal
+                    value: true
+                  type:
+                    kind: when
+                    condition:
+                      kind: equals
+                      left:
+                        kind: path
+                        path: modelType.declaration.kind
+                        optional: true
+                      right:
+                        kind: literal
+                        value: enum
+                    then:
+                      kind: object
+                      fields:
+                        kind:
+                          kind: literal
+                          value: union
+                        options:
+                          kind: map
+                          path: modelType.declaration.values
+                          as: enumValue
+                          optional: true
+                          value:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: literal
+                              value:
+                                kind: path
+                                path: enumValue
+                    else:
+                      kind: when
+                      condition:
+                        kind: equals
+                        left:
+                          kind: path
+                          path: modelType.declaration.kind
+                          optional: true
+                        right:
+                          kind: literal
+                          value: alias
+                      then:
+                        kind: match
+                        value:
+                          kind: path
+                          path: modelType.declaration.type.kind
+                          optional: true
+                        cases:
+                          ref:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: ref
+                              name:
+                                kind: path
+                                path: modelType.declaration.type.name
+                          union:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: union
+                              options:
+                                kind: map
+                                path: modelType.declaration.type.options
+                                as: option
+                                optional: true
+                                value:
+                                  kind: object
+                                  fields:
+                                    kind:
+                                      kind: literal
+                                      value: keyword
+                                    name:
+                                      kind: match
+                                      value:
+                                        kind: path
+                                        path: option
+                                        optional: true
+                                      cases:
+                                        string:
+                                          kind: literal
+                                          value: string
+                                        nonEmptyString:
+                                          kind: literal
+                                          value: string
+                                        number:
+                                          kind: literal
+                                          value: number
+                                        boolean:
+                                          kind: literal
+                                          value: boolean
+                                        unknown:
+                                          kind: literal
+                                          value: unknown
+                                      default:
+                                        kind: literal
+                                        value: unknown
+                        default:
+                          kind: object
+                          fields:
+                            kind:
+                              kind: literal
+                              value: keyword
+                            name:
+                              kind: match
+                              value:
+                                kind: path
+                                path: modelType.declaration.type
+                                optional: true
+                              cases:
+                                string:
+                                  kind: literal
+                                  value: string
+                                nonEmptyString:
+                                  kind: literal
+                                  value: string
+                                number:
+                                  kind: literal
+                                  value: number
+                                boolean:
+                                  kind: literal
+                                  value: boolean
+                                unknown:
+                                  kind: literal
+                                  value: unknown
+                              default:
+                                kind: literal
+                                value: unknown
+                      else:
+                        kind: object
+                        fields:
+                          kind:
+                            kind: literal
+                            value: object
+                          properties:
+                            kind: map
+                            path: modelType.fields
+                            as: field
+                            optional: true
+                            value:
+                              kind: object
+                              fields:
+                                name:
+                                  kind: path
+                                  path: field.name
+                                optional:
+                                  kind: when
+                                  condition:
+                                    kind: equals
+                                    left:
+                                      kind: path
+                                      path: field.required
+                                      optional: true
+                                    right:
+                                      kind: literal
+                                      value: false
+                                  then:
+                                    kind: literal
+                                    value: true
+                                  else:
+                                    kind: literal
+                                    value: false
+                                comment:
+                                  kind: path
+                                  path: field.description
+                                  optional: true
+                                type:
+                                  kind: match
+                                  value:
+                                    kind: path
+                                    path: field.type.kind
+                                    optional: true
+                                  cases:
+                                    scalar:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: keyword
+                                        name:
+                                          kind: match
+                                          value:
+                                            kind: path
+                                            path: field.type.name
+                                            optional: true
+                                          cases:
+                                            string:
+                                              kind: literal
+                                              value: string
+                                            nonEmptyString:
+                                              kind: literal
+                                              value: string
+                                            number:
+                                              kind: literal
+                                              value: number
+                                            boolean:
+                                              kind: literal
+                                              value: boolean
+                                            unknown:
+                                              kind: literal
+                                              value: unknown
+                                          default:
+                                            kind: literal
+                                            value: unknown
+                                    string:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: keyword
+                                        name:
+                                          kind: literal
+                                          value: string
+                                    nonEmptyString:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: keyword
+                                        name:
+                                          kind: literal
+                                          value: string
+                                    number:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: keyword
+                                        name:
+                                          kind: literal
+                                          value: number
+                                    boolean:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: keyword
+                                        name:
+                                          kind: literal
+                                          value: boolean
+                                    unknown:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: keyword
+                                        name:
+                                          kind: literal
+                                          value: unknown
+                                    array:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: array
+                                        item:
+                                          kind: when
+                                          condition:
+                                            kind: is
+                                            value:
+                                              kind: path
+                                              path: field.type.item.name
+                                              optional: true
+                                              default:
+                                                kind: path
+                                                path: field.type.items.name
+                                                optional: true
+                                          then:
+                                            kind: object
+                                            fields:
+                                              kind:
+                                                kind: literal
+                                                value: ref
+                                              name:
+                                                kind: path
+                                                path: field.type.item.name
+                                                optional: true
+                                                default:
+                                                  kind: path
+                                                  path: field.type.items.name
+                                                  optional: true
+                                          else:
+                                            kind: object
+                                            fields:
+                                              kind:
+                                                kind: literal
+                                                value: keyword
+                                              name:
+                                                kind: match
+                                                value:
+                                                  kind: path
+                                                  path: field.type.item.kind
+                                                  optional: true
+                                                  default:
+                                                    kind: path
+                                                    path: field.type.items.kind
+                                                    optional: true
+                                                cases:
+                                                  string:
+                                                    kind: literal
+                                                    value: string
+                                                  number:
+                                                    kind: literal
+                                                    value: number
+                                                  boolean:
+                                                    kind: literal
+                                                    value: boolean
+                                                  unknown:
+                                                    kind: literal
+                                                    value: unknown
+                                                default:
+                                                  kind: literal
+                                                  value: unknown
+                                    ref:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: ref
+                                        name:
+                                          kind: path
+                                          path: field.type.name
+                                          optional: true
+                                    literal:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: literal
+                                        value:
+                                          kind: path
+                                          path: field.type.value
+                                          optional: true
+                                default:
+                                  kind: object
+                                  fields:
+                                    kind:
+                                      kind: literal
+                                      value: keyword
+                                    name:
+                                      kind: match
+                                      value:
+                                        kind: path
+                                        path: field.type
+                                        optional: true
+                                      cases:
+                                        string:
+                                          kind: literal
+                                          value: string
+                                        nonEmptyString:
+                                          kind: literal
+                                          value: string
+                                        number:
+                                          kind: literal
+                                          value: number
+                                        boolean:
+                                          kind: literal
+                                          value: boolean
+                                        unknown:
+                                          kind: literal
+                                          value: unknown
+                                      default:
+                                        kind: literal
+                                        value: unknown
+
+        - id: typescript.cli.program.imports
+          source:
+            selector: typescript.cliProgramSurfaces
+            as: program
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.import:"
+                  - kind: path
+                    path: program.id
+                  - ".program-runtime"
+              factKind: typescript.import
+              target:
+                kind: path
+                path: program.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: program.unit
+                  module:
+                    kind: path
+                    path: program.programImportModule
+                  order:
+                    kind: literal
+                    value: 10
+                  named:
+                    kind: array
+                    items:
+                      - kind: object
+                        fields:
+                          imported:
+                            kind: path
+                            path: program.programTypeName
+
+        - id: typescript.cli.command.option.types
+          source:
+            selector: typescript.cliProgramCommands
+            as: command
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: command.id
+                  - ".options"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: command.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: command.unit
+                  kind:
+                    kind: literal
+                    value: typeAlias
+                  role:
+                    kind: literal
+                    value: cli.command.options.type
+                  order:
+                    kind: literal
+                    value: 100
+                  name:
+                    kind: path
+                    path: command.optionTypeName
+                  exported:
+                    kind: literal
+                    value: true
+                  type:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: object
+                      properties:
+                        kind: map
+                        path: command.options
+                        as: option
+                        optional: true
+                        value:
+                          kind: object
+                          fields:
+                            name:
+                              kind: path
+                              path: option.name
+                            optional:
+                              kind: when
+                              condition:
+                                kind: equals
+                                left:
+                                  kind: path
+                                  path: option.required
+                                  optional: true
+                                right:
+                                  kind: literal
+                                  value: true
+                              then:
+                                kind: literal
+                                value: false
+                              else:
+                                kind: literal
+                                value: true
+                            type:
+                              kind: when
+                              condition:
+                                kind: is
+                                value:
+                                  kind: path
+                                  path: option.values
+                                  optional: true
+                              then:
+                                kind: object
+                                fields:
+                                  kind:
+                                    kind: literal
+                                    value: union
+                                  options:
+                                    kind: map
+                                    path: option.values
+                                    as: value
+                                    optional: true
+                                    value:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: literal
+                                        value:
+                                          kind: path
+                                          path: value
+                              else:
+                                kind: object
+                                fields:
+                                  kind:
+                                    kind: literal
+                                    value: keyword
+                                  name:
+                                    kind: match
+                                    value:
+                                      kind: path
+                                      path: option.valueType
+                                      optional: true
+                                    cases:
+                                      boolean:
+                                        kind: literal
+                                        value: boolean
+                                      number:
+                                        kind: literal
+                                        value: number
+                                      string:
+                                        kind: literal
+                                        value: string
+                                    default:
+                                      kind: literal
+                                      value: string
+
+        - id: typescript.cli.program.declarations
+          source:
+            selector: typescript.cliProgramSurfaces
+            as: program
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: program.id
+                  - ".handlers"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: program.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: program.unit
+                  kind:
+                    kind: literal
+                    value: typeAlias
+                  role:
+                    kind: literal
+                    value: cli.handler.map.surface
+                  order:
+                    kind: literal
+                    value: 200
+                  name:
+                    kind: path
+                    path: program.handlerMapTypeName
+                  exported:
+                    kind: literal
+                    value: true
+                  type:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: object
+                      properties:
+                        kind: map
+                        path: program.commands
+                        as: command
+                        value:
+                          kind: object
+                          fields:
+                            name:
+                              kind: path
+                              path: command.dispatch
+                            type:
+                              kind: object
+                              fields:
+                                kind:
+                                  kind: literal
+                                  value: function
+                                parameters:
+                                  kind: array
+                                  items:
+                                    - kind: object
+                                      fields:
+                                        name:
+                                          kind: literal
+                                          value: input
+                                        type:
+                                          kind: object
+                                          fields:
+                                            kind:
+                                              kind: literal
+                                              value: ref
+                                            name:
+                                              kind: path
+                                              path: command.optionTypeName
+                                returnType:
+                                  kind: object
+                                  fields:
+                                    kind:
+                                      kind: literal
+                                      value: promise
+                                    value:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: keyword
+                                        name:
+                                          kind: literal
+                                          value: void
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: program.id
+                  - ".factory"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: program.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: program.unit
+                  kind:
+                    kind: literal
+                    value: function
+                  role:
+                    kind: literal
+                    value: typescript.factory.function.surface
+                  order:
+                    kind: literal
+                    value: 300
+                  name:
+                    kind: path
+                    path: program.factoryName
+                  exported:
+                    kind: literal
+                    value: true
+                  parameters:
+                    kind: array
+                    items:
+                      - kind: object
+                        fields:
+                          name:
+                            kind: literal
+                            value: handlers
+                          type:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: typeApplication
+                              base:
+                                kind: object
+                                fields:
+                                  kind:
+                                    kind: literal
+                                    value: ref
+                                  name:
+                                    kind: literal
+                                    value: Partial
+                              arguments:
+                                kind: array
+                                items:
+                                  - kind: object
+                                    fields:
+                                      kind:
+                                        kind: literal
+                                        value: ref
+                                      name:
+                                        kind: path
+                                        path: program.handlerMapTypeName
+                  returnType:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: ref
+                      name:
+                        kind: path
+                        path: program.programTypeName
+                  body:
+                    kind: arrayConcat
+                    items:
+                      - kind: array
+                        items:
+                          - kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: const
+                              name:
+                                kind: literal
+                                value: program
+                              value:
+                                kind: object
+                                fields:
+                                  kind:
+                                    kind: literal
+                                    value: new
+                                  callee:
+                                    kind: object
+                                    fields:
+                                      kind:
+                                        kind: literal
+                                        value: identifier
+                                      name:
+                                        kind: path
+                                        path: program.programTypeName
+                                  arguments:
+                                    kind: array
+                                    items: []
+                      - kind: map
+                        path: program.commands
+                        as: command
+                        value:
+                          kind: object
+                          fields:
+                            kind:
+                              kind: literal
+                              value: const
+                            name:
+                              kind: path
+                              path: command.actionName
+                            value:
+                              kind: object
+                              fields:
+                                kind:
+                                  kind: literal
+                                  value: arrowFunction
+                                async:
+                                  kind: literal
+                                  value: true
+                                parameters:
+                                  kind: array
+                                  items:
+                                    - kind: object
+                                      fields:
+                                        name:
+                                          kind: literal
+                                          value: opts
+                                        type:
+                                          kind: object
+                                          fields:
+                                            kind:
+                                              kind: literal
+                                              value: ref
+                                            name:
+                                              kind: path
+                                              path: command.optionTypeName
+                                body:
+                                  kind: object
+                                  fields:
+                                    kind:
+                                      kind: literal
+                                      value: block
+                                    statements:
+                                      kind: array
+                                      items:
+                                        - kind: object
+                                          fields:
+                                            kind:
+                                              kind: literal
+                                              value: const
+                                            name:
+                                              kind: literal
+                                              value: handler
+                                            value:
+                                              kind: object
+                                              fields:
+                                                kind:
+                                                  kind: literal
+                                                  value: elementAccess
+                                                object:
+                                                  kind: object
+                                                  fields:
+                                                    kind:
+                                                      kind: literal
+                                                      value: identifier
+                                                    name:
+                                                      kind: literal
+                                                      value: handlers
+                                                element:
+                                                  kind: object
+                                                  fields:
+                                                    kind:
+                                                      kind: literal
+                                                      value: literal
+                                                    value:
+                                                      kind: path
+                                                      path: command.dispatch
+                                        - kind: object
+                                          fields:
+                                            kind:
+                                              kind: literal
+                                              value: if
+                                            condition:
+                                              kind: object
+                                              fields:
+                                                kind:
+                                                  kind: literal
+                                                  value: unary
+                                                operator:
+                                                  kind: literal
+                                                  value: "!"
+                                                value:
+                                                  kind: object
+                                                  fields:
+                                                    kind:
+                                                      kind: literal
+                                                      value: identifier
+                                                    name:
+                                                      kind: literal
+                                                      value: handler
+                                            then:
+                                              kind: array
+                                              items:
+                                                - kind: object
+                                                  fields:
+                                                    kind:
+                                                      kind: literal
+                                                      value: throw
+                                                    value:
+                                                      kind: object
+                                                      fields:
+                                                        kind:
+                                                          kind: literal
+                                                          value: new
+                                                        callee:
+                                                          kind: object
+                                                          fields:
+                                                            kind:
+                                                              kind: literal
+                                                              value: identifier
+                                                            name:
+                                                              kind: literal
+                                                              value: Error
+                                                        arguments:
+                                                          kind: array
+                                                          items:
+                                                            - kind: object
+                                                              fields:
+                                                                kind:
+                                                                  kind: literal
+                                                                  value: literal
+                                                                value:
+                                                                  kind: concat
+                                                                  items:
+                                                                    - kind: literal
+                                                                      value: "No CLI runtime handler registered for dispatch '"
+                                                                    - kind: path
+                                                                      path: command.dispatch
+                                                                    - kind: literal
+                                                                      value: "'."
+                                        - kind: object
+                                          fields:
+                                            kind:
+                                              kind: literal
+                                              value: expression
+                                            expression:
+                                              kind: object
+                                              fields:
+                                                kind:
+                                                  kind: literal
+                                                  value: await
+                                                value:
+                                                  kind: object
+                                                  fields:
+                                                    kind:
+                                                      kind: literal
+                                                      value: call
+                                                    callee:
+                                                      kind: object
+                                                      fields:
+                                                        kind:
+                                                          kind: literal
+                                                          value: identifier
+                                                        name:
+                                                          kind: literal
+                                                          value: handler
+                                                    arguments:
+                                                      kind: array
+                                                      items:
+                                                        - kind: object
+                                                          fields:
+                                                            kind:
+                                                              kind: literal
+                                                              value: identifier
+                                                            name:
+                                                              kind: literal
+                                                              value: opts
+                      - kind: array
+                        items:
+                          - kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: return
+                              value:
+                                kind: object
+                                fields:
+                                  kind:
+                                    kind: literal
+                                    value: identifier
+                                  name:
+                                    kind: literal
+                                    value: program
+
+        - id: typescript.capability.adapter-contract.imports
+          source:
+            selector: typescript.capabilityAdapterContractSurfaces
+            as: surface
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.import:"
+                  - kind: path
+                    path: surface.id
+                  - ".models"
+              factKind: typescript.import
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  module:
+                    kind: path
+                    path: surface.surfaceMetadata.modelImportPath
+                    optional: true
+                    default:
+                      kind: literal
+                      value: ./types.generated
+                  order:
+                    kind: literal
+                    value: 10
+                  namespace:
+                    kind: path
+                    path: surface.surfaceMetadata.modelNamespace
+                    optional: true
+                    default:
+                      kind: literal
+                      value: ModelTypes
+
+        - id: typescript.capability.adapter-contract.declarations
+          source:
+            selector: typescript.capabilityAdapterContractSurfaces
+            as: surface
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".adapter"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: typeAlias
+                  role:
+                    kind: literal
+                    value: adapter.implementation.type
+                  order:
+                    kind: literal
+                    value: 100
+                  name:
+                    kind: path
+                    path: surface.surfaceMetadata.adapterTypeName
+                  exported:
+                    kind: literal
+                    value: true
+                  type:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: object
+                      properties:
+                        kind: map
+                        path: surface.methods
+                        as: method
+                        value:
+                          kind: object
+                          fields:
+                            name:
+                              kind: path
+                              path: method.name
+                            type:
+                              kind: object
+                              fields:
+                                kind:
+                                  kind: literal
+                                  value: function
+                                parameters:
+                                  kind: array
+                                  items:
+                                    - kind: object
+                                      fields:
+                                        name:
+                                          kind: literal
+                                          value: input
+                                        type:
+                                          kind: when
+                                          condition:
+                                            kind: is
+                                            value:
+                                              kind: path
+                                              path: method.inputs.input.type
+                                              optional: true
+                                          then:
+                                            kind: when
+                                            condition:
+                                              kind: is
+                                              value:
+                                                kind: path
+                                                path: method.inputs.input.type.name
+                                                optional: true
+                                            then:
+                                              kind: object
+                                              fields:
+                                                kind:
+                                                  kind: literal
+                                                  value: ref
+                                                name:
+                                                  kind: concat
+                                                  items:
+                                                    - kind: path
+                                                      path: surface.surfaceMetadata.modelNamespace
+                                                      optional: true
+                                                      default:
+                                                        kind: literal
+                                                        value: ModelTypes
+                                                    - kind: literal
+                                                      value: "."
+                                                    - kind: path
+                                                      path: method.inputs.input.type.name
+                                            else:
+                                              kind: object
+                                              fields:
+                                                kind:
+                                                  kind: literal
+                                                  value: keyword
+                                                name:
+                                                  kind: match
+                                                  value:
+                                                    kind: path
+                                                    path: method.inputs.input.type
+                                                    optional: true
+                                                  cases:
+                                                    string:
+                                                      kind: literal
+                                                      value: string
+                                                    nonEmptyString:
+                                                      kind: literal
+                                                      value: string
+                                                    number:
+                                                      kind: literal
+                                                      value: number
+                                                    boolean:
+                                                      kind: literal
+                                                      value: boolean
+                                                    unknown:
+                                                      kind: literal
+                                                      value: unknown
+                                                  default:
+                                                    kind: literal
+                                                    value: unknown
+                                          else:
+                                            kind: object
+                                            fields:
+                                              kind:
+                                                kind: literal
+                                                value: object
+                                              properties:
+                                                kind: map
+                                                path: method.inputProperties
+                                                as: input
+                                                optional: true
+                                                value:
+                                                  kind: object
+                                                  fields:
+                                                    name:
+                                                      kind: path
+                                                      path: input.name
+                                                    optional:
+                                                      kind: when
+                                                      condition:
+                                                        kind: equals
+                                                        left:
+                                                          kind: path
+                                                          path: input.contract.required
+                                                          optional: true
+                                                        right:
+                                                          kind: literal
+                                                          value: false
+                                                      then:
+                                                        kind: literal
+                                                        value: true
+                                                      else:
+                                                        kind: literal
+                                                        value: false
+                                                    type:
+                                                      kind: match
+                                                      value:
+                                                        kind: path
+                                                        path: input.contract.type.kind
+                                                        optional: true
+                                                      cases:
+                                                        ref:
+                                                          kind: object
+                                                          fields:
+                                                            kind:
+                                                              kind: literal
+                                                              value: ref
+                                                            name:
+                                                              kind: concat
+                                                              items:
+                                                                - kind: path
+                                                                  path: surface.surfaceMetadata.modelNamespace
+                                                                  optional: true
+                                                                  default:
+                                                                    kind: literal
+                                                                    value: ModelTypes
+                                                                - kind: literal
+                                                                  value: "."
+                                                                - kind: path
+                                                                  path: input.contract.type.name
+                                                        array:
+                                                          kind: object
+                                                          fields:
+                                                            kind:
+                                                              kind: literal
+                                                              value: array
+                                                            item:
+                                                              kind: object
+                                                              fields:
+                                                                kind:
+                                                                  kind: literal
+                                                                  value: keyword
+                                                                name:
+                                                                  kind: literal
+                                                                  value: unknown
+                                                      default:
+                                                        kind: object
+                                                        fields:
+                                                          kind:
+                                                            kind: literal
+                                                            value: keyword
+                                                          name:
+                                                            kind: match
+                                                            value:
+                                                              kind: path
+                                                              path: input.contract.type
+                                                              optional: true
+                                                            cases:
+                                                              string:
+                                                                kind: literal
+                                                                value: string
+                                                              nonEmptyString:
+                                                                kind: literal
+                                                                value: string
+                                                              number:
+                                                                kind: literal
+                                                                value: number
+                                                              boolean:
+                                                                kind: literal
+                                                                value: boolean
+                                                              unknown:
+                                                                kind: literal
+                                                                value: unknown
+                                                            default:
+                                                              kind: literal
+                                                              value: unknown
+                                returnType:
+                                  kind: object
+                                  fields:
+                                    kind:
+                                      kind: literal
+                                      value: promise
+                                    value:
+                                      kind: when
+                                      condition:
+                                        kind: is
+                                        value:
+                                          kind: path
+                                          path: method.output.type.name
+                                          optional: true
+                                      then:
+                                        kind: object
+                                        fields:
+                                          kind:
+                                            kind: literal
+                                            value: ref
+                                          name:
+                                            kind: concat
+                                            items:
+                                              - kind: path
+                                                path: surface.surfaceMetadata.modelNamespace
+                                                optional: true
+                                                default:
+                                                  kind: literal
+                                                  value: ModelTypes
+                                              - kind: literal
+                                                value: "."
+                                              - kind: path
+                                                path: method.output.type.name
+                                      else:
+                                        kind: match
+                                        value:
+                                          kind: path
+                                          path: method.output.type.kind
+                                          optional: true
+                                        cases:
+                                          array:
+                                            kind: object
+                                            fields:
+                                              kind:
+                                                kind: literal
+                                                value: array
+                                              item:
+                                                kind: when
+                                                condition:
+                                                  kind: is
+                                                  value:
+                                                    kind: path
+                                                    path: method.output.type.items.name
+                                                    optional: true
+                                                then:
+                                                  kind: object
+                                                  fields:
+                                                    kind:
+                                                      kind: literal
+                                                      value: ref
+                                                    name:
+                                                      kind: concat
+                                                      items:
+                                                        - kind: path
+                                                          path: surface.surfaceMetadata.modelNamespace
+                                                          optional: true
+                                                          default:
+                                                            kind: literal
+                                                            value: ModelTypes
+                                                        - kind: literal
+                                                          value: "."
+                                                        - kind: path
+                                                          path: method.output.type.items.name
+                                                else:
+                                                  kind: object
+                                                  fields:
+                                                    kind:
+                                                      kind: literal
+                                                      value: keyword
+                                                    name:
+                                                      kind: literal
+                                                      value: unknown
+                                        default:
+                                          kind: object
+                                          fields:
+                                            kind:
+                                              kind: literal
+                                              value: keyword
+                                            name:
+                                              kind: match
+                                              value:
+                                                kind: path
+                                                path: method.output.type
+                                                optional: true
+                                              cases:
+                                                string:
+                                                  kind: literal
+                                                  value: string
+                                                nonEmptyString:
+                                                  kind: literal
+                                                  value: string
+                                                number:
+                                                  kind: literal
+                                                  value: number
+                                                boolean:
+                                                  kind: literal
+                                                  value: boolean
+                                                unknown:
+                                                  kind: literal
+                                                  value: unknown
+                                              default:
+                                                kind: literal
+                                                value: unknown
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".contract-type"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: typeAlias
+                  role:
+                    kind: literal
+                    value: adapter.contract.type
+                  order:
+                    kind: literal
+                    value: 200
+                  name:
+                    kind: path
+                    path: surface.surfaceMetadata.contractTypeName
+                  exported:
+                    kind: literal
+                    value: true
+                  type:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: raw
+                      text:
+                        kind: concat
+                        items:
+                          - kind: literal
+                            value: "{ readonly capability: string; readonly methods: { readonly name: keyof "
+                          - kind: path
+                            path: surface.surfaceMetadata.adapterTypeName
+                          - kind: literal
+                            value: " & string; readonly guards: { readonly id: string; readonly target?: string; readonly description?: string; readonly assertion?: unknown; readonly failure?: unknown; readonly metadata?: unknown; }[]; }[] }"
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".contract"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: const
+                  role:
+                    kind: literal
+                    value: adapter.contract.const
+                  order:
+                    kind: literal
+                    value: 300
+                  name:
+                    kind: path
+                    path: surface.surfaceMetadata.contractConstName
+                  exported:
+                    kind: literal
+                    value: true
+                  type:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: ref
+                      name:
+                        kind: path
+                        path: surface.surfaceMetadata.contractTypeName
+                  value:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: object
+                      properties:
+                        kind: array
+                        items:
+                          - kind: object
+                            fields:
+                              key:
+                                kind: literal
+                                value: capability
+                              value:
+                                kind: object
+                                fields:
+                                  kind:
+                                    kind: literal
+                                    value: literal
+                                  value:
+                                    kind: path
+                                    path: surface.capability.id
+                          - kind: object
+                            fields:
+                              key:
+                                kind: literal
+                                value: methods
+                              value:
+                                kind: object
+                                fields:
+                                  kind:
+                                    kind: literal
+                                    value: array
+                                  items:
+                                    kind: map
+                                    path: surface.methods
+                                    as: method
+                                    value:
+                                      kind: object
+                                      fields:
+                                        kind:
+                                          kind: literal
+                                          value: object
+                                        properties:
+                                          kind: array
+                                          items:
+                                            - kind: object
+                                              fields:
+                                                key:
+                                                  kind: literal
+                                                  value: name
+                                                value:
+                                                  kind: object
+                                                  fields:
+                                                    kind:
+                                                      kind: literal
+                                                      value: literal
+                                                    value:
+                                                      kind: path
+                                                      path: method.name
+                                            - kind: object
+                                              fields:
+                                                key:
+                                                  kind: literal
+                                                  value: guards
+                                                value:
+                                                  kind: object
+                                                  fields:
+                                                    kind:
+                                                      kind: literal
+                                                      value: array
+                                                    items:
+                                                      kind: array
+                                                      items: []
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".implement"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: function
+                  role:
+                    kind: literal
+                    value: adapter.implement.function
+                  order:
+                    kind: literal
+                    value: 400
+                  name:
+                    kind: path
+                    path: surface.surfaceMetadata.implementFunctionName
+                  exported:
+                    kind: literal
+                    value: true
+                  parameters:
+                    kind: array
+                    items:
+                      - kind: object
+                        fields:
+                          name:
+                            kind: literal
+                            value: adapter
+                          type:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: ref
+                              name:
+                                kind: path
+                                path: surface.surfaceMetadata.adapterTypeName
+                  returnType:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: ref
+                      name:
+                        kind: path
+                        path: surface.surfaceMetadata.adapterTypeName
+                  body:
+                    kind: array
+                    items:
+                      - kind: object
+                        fields:
+                          kind:
+                            kind: literal
+                            value: return
+                          value:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: identifier
+                              name:
+                                kind: literal
+                                value: adapter
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".alias"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: typeAlias
+                  role:
+                    kind: literal
+                    value: adapter.public.alias
+                  order:
+                    kind: literal
+                    value: 500
+                  name:
+                    kind: path
+                    path: surface.surfaceMetadata.aliasName
+                  exported:
+                    kind: literal
+                    value: true
+                  type:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: ref
+                      name:
+                        kind: path
+                        path: surface.surfaceMetadata.adapterTypeName
+
+        - id: typescript.host.dispatch.declarations
+          source:
+            selector: typescript.hostDispatchSurfaces
+            as: surface
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".dispatches"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: const
+                  role:
+                    kind: literal
+                    value: host.dispatch.constants
+                  order:
+                    kind: literal
+                    value: 100
+                  name:
+                    kind: path
+                    path: surface.metadata.dispatchesConstName
+                  exported:
+                    kind: literal
+                    value: true
+                  value:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: object
+                      properties:
+                        kind: map
+                        path: surface.dispatches
+                        as: dispatch
+                        value:
+                          kind: object
+                          fields:
+                            key:
+                              kind: path
+                              path: dispatch.key
+                            value:
+                              kind: object
+                              fields:
+                                kind:
+                                  kind: literal
+                                  value: literal
+                                value:
+                                  kind: path
+                                  path: dispatch.dispatch
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".key"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: typeAlias
+                  order:
+                    kind: literal
+                    value: 200
+                  name:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: surface.metadata.dispatchesConstName
+                      - kind: literal
+                        value: Key
+                  exported:
+                    kind: literal
+                    value: true
+                  type:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: raw
+                      text:
+                        kind: concat
+                        items:
+                          - kind: literal
+                            value: "keyof typeof "
+                          - kind: path
+                            path: surface.metadata.dispatchesConstName
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".method-ids"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: const
+                  role:
+                    kind: literal
+                    value: host.dispatch.method-ids
+                  order:
+                    kind: literal
+                    value: 300
+                  name:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: surface.metadata.dispatchesConstName
+                      - kind: literal
+                        value: MethodIds
+                  exported:
+                    kind: literal
+                    value: true
+                  value:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: object
+                      properties:
+                        kind: map
+                        path: surface.dispatches
+                        as: dispatch
+                        value:
+                          kind: object
+                          fields:
+                            key:
+                              kind: path
+                              path: dispatch.key
+                            value:
+                              kind: object
+                              fields:
+                                kind:
+                                  kind: literal
+                                  value: literal
+                                value:
+                                  kind: path
+                                  path: dispatch.method
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".dispatcher"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: typeAlias
+                  order:
+                    kind: literal
+                    value: 400
+                  name:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: surface.metadata.dispatchesConstName
+                      - kind: literal
+                        value: Dispatcher
+                  exported:
+                    kind: literal
+                    value: true
+                  type:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: raw
+                      text:
+                        kind: literal
+                        value: "(input: unknown) => Promise<unknown>"
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".flow"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: const
+                  order:
+                    kind: literal
+                    value: 500
+                  name:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: surface.metadata.dispatchesConstName
+                      - kind: literal
+                        value: FlowId
+                  exported:
+                    kind: literal
+                    value: true
+                  value:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: literal
+                      value:
+                        kind: path
+                        path: surface.metadata.flow
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.declaration:"
+                  - kind: path
+                    path: surface.id
+                  - ".factory"
+              factKind: typescript.declaration
+              target:
+                kind: path
+                path: surface.unit
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: surface.unit
+                  kind:
+                    kind: literal
+                    value: function
+                  order:
+                    kind: literal
+                    value: 600
+                  name:
+                    kind: path
+                    path: surface.metadata.factoryName
+                  exported:
+                    kind: literal
+                    value: true
+                  parameters:
+                    kind: array
+                    items:
+                      - kind: object
+                        fields:
+                          name:
+                            kind: literal
+                            value: dispatchers
+                          type:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: raw
+                              text:
+                                kind: concat
+                                items:
+                                  - kind: literal
+                                    value: "Partial<Record<"
+                                  - kind: path
+                                    path: surface.metadata.dispatchesConstName
+                                  - kind: literal
+                                    value: "Key, "
+                                  - kind: path
+                                    path: surface.metadata.dispatchesConstName
+                                  - kind: literal
+                                    value: "Dispatcher>>"
+                  returnType:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: raw
+                      text:
+                        kind: concat
+                        items:
+                          - kind: literal
+                            value: "ReadonlyMap<string, "
+                          - kind: path
+                            path: surface.metadata.dispatchesConstName
+                          - kind: literal
+                            value: "Dispatcher>"
+                  body:
+                    kind: array
+                    items:
+                      - kind: object
+                        fields:
+                          kind:
+                            kind: literal
+                            value: const
+                          name:
+                            kind: literal
+                            value: methods
+                          value:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: raw
+                              text:
+                                kind: concat
+                                items:
+                                  - kind: literal
+                                    value: "new Map<string, "
+                                  - kind: path
+                                    path: surface.metadata.dispatchesConstName
+                                  - kind: literal
+                                    value: "Dispatcher>()"
+                      - kind: object
+                        fields:
+                          kind:
+                            kind: literal
+                            value: const
+                          name:
+                            kind: literal
+                            value: bindings
+                          type:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: raw
+                              text:
+                                kind: concat
+                                items:
+                                  - kind: literal
+                                    value: "Array<["
+                                  - kind: path
+                                    path: surface.metadata.dispatchesConstName
+                                  - kind: literal
+                                    value: "Key, string]>"
+                          value:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: array
+                              items:
+                                kind: map
+                                path: surface.dispatches
+                                as: dispatch
+                                value:
+                                  kind: object
+                                  fields:
+                                    kind:
+                                      kind: literal
+                                      value: array
+                                    items:
+                                      kind: array
+                                      items:
+                                        - kind: object
+                                          fields:
+                                            kind:
+                                              kind: literal
+                                              value: literal
+                                            value:
+                                              kind: path
+                                              path: dispatch.key
+                                        - kind: object
+                                          fields:
+                                            kind:
+                                              kind: literal
+                                              value: member
+                                            object:
+                                              kind: object
+                                              fields:
+                                                kind:
+                                                  kind: literal
+                                                  value: identifier
+                                                name:
+                                                  kind: concat
+                                                  items:
+                                                    - kind: path
+                                                      path: surface.metadata.dispatchesConstName
+                                                    - kind: literal
+                                                      value: MethodIds
+                                            property:
+                                              kind: path
+                                              path: dispatch.key
+                      - kind: object
+                        fields:
+                          kind:
+                            kind: literal
+                            value: raw
+                          text:
+                            kind: literal
+                            value: "for (const [key, methodId] of bindings) { const handler = dispatchers[key]; if (handler) methods.set(methodId, handler); }"
+                      - kind: object
+                        fields:
+                          kind:
+                            kind: literal
+                            value: return
+                          value:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: literal
+                                value: identifier
+                              name:
+                                kind: literal
+                                value: methods

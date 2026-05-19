@@ -1,0 +1,116 @@
+openspec: "1.0"
+documents:
+  - id: graph.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.graph.v1
+      declarations:
+
+        - name: GraphDocument
+          kind: object
+          fields:
+            - name: subject
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+              required: false
+            - name: lowering
+              type:
+                kind: array
+                item: unknown
+              required: false
+            - name: selectors
+              type:
+                kind: array
+                item: unknown
+              required: false
+            - name: views
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: GraphViewDeclaration
+              required: false
+            - name: derive
+              type:
+                kind: array
+                item: unknown
+              required: false
+            - name: validate
+              type:
+                kind: array
+                item: unknown
+              required: false
+
+        - name: GraphDocumentSelectorNoParams
+          kind: object
+          fields: []
+
+        - name: GraphSelectorModelContract
+          kind: object
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: model
+            - name: model
+              type: nonEmptyString
+
+        - name: GraphViewSources
+          kind: alias
+          type: unknown
+
+        - name: GraphViewExpression
+          kind: alias
+          type: unknown
+
+        - name: GraphViewResult
+          kind: alias
+          type: unknown
+
+        - name: GraphViewOrdering
+          kind: alias
+          type: unknown
+
+        - name: GraphViewDeclaration
+          kind: object
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+              required: false
+            - name: sources
+              type:
+                kind: ref
+                name: GraphViewSources
+            - name: where
+              type:
+                kind: ref
+                name: GraphViewExpression
+              required: false
+            - name: groupBy
+              type:
+                kind: ref
+                name: GraphViewExpression
+              required: false
+            - name: result
+              type:
+                kind: ref
+                name: GraphViewResult
+            - name: orderBy
+              type:
+                kind: ref
+                name: GraphViewOrdering
+              required: false
+            - name: paramsContract
+              type:
+                kind: ref
+                name: GraphSelectorModelContract
+            - name: returnsContract
+              type:
+                kind: ref
+                name: GraphSelectorModelContract
+            - name: metadata
+              type: unknown
+              required: false

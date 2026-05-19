@@ -1,0 +1,50 @@
+openspec: "1.0"
+documents:
+  - id: typescript.recipe.apply.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: typescript.recipe.apply.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:typescript.recipe.apply
+            id: typescript.recipe.apply
+            namespace: typescript.recipe.apply
+            capability: capability.capability:typescript.recipe.apply
+            models: []
+            methods:
+              - name: apply
+            artifacts:
+              types:
+                path: capabilities/typescript.recipe.apply/src/sdk/typescript-recipe-apply-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/typescript.recipe.apply/src/sdk/typescript-recipe-apply.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./typescript-recipe-apply-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: TypeScriptRecipeApplyAdapter
+              contractTypeName: TypeScriptRecipeApplyAdapterContract
+              contractConstName: typescriptRecipeApplyAdapterContract
+              implementFunctionName: implementTypeScriptRecipeApplyAdapter
+              aliasName: TypeScriptRecipeApply
+
+  - id: typescript.recipe.apply.type-exports
+    protocol: openspec.facet.v1
+    document:
+      owner: capability.package:typescript.recipe.apply
+      facets:
+        - id: typescript.recipe.apply.type-exports
+          kind: typescript.declaration
+          target: syntax.unit:typescript.recipe.apply.types.types
+          value:
+            unit: syntax.unit:typescript.recipe.apply.types.types
+            kind: raw
+            role: external.type.exports
+            order: 10
+            value:
+              kind: raw
+              text: "export type { TypeScriptRecipeApplyInput, TypeScriptRecipeApplyResult } from \"@openspec/typescript-dialect/types\";"

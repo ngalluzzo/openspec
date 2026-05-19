@@ -1,0 +1,273 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.model.v1
+package:
+  id: "@openspec/model"
+documentModels:
+  - model:ModelDocument
+
+# ── Expressions ────────────────────────────────────────────────────────────────
+# Expressions live in the protocol declaration, not the graph document.
+# The graph lowering (model.graph.openspec.yml) calls these by name.
+
+expressions:
+  model.normalizeType:
+    input: type
+    value:
+      kind: when
+      condition:
+        kind: is
+        value:
+          kind: path
+          path: type
+        type: string
+      then:
+        kind: object
+        fields:
+          kind:
+            kind: literal
+            value: scalar
+          name:
+            kind: path
+            path: type
+      else:
+        kind: match
+        value:
+          kind: path
+          path: type.kind
+          optional: true
+        cases:
+          scalar:
+            kind: object
+            fields:
+              kind:
+                kind: literal
+                value: scalar
+              name:
+                kind: path
+                path: type.name
+                optional: true
+          literal:
+            kind: object
+            fields:
+              kind:
+                kind: literal
+                value: literal
+              value:
+                kind: path
+                path: type.value
+                optional: true
+          ref:
+            kind: object
+            fields:
+              kind:
+                kind: literal
+                value: ref
+              name:
+                kind: path
+                path: type.name
+                optional: true
+          array:
+            kind: object
+            fields:
+              kind:
+                kind: literal
+                value: array
+              item:
+                kind: call
+                name: model.normalizeType
+                input:
+                  kind: path
+                  path: type.item
+                  optional: true
+                  default:
+                    kind: path
+                    path: type.items
+                    optional: true
+          record:
+            kind: object
+            fields:
+              kind:
+                kind: literal
+                value: record
+              value:
+                kind: call
+                name: model.normalizeType
+                input:
+                  kind: path
+                  path: type.value
+                  optional: true
+          map:
+            kind: object
+            fields:
+              kind:
+                kind: literal
+                value: map
+              key:
+                kind: call
+                name: model.normalizeType
+                input:
+                  kind: path
+                  path: type.key
+                  optional: true
+              value:
+                kind: call
+                name: model.normalizeType
+                input:
+                  kind: path
+                  path: type.value
+                  optional: true
+          union:
+            kind: object
+            fields:
+              kind:
+                kind: literal
+                value: union
+              options:
+                kind: map
+                path: type.options
+                optional: true
+                as: option
+                value:
+                  kind: call
+                  name: model.normalizeType
+                  input:
+                    kind: path
+                    path: option
+          discriminatedUnion:
+            kind: object
+            fields:
+              kind:
+                kind: literal
+                value: discriminatedUnion
+              discriminator:
+                kind: path
+                path: type.discriminator
+                optional: true
+              variants:
+                kind: map
+                path: type.variants
+                optional: true
+                as: variant
+                value:
+                  kind: call
+                  name: model.normalizeType
+                  input:
+                    kind: path
+                    path: variant
+          enum:
+            kind: object
+            fields:
+              kind:
+                kind: literal
+                value: enum
+              values:
+                kind: path
+                path: type.values
+                optional: true
+        default:
+          kind: object
+          fields:
+            kind:
+              kind: literal
+              value: scalar
+            name:
+              kind: path
+              path: type.kind
+              optional: true
+
+# ── Validation ─────────────────────────────────────────────────────────────────
+
+validation:
+  - id: model.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.model.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: model.owner.invalid
+        message: Model documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-declarations
+        scope: selector
+        selector: model.declarations
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: model.declarations.empty
+        message: Model documents must declare at least one type.
+
+      - id: branded-requires-base
+        scope: selector
+        selector: model.declarations
+        forEach: true
+        when:
+          $expr:
+            ===:
+              - var: item.kind
+              - branded
+        assert:
+          $expr:
+            "!":
+              - os_is_empty:
+                  - var:
+                      - item.base
+                      - null
+        code: model.branded.base.missing
+        message: "Branded declarations must declare a base scalar type (e.g. base: string)."
+        details:
+          $expr:
+            os_object:
+              - name:
+                  var: item.name
+
+      - id: ref-not-to-entity
+        scope: selector
+        selector: model.fields
+        forEach: true
+        when:
+          $expr:
+            ===:
+              - var:
+                  - item.type.kind
+                  - null
+              - ref
+        assert:
+          $expr:
+            "!":
+              - regex_test:
+                  - var:
+                      - item.type.name
+                      - ""
+                  - ^[A-Z].*Entity$
+        code: model.ref.entity.forbidden
+        message: >
+          Model fields cannot reference entities directly.
+          Cross-entity relationships are declared using the relation protocol.
+          Use a scalar ID field (e.g. userId: UserId) and declare a relation separately.
+        details:
+          $expr:
+            os_object:
+              - declaration:
+                  var: item.declaration
+                field:
+                  var: item.name
+                ref:
+                  var: item.type.name

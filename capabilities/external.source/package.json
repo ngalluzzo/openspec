@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/external-source-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/external-source.generated.ts",
+			"import": "./src/sdk/external-source.generated.ts",
+			"default": "./src/sdk/external-source.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/external-source-types.generated.ts",
+			"import": "./src/sdk/external-source-types.generated.ts",
+			"default": "./src/sdk/external-source-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/external-source.model.openspec.yml",
+			"spec/external-source.capability.openspec.yml",
+			"spec/external-source.output.openspec.yml"
+		]
+	}
+}

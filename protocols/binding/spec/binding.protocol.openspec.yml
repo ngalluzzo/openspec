@@ -1,0 +1,123 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.binding.v1
+package:
+  id: "@openspec/binding"
+documentModels:
+  - model:BindingDocument
+validation:
+  - id: binding.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.binding.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: binding.owner.invalid
+        message: Binding documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-bindings
+        scope: selector
+        selector: binding.bindings
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: binding.declarations.empty
+        message: Binding documents must declare at least one binding.
+
+      - id: binding-id-format
+        scope: selector
+        selector: binding.bindings
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: binding.id.invalid
+        message: Binding ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: binding-kind-format
+        scope: selector
+        selector: binding.bindings
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$
+        code: binding.kind.invalid
+        message: >
+          Binding kind must be a namespaced identifier with at least two segments
+          (e.g. http.route, transport.addressed-entrypoint, cli.command).
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: binding-subject-format
+        scope: selector
+        selector: binding.bindings
+        forEach: true
+        assert:
+          $expr:
+            or:
+              - os_is_empty:
+                  - var:
+                      - item.subject
+                      - null
+              - regex_test:
+                  - var: item.subject
+                  - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: binding.subject.invalid
+        message: Binding subject must be a canonical nodeId.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+                subject:
+                  var: item.subject
+
+      - id: binding-slot-format
+        scope: selector
+        selector: binding.bindings
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.slot
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: binding.slot.invalid
+        message: Binding slot must be a canonical nodeId.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+                slot:
+                  var: item.slot

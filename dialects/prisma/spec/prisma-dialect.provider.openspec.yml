@@ -1,0 +1,49 @@
+openspec: "1.0"
+documents:
+  - id: prisma-dialect.provider
+    protocol: openspec.provider.v1
+    document:
+      owner: dialect.package:prisma
+      providers:
+        - id: prisma
+          name: Prisma Dialect
+          exports:
+            adapters:
+              - adapter.adapter:prisma.syntax.render
+      offerings:
+        - id: prisma.syntax.render
+          provider: provider.provider:prisma
+          role: module.render
+          dialect: prisma
+          adapter: adapter.adapter:prisma.syntax.render
+          projectionKind: projection.syntax.render
+          params:
+            dialect: prisma
+
+  - id: prisma-dialect.adapter
+    protocol: openspec.adapter.v1
+    document:
+      owner: provider.provider:prisma
+      adapters:
+        - id: prisma.syntax.render
+          capability: capability.capability:artifact.render
+          kind: projection.syntax.render
+          params:
+            dialect: prisma
+          description: Renders Prisma syntax facets into Prisma schema text.
+
+  - id: prisma-dialect.projection
+    protocol: openspec.projection.v1
+    document:
+      owner: provider.provider:prisma
+      materializers:
+        - id: prisma.syntax.render
+          projectionKind: projection.syntax.render
+          adapter: adapter.adapter:prisma.syntax.render
+          selector: selector.declaration:prisma.syntaxRenderInput
+          paramsSource: projectionInputs
+          inputShape: model:PrismaSyntaxRenderInput
+          outputShape: model:TextFileArtifactRecipe
+          implementationMethod: render
+          inputMode: selectorResult
+          description: Renders one storage schema syntax unit as a Prisma schema file.

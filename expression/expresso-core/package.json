@@ -1,0 +1,64 @@
+{
+	"name": "@gooi/expresso-core",
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.ts",
+			"default": "./dist/index.js"
+		},
+		"./emitter/*": {
+			"types": "./src/emitter/*.ts",
+			"import": "./src/emitter/*.ts",
+			"default": "./dist/emitter/*.js"
+		},
+		"./testing/*": {
+			"types": "./src/testing/*.ts",
+			"import": "./src/testing/*.ts",
+			"default": "./dist/testing/*.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"private": true,
+	"scripts": {
+		"docs:generate": "bun ../../../tools/expresso-cli/cli.ts docs:generate:all",
+		"docs:generate:markdown": "bun ../../../tools/expresso-cli/cli.ts docs:generate:markdown",
+		"docs:generate:schema": "bun ../../../tools/expresso-cli/cli.ts docs:generate:schema",
+		"docs:generate:types": "bun ../../../tools/expresso-cli/cli.ts docs:generate:types",
+		"ops:list": "bun ../../../tools/expresso-cli/cli.ts ops:list",
+		"ops:search": "bun ../../../tools/expresso-cli/cli.ts ops:search",
+		"ops:info": "bun ../../../tools/expresso-cli/cli.ts ops:info",
+		"ops:deprecated": "bun ../../../tools/expresso-cli/cli.ts ops:deprecated",
+		"ops:stats": "bun ../../../tools/expresso-cli/cli.ts ops:stats",
+		"test": "bun test",
+		"test:generate": "bun ../../../tools/expresso-cli/cli.ts test:generate",
+		"test:stats": "bun ../../../tools/expresso-cli/cli.ts test:stats",
+		"validate:metadata": "bun ../../../tools/expresso-cli/cli.ts validate:metadata",
+		"plugin:list": "bun ../../../tools/expresso-cli/cli.ts plugin:list",
+		"plugin:info": "bun ../../../tools/expresso-cli/cli.ts plugin:info",
+		"plugin:namespaces": "bun ../../../tools/expresso-cli/cli.ts plugin:namespaces",
+		"plugin:operators": "bun ../../../tools/expresso-cli/cli.ts plugin:operators",
+		"plugin:stats": "bun ../../../tools/expresso-cli/cli.ts plugin:stats",
+		"plugin:clear": "bun ../../../tools/expresso-cli/cli.ts plugin:clear",
+		"scaffold:plugin": "bun ../../../tools/expresso-cli/cli.ts scaffold:plugin",
+		"spec:generate": "bun ../../../tools/expresso-cli/cli.ts spec:generate",
+		"bench:type-registry": "bun ./scripts/bench-type-registry.mjs",
+		"typecheck": "tsc -b",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"prettier": "^3.8.0",
+		"ts-morph": "^27.0.2"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"typescript": "^5",
+		"zod": "^4.3.6"
+	}
+}

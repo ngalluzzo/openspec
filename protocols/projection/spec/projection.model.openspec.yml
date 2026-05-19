@@ -1,0 +1,167 @@
+openspec: "1.0"
+documents:
+  - id: projection.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.projection.v1
+      declarations:
+        - kind: object
+          name: ProjectionMaterializerSelectorParams
+          fields:
+            - name: adapter
+              type: nonEmptyString
+            - name: projectionKind
+              type: nonEmptyString
+
+        - kind: object
+          name: ProjectionMaterializerImplementationMethodsSelectorParams
+          fields:
+            - name: materializer
+              type: nonEmptyString
+
+        - kind: object
+          name: ProjectionContractInput
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: capability
+              type: nonEmptyString
+            - name: projectionKind
+              type: nonEmptyString
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: ProjectionMaterializerInput
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: projectionKind
+              type: nonEmptyString
+            - name: adapter
+              type: nonEmptyString
+            - name: selector
+              type: nonEmptyString
+            - name: paramsSource
+              type: nonEmptyString
+              required: false
+            - name: inputShape
+              type: unknown
+              required: false
+            - name: outputShape
+              type: unknown
+              required: false
+            - name: implementationMethod
+              type: nonEmptyString
+              required: false
+            - name: inputMode
+              type: nonEmptyString
+              required: false
+            - name: selectorResultField
+              type: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: ProjectionTargetArtifact
+          fields:
+            - name: path
+              type: nonEmptyString
+
+        - kind: object
+          name: ProjectionTargetInput
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: projectionKind
+              type: nonEmptyString
+              required: false
+            - name: artifact
+              type:
+                kind: ref
+                name: ProjectionTargetArtifact
+              required: false
+            - name: adapter
+              type: nonEmptyString
+              required: false
+            - name: inputs
+              type: unknown
+              required: false
+            - name: options
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProjectionContractDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+              required: false
+            - name: contracts
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProjectionContractInput
+              required: false
+            - name: materializers
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProjectionMaterializerInput
+              required: false
+            - name: targets
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProjectionTargetInput
+              required: false
+
+        - kind: object
+          name: ProjectionMaterializerContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: projectionKind
+              type: nonEmptyString
+            - name: adapter
+              type: nonEmptyString
+            - name: selector
+              type: nonEmptyString
+            - name: paramsSource
+              type: nonEmptyString
+              required: false
+            - name: inputShape
+              type: unknown
+              required: false
+            - name: outputShape
+              type: unknown
+              required: false
+            - name: implementationMethod
+              type: nonEmptyString
+              required: false
+            - name: inputMode
+              type: nonEmptyString
+              required: false
+            - name: selectorResultField
+              type: nonEmptyString
+              required: false
+
+        - kind: alias
+          name: ProjectionMaterializerSelectorResult
+          type:
+            kind: ref
+            name: ProjectionMaterializerContract
+
+        - kind: alias
+          name: ProjectionMaterializerImplementationMethodsSelectorResult
+          type:
+            kind: array
+            item: unknown

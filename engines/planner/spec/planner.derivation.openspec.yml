@@ -1,0 +1,56 @@
+openspec: "1.0"
+documents:
+  - id: planner.derivation
+    protocol: openspec.derivation.v1
+    document:
+      owner: provider.provider:planner
+      rules:
+        - id: planner.fulfillment.action
+          source:
+            selector: fulfillment.plans
+            as: plan
+          facts:
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "planning.action:"
+                  - kind: path
+                    path: plan.id
+              factKind: planning.action
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: path
+                    path: plan.id
+                  owner:
+                    kind: path
+                    path: plan.owner
+                  capability:
+                    kind: path
+                    path: plan.capability
+                  projectionKind:
+                    kind: path
+                    path: plan.projectionKind
+                  adapterId:
+                    kind: path
+                    path: plan.adapterId
+                  artifactNodeId:
+                    kind: path
+                    path: plan.artifactNodeId
+                  artifactPath:
+                    kind: path
+                    path: plan.artifactPath
+                  projectionInputs:
+                    kind: path
+                    path: plan.projectionInputs
+                    optional: true
+                  source:
+                    kind: path
+                    path: plan.source
+                    optional: true
+                  externalSource:
+                    kind: path
+                    path: plan.externalSource
+                    optional: true

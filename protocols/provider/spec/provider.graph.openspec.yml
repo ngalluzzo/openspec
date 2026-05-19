@@ -1,0 +1,629 @@
+openspec: "1.0"
+documents:
+  - id: provider.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.provider.v1
+      owner: protocol.protocol:openspec.provider.v1
+      lowering:
+        - id: provider.declarations
+          source:
+            path: providers
+            as: provider
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - provider.provider
+                    - var: provider.id
+              factKind:
+                $expr: provider.provider
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: provider.id
+                      name:
+                        var:
+                          - provider.name
+                          - null
+                      exports:
+                        var:
+                          - provider.exports
+                          - null
+                      metadata:
+                        var:
+                          - provider.metadata
+                          - null
+
+            - kind: forEach
+              path: provider.exports.adapters
+              as: adapter
+              optional: true
+              facts:
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - provider.provider
+                            - var: provider.id
+                        - .exports.
+                        - var: adapter
+                  factKind:
+                    $expr: provider.exports.adapter
+                  from:
+                    $expr:
+                      os_node_id:
+                        - provider.provider
+                        - var: provider.id
+                  to:
+                    $expr:
+                      var: adapter
+
+        - id: provider.offerings
+          source:
+            path: offerings
+            as: offering
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - provider.offering
+                    - var: offering.id
+              factKind:
+                $expr: provider.offering
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - provider.offering
+                          - var: offering.id
+                      id:
+                        var: offering.id
+                      owner:
+                        var:
+                          - document.owner
+                          - null
+                      provider:
+                        var: offering.provider
+                      role:
+                        var: offering.role
+                      dialect:
+                        var:
+                          - offering.dialect
+                          - null
+                      adapter:
+                        var:
+                          - offering.adapter
+                          - null
+                      projectionKind:
+                        var:
+                          - offering.projectionKind
+                          - null
+                      target:
+                        var:
+                          - offering.target
+                          - null
+                      params:
+                        var:
+                          - offering.params
+                          - null
+                      metadata:
+                        var:
+                          - offering.metadata
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - provider.offering
+                        - var: offering.id
+                    - .provider.
+                    - var: offering.provider
+              factKind:
+                $expr: provider.offering.provider
+              from:
+                $expr:
+                  os_node_id:
+                    - provider.offering
+                    - var: offering.id
+              to:
+                $expr:
+                  var: offering.provider
+
+        - id: provider.selectionRequests
+          source:
+            path: selectionRequests
+            as: request
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - provider.selection.request
+                    - var: request.id
+              factKind:
+                $expr: provider.selection.request
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - provider.selection.request
+                          - var: request.id
+                      id:
+                        var: request.id
+                      owner:
+                        var:
+                          - document.owner
+                          - null
+                      target:
+                        var: request.target
+                      role:
+                        var: request.role
+                      dialect:
+                        var:
+                          - request.dialect
+                          - null
+                      provider:
+                        var:
+                          - request.provider
+                          - null
+                      params:
+                        var:
+                          - request.params
+                          - null
+                      metadata:
+                        var:
+                          - request.metadata
+                          - null
+
+      selectors:
+        - id: provider.providers
+          sources:
+            provider:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: provider.provider
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.provider.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: unknown
+          returnsContract:
+            kind: model
+            model: model:ProviderProvidersSelectorResult
+
+        - id: provider.byId
+          sources:
+            provider:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - provider.provider
+                      - var: parameter.provider
+                kind:
+                  $expr: provider.provider
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.provider.attributes
+          paramsContract:
+            kind: unknown
+          returnsContract:
+            kind: model
+            model: model:ProviderByIdSelectorResult
+
+        - id: provider.offerings
+          sources:
+            offering:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: provider.offering
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.offering.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:ProviderSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ProviderOfferingsSelectorResult
+
+        - id: provider.selectionRequests
+          sources:
+            request:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: provider.selection.request
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.request.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:ProviderSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ProviderSelectionRequestsSelectorResult
+
+        - id: provider.selectionCandidates
+          sources:
+            request:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: provider.selection.request
+            offering:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: provider.offering
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.request.attributes.role
+                    - var: row.offering.attributes.role
+                - or:
+                    - os_is_empty:
+                        - var: row.request.attributes.dialect
+                    - ===:
+                        - var: row.request.attributes.dialect
+                        - var: row.offering.attributes.dialect
+                - or:
+                    - os_is_empty:
+                        - var: row.request.attributes.provider
+                    - ===:
+                        - var: row.request.attributes.provider
+                        - var: row.offering.attributes.provider
+                - or:
+                    - os_is_empty:
+                        - var: row.offering.attributes.target
+                    - ===:
+                        - var: row.request.attributes.target
+                        - var: row.offering.attributes.target
+                - or:
+                    - os_is_empty:
+                        - var: row.request.attributes.params
+                    - object_includes:
+                        - var:
+                            - row.offering.attributes.params
+                            - {}
+                        - var:
+                            - row.request.attributes.params
+                            - {}
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      cat:
+                        - var: row.request.attributes.id
+                        - .
+                        - var: row.offering.attributes.id
+                    request:
+                      var: row.request.attributes.id
+                    target:
+                      var: row.request.attributes.target
+                    role:
+                      var: row.request.attributes.role
+                    provider:
+                      var: row.offering.attributes.provider
+                    offering:
+                      var: row.offering.attributes.id
+                    dialect:
+                      var:
+                        - row.offering.attributes.dialect
+                        - null
+                    adapter:
+                      var:
+                        - row.offering.attributes.adapter
+                        - null
+                    projectionKind:
+                      var:
+                        - row.offering.attributes.projectionKind
+                        - null
+                    params:
+                      var:
+                        - row.offering.attributes.params
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.request
+            - $expr:
+                var: row.value.offering
+          paramsContract:
+            kind: model
+            model: model:ProviderSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ProviderSelectionsSelectorResult
+
+        - id: provider.selectionCandidatesForRequest
+          sources:
+            candidate:
+              kind: selector
+              selector:
+                $expr: provider.selectionCandidates
+              params:
+                $expr:
+                  os_object: []
+          where:
+            $expr:
+              ===:
+                - var: row.candidate.request
+                - var: parameter.request
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.candidate
+          orderBy:
+            - $expr:
+                var: row.value.offering
+          paramsContract:
+            kind: model
+            model: model:ProviderSelectionByRequestParams
+          returnsContract:
+            kind: model
+            model: model:ProviderSelectionsSelectorResult
+
+        - id: provider.selectionOtherCandidates
+          sources:
+            candidate:
+              kind: selector
+              selector:
+                $expr: provider.selectionCandidates
+              params:
+                $expr:
+                  os_object: []
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.candidate.request
+                    - var: parameter.request
+                - "!":
+                    - ===:
+                        - var: row.candidate.offering
+                        - var: parameter.offering
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.candidate
+          orderBy:
+            - $expr:
+                var: row.value.offering
+          paramsContract:
+            kind: model
+            model: model:ProviderSelectionOtherCandidatesParams
+          returnsContract:
+            kind: model
+            model: model:ProviderSelectionsSelectorResult
+
+        - id: provider.selectedRows
+          sources:
+            candidate:
+              kind: selector
+              selector:
+                $expr: provider.selectionCandidates
+              params:
+                $expr:
+                  os_object: []
+            other:
+              kind: selector
+              optional: true
+              selector:
+                $expr: provider.selectionOtherCandidates
+              params:
+                $expr:
+                  os_object:
+                    - request:
+                        var: row.candidate.request
+                      offering:
+                        var: row.candidate.offering
+          where:
+            $expr:
+              "!":
+                - var:
+                    - row.other
+                    - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.candidate
+          orderBy:
+            - $expr:
+                var: row.value.request
+          paramsContract:
+            kind: model
+            model: model:ProviderSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ProviderSelectionsSelectorResult
+
+        - id: provider.selections
+          sources:
+            selection:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: provider.selection
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.selection.attributes
+          orderBy:
+            - $expr:
+                var: row.value.request
+          paramsContract:
+            kind: model
+            model: model:ProviderSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ProviderSelectionsSelectorResult
+
+        - id: provider.selectionMissing
+          sources:
+            request:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: provider.selection.request
+            candidate:
+              kind: selector
+              optional: true
+              selector:
+                $expr: provider.selectionCandidatesForRequest
+              params:
+                $expr:
+                  os_object:
+                    - request:
+                        var: row.request.attributes.id
+          where:
+            $expr:
+              "!":
+                - var:
+                    - row.candidate
+                    - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.request.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:ProviderSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ProviderSelectionRequestsSelectorResult
+
+        - id: provider.selectionAmbiguous
+          sources:
+            candidate:
+              kind: selector
+              selector:
+                $expr: provider.selectionCandidates
+              params:
+                $expr:
+                  os_object: []
+            other:
+              kind: selector
+              selector:
+                $expr: provider.selectionOtherCandidates
+              params:
+                $expr:
+                  os_object:
+                    - request:
+                        var: row.candidate.request
+                      offering:
+                        var: row.candidate.offering
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - request:
+                      var: row.candidate.request
+                    target:
+                      var: row.candidate.target
+                    role:
+                      var: row.candidate.role
+                    offering:
+                      var: row.candidate.offering
+                    otherOffering:
+                      var: row.other.offering
+          orderBy:
+            - $expr:
+                var: row.value.request
+            - $expr:
+                var: row.value.offering
+          paramsContract:
+            kind: model
+            model: model:ProviderSelectorNoParams
+          returnsContract:
+            kind: unknown
+
+      validate:
+        - id: provider.selection.validation
+          rules:
+            - id: provider-selection-missing
+              scope: selector
+              selector: provider.selectionMissing
+              forEach: true
+              assert:
+                $expr: false
+              code: provider.selection.missing
+              message: Provider selection request has no matching provider offering.
+              details:
+                $expr:
+                  os_object:
+                    - request:
+                        var: item.id
+                      target:
+                        var: item.target
+                      role:
+                        var: item.role
+                      dialect:
+                        var:
+                          - item.dialect
+                          - null
+
+            - id: provider-selection-ambiguous
+              scope: selector
+              selector: provider.selectionAmbiguous
+              forEach: true
+              assert:
+                $expr: false
+              code: provider.selection.ambiguous
+              message: Provider selection request matches multiple provider offerings.
+              details:
+                $expr:
+                  os_object:
+                    - request:
+                        var: item.request
+                      target:
+                        var: item.target
+                      role:
+                        var: item.role
+                      offering:
+                        var: item.offering
+                      otherOffering:
+                        var: item.otherOffering

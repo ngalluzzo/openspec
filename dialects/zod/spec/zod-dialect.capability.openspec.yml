@@ -1,0 +1,22 @@
+openspec: "1.0"
+documents:
+  - id: zod-dialect.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: dialect.package:zod
+      capabilities:
+        - id: zod.syntax.render
+          kind: projection.syntax.render
+          description: Render Zod schema facets into a TypeScript/Zod schema artifact recipe.
+          methods:
+            render:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ZodSyntaxRenderInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: TextFileArtifactRecipe

@@ -1,0 +1,24 @@
+openspec: "1.0"
+documents:
+  - id: workspace.provider
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: workspace.provider
+          pattern: pattern.declaration:provider.adapters
+          inputs:
+            provider:
+              id: workspace
+              name: Workspace provider
+            adapters:
+              - id: workspace.build.default
+                capability: capability.capability:workspace.build
+                kind: workspace.build.default
+                description: Executes all planning actions and writes outputs via flow.executor.
+                requires:
+                  - capability: capability.capability:flow.executor
+                    as: executor
+              - id: workspace.compiler.default
+                capability: capability.capability:compiler
+                kind: workspace.compiler.default
+                description: Compiles OpenSpec documents from a workspace root and returns the semantic graph.

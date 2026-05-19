@@ -1,0 +1,77 @@
+openspec: "1.0"
+documents:
+  - id: storage.writer.model
+    protocol: openspec.model.v1
+    document:
+      owner: capability.package:storage.writer
+
+      declarations:
+
+        - kind: enum
+          name: OverwritePolicy
+          values:
+            - error-on-conflict
+            - overwrite-generated
+
+        - kind: enum
+          name: WriteDisposition
+          values:
+            - generated
+            - scaffold
+
+        - kind: object
+          name: ContentWrite
+          fields:
+            - name: location
+              type: nonEmptyString
+              description: Relative location of the file within the root.
+            - name: content
+              type: nonEmptyString
+            - name: disposition
+              type:
+                kind: ref
+                name: WriteDisposition
+              required: false
+
+        - kind: object
+          name: WriteBatch
+          fields:
+            - name: writes
+              type:
+                kind: array
+                items:
+                  kind: ref
+                  name: ContentWrite
+            - name: root
+              type: nonEmptyString
+              required: false
+              description: Root path to resolve all locations against.
+            - name: policy
+              type:
+                kind: ref
+                name: OverwritePolicy
+              required: false
+
+        - kind: object
+          name: WriteReport
+          fields:
+            - name: written
+              type:
+                kind: array
+                items:
+                  kind: string
+            - name: skipped
+              type:
+                kind: array
+                items:
+                  kind: string
+            - name: stale
+              type:
+                kind: array
+                items:
+                  kind: string
+            - name: diagnostics
+              type:
+                kind: array
+                items:
+                  kind: unknown

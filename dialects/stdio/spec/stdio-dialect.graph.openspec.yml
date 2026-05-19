@@ -1,0 +1,108 @@
+openspec: "1.0"
+documents:
+  - id: stdio-dialect.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: dialect.package:stdio
+      selectors:
+        - id: stdio.transports
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: stdio.transport
+            transport:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.facet.target
+                kind:
+                  $expr: transport.transport
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    transport:
+                      var: row.transport.attributes
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.target
+          paramsContract:
+            kind: model
+            model: model:StdioDialectSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StdioTransportFacetSelectorResult
+
+        - id: stdio.commandDispatches
+          sources:
+            dispatch:
+              kind: selector
+              selector:
+                $expr: cli.commandDispatches
+              params:
+                $expr:
+                  os_object:
+                    - hostId:
+                        var:
+                          - parameter.hostId
+                          - null
+            stdio:
+              kind: facets
+              filter:
+                kind:
+                  $expr: stdio.transport
+                target:
+                  $expr:
+                    var: row.dispatch.transport
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.dispatch.id
+                    owner:
+                      var: row.dispatch.owner
+                    entrypoint:
+                      var: row.dispatch.entrypoint
+                    operation:
+                      var: row.dispatch.operation
+                    operationId:
+                      var: row.dispatch.operationId
+                    transport:
+                      var: row.dispatch.transport
+                    method:
+                      var: row.dispatch.method
+                    adapter:
+                      var: row.dispatch.adapter
+                    dispatch:
+                      var: row.dispatch.dispatch
+                    environment:
+                      var: row.dispatch.environment
+                    command:
+                      var: row.dispatch.command
+                    surface:
+                      var: row.dispatch.surface
+                    stdio:
+                      var: row.stdio.value
+          orderBy:
+            - $expr:
+                var: row.value.command
+          paramsContract:
+            kind: model
+            model: model:StdioCommandDispatchSelectorParams
+          returnsContract:
+            kind: model
+            model: model:StdioCommandDispatchSelectorResult

@@ -1,0 +1,91 @@
+openspec: "1.0"
+documents:
+  - id: graph.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: protocol.protocol:openspec.graph.v1
+      capabilities:
+        - id: graph.provide
+          kind: graph.providing
+          description: Build the compiler graph runtime surface from graph facts and selector declarations.
+          methods:
+            provide:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: GraphProviderInput
+              output:
+                type:
+                  kind: ref
+                  name: GraphProviderResult
+
+        - id: graph.derive
+          kind: graph.derivation
+          description: Derive additional graph facts from an existing graph and runtime.
+          methods:
+            derive:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: GraphDeriveInput
+              output:
+                type:
+                  kind: ref
+                  name: DynamicDerivationResult
+
+        - id: graph.validate
+          kind: graph.validation
+          description: Validate compiled documents against an enriched graph.
+          methods:
+            validate:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: GraphValidateInput
+              output:
+                type:
+                  kind: ref
+                  name: GraphValidationResult
+
+        - id: graph.document.lower
+          kind: graph.document.lowering
+          description: Prepare graph-owned lowering maps and lower protocol documents into graph facts.
+          methods:
+            prepare:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: GraphDocumentLowerPrepareInput
+              output:
+                type:
+                  kind: ref
+                  name: GraphDocumentLowerHandle
+            lower:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: GraphDocumentLowerInput
+              output:
+                type:
+                  kind: ref
+                  name: GraphDocumentLowerResult
+
+        - id: graph.selectors.materialize
+          kind: graph.selector.materialization
+          description: Materialize executable selector closures from graph-owned selector declarations.
+          methods:
+            materialize:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: GraphSelectorsMaterializeInput
+              output:
+                type:
+                  kind: ref
+                  name: GraphSelectorsMaterializeResult

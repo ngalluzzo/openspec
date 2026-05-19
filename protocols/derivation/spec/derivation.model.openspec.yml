@@ -1,0 +1,108 @@
+openspec: "1.0"
+documents:
+  - id: derivation.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.derivation.v1
+      declarations:
+
+        - kind: object
+          name: DerivationSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: DerivationRuleByIdSelectorParams
+          fields:
+            - name: id
+              type: nonEmptyString
+
+        - kind: object
+          name: DerivationRuleSource
+          fields:
+            - name: selector
+              type: nonEmptyString
+              description: ID of the selector to run. The selector must accept empty params.
+            - name: as
+              type: nonEmptyString
+              description: Variable name bound to each selector result row.
+            - name: optional
+              type: boolean
+              required: false
+
+        - kind: object
+          name: DerivationRuleDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: source
+              type:
+                kind: ref
+                name: DerivationRuleSource
+            - name: after
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: facts
+              type:
+                kind: array
+                item: unknown
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: DerivationDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+              description: Canonical nodeId of the package or protocol that owns these derivation rules.
+            - name: rules
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: DerivationRuleDeclaration
+
+        - kind: object
+          name: DerivationRuleContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: subject
+              type: nonEmptyString
+            - name: selector
+              type: nonEmptyString
+            - name: as
+              type: nonEmptyString
+            - name: optional
+              type: boolean
+              required: false
+            - name: after
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: facts
+              type:
+                kind: array
+                item: unknown
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: alias
+          name: DerivationRulesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: DerivationRuleContract
+
+        - kind: alias
+          name: DerivationRuleByIdSelectorResult
+          type:
+            kind: ref
+            name: DerivationRuleContract

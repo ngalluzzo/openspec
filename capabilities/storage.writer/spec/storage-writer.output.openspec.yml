@@ -1,0 +1,38 @@
+openspec: "1.0"
+documents:
+  - id: storage.writer.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: storage.writer.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:storage.writer
+            id: storage.writer
+            namespace: storage.writer
+            capability: capability.capability:storage.writer
+            models:
+              - name: OverwritePolicy
+              - name: WriteDisposition
+              - name: ContentWrite
+              - name: WriteBatch
+              - name: WriteReport
+            methods:
+              - name: write
+            artifacts:
+              types:
+                path: capabilities/storage.writer/src/sdk/storage-writer-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/storage.writer/src/sdk/storage-writer.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./storage-writer-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: StorageWriterAdapter
+              contractTypeName: StorageWriterAdapterContract
+              contractConstName: storageWriterAdapterContract
+              implementFunctionName: implementStorageWriterAdapter
+              aliasName: StorageWriter

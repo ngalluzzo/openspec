@@ -1,0 +1,23 @@
+openspec: "1.0"
+documents:
+  - id: storage.reader.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:storage.reader
+
+      capabilities:
+        - id: storage.reader
+          kind: storage.reading
+          description: Read files from addressable storage. Local FS, S3, GCS are all adapters.
+          methods:
+            read:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ReadQuery
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ReadReport

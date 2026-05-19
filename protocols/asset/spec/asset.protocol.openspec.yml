@@ -1,0 +1,165 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.asset.v1
+package:
+  id: "@openspec/asset"
+documentModels:
+  - model:AssetDocument
+validation:
+  - id: asset.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.asset.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: asset.owner.invalid
+        message: Asset documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: namespace-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.asset.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.namespace
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: asset.namespace.invalid
+        message: Asset document namespaces must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - namespace:
+                  var:
+                    - document.document.namespace
+                    - null
+
+      - id: has-assets
+        scope: selector
+        selector: asset.assets
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: asset.declarations.empty
+        message: Asset documents must declare at least one asset.
+
+      - id: asset-id-format
+        scope: selector
+        selector: asset.assets
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: asset.id.invalid
+        message: Asset ids must be lowercase identifiers unique inside their namespace.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: asset-kind-format
+        scope: selector
+        selector: asset.assets
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: asset.kind.invalid
+        message: Asset kind must be a lowercase namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - asset:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: locator-kind-format
+        scope: selector
+        selector: asset.assets
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.locator.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: asset.locator.kind.invalid
+        message: Asset locator kind must be a lowercase namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - asset:
+                  var: item.id
+                locator:
+                  var:
+                    - item.locator.kind
+                    - null
+
+      - id: locator-has-address
+        scope: selector
+        selector: asset.assets
+        forEach: true
+        assert:
+          $expr:
+            or:
+              - "!":
+                  - os_is_empty:
+                      - var:
+                          - item.locator.path
+                          - null
+              - "!":
+                  - os_is_empty:
+                      - var:
+                          - item.locator.uri
+                          - null
+        code: asset.locator.address.missing
+        message: Asset locators must declare either path or uri.
+        details:
+          $expr:
+            os_object:
+              - asset:
+                  var: item.id
+
+      - id: asset-subject-ref-format
+        scope: selector
+        selector: asset.subjects
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.subject
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*:.+$
+        code: asset.subject.invalid
+        message: Asset subjects must be canonical nodeIds.
+        details:
+          $expr:
+            os_object:
+              - asset:
+                  var: item.asset
+                subject:
+                  var: item.subject

@@ -1,0 +1,314 @@
+openspec: "1.0"
+documents:
+  - id: signal.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.signal.v1
+      owner: protocol.protocol:openspec.signal.v1
+      lowering:
+        - id: signal.declarations
+          source:
+            path: signals
+            as: signal
+          facts:
+            # signal.declaration node
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - signal
+                    - var: signal.id
+              factKind:
+                $expr: signal.declaration
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: signal.id
+                      name:
+                        var:
+                          - signal.name
+                          - null
+                      owner:
+                        var: document.owner
+                      kind:
+                        var: signal.kind
+                      description:
+                        var:
+                          - signal.description
+                          - null
+
+            # signal.owner.declaration edge — owner → signal
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .signal.
+                    - var: signal.id
+              factKind:
+                $expr: signal.owner.declaration
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - signal
+                    - var: signal.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      signal:
+                        var: signal.id
+
+            # signal.payload edge — signal → model node (when payload declared)
+            - kind: edge
+              when:
+                $expr:
+                  var:
+                    - signal.payload
+                    - null
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - signal
+                        - var: signal.id
+                    - .payload.
+                    - var: signal.payload
+              factKind:
+                $expr: signal.payload
+              from:
+                $expr:
+                  os_node_id:
+                    - signal
+                    - var: signal.id
+              to:
+                $expr:
+                  var: signal.payload
+
+            # signal.subject edge — signal → entity node (when subject declared)
+            - kind: edge
+              when:
+                $expr:
+                  var:
+                    - signal.subject
+                    - null
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - signal
+                        - var: signal.id
+                    - .subject.
+                    - var: signal.subject
+              factKind:
+                $expr: signal.subject
+              from:
+                $expr:
+                  os_node_id:
+                    - signal
+                    - var: signal.id
+              to:
+                $expr:
+                  var: signal.subject
+
+      selectors:
+        # All declared signals.
+        - id: signal.all
+          sources:
+            signal:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: signal.declaration
+            payload:
+              kind: edges
+              filter:
+                kind:
+                  $expr: signal.payload
+                from:
+                  $expr:
+                    var: row.signal.id
+              optional: true
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: signal.subject
+                from:
+                  $expr:
+                    var: row.signal.id
+              optional: true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.signal.attributes.id
+                    name:
+                      var:
+                        - row.signal.attributes.name
+                        - null
+                    owner:
+                      var: row.signal.attributes.owner
+                    kind:
+                      var: row.signal.attributes.kind
+                    payload:
+                      var:
+                        - row.payload.to
+                        - null
+                    subject:
+                      var:
+                        - row.subject.to
+                        - null
+                    description:
+                      var:
+                        - row.signal.attributes.description
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:SignalSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SignalAllSelectorResult
+
+        # Single signal by ID.
+        - id: signal.byId
+          sources:
+            signal:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - signal
+                      - var: parameter.signal
+                kind:
+                  $expr: signal.declaration
+            payload:
+              kind: edges
+              filter:
+                kind:
+                  $expr: signal.payload
+                from:
+                  $expr:
+                    var: row.signal.id
+              optional: true
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: signal.subject
+                from:
+                  $expr:
+                    var: row.signal.id
+              optional: true
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.signal.attributes.id
+                    name:
+                      var:
+                        - row.signal.attributes.name
+                        - null
+                    owner:
+                      var: row.signal.attributes.owner
+                    kind:
+                      var: row.signal.attributes.kind
+                    payload:
+                      var:
+                        - row.payload.to
+                        - null
+                    subject:
+                      var:
+                        - row.subject.to
+                        - null
+                    description:
+                      var:
+                        - row.signal.attributes.description
+                        - null
+          paramsContract:
+            kind: model
+            model: model:SignalByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:SignalByIdSelectorResult
+
+        # All signals of a given kind — for routing and subscription generators.
+        - id: signal.byKind
+          sources:
+            signal:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: signal.declaration
+            payload:
+              kind: edges
+              filter:
+                kind:
+                  $expr: signal.payload
+                from:
+                  $expr:
+                    var: row.signal.id
+              optional: true
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: signal.subject
+                from:
+                  $expr:
+                    var: row.signal.id
+              optional: true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.signal.attributes.id
+                    name:
+                      var:
+                        - row.signal.attributes.name
+                        - null
+                    owner:
+                      var: row.signal.attributes.owner
+                    kind:
+                      var: row.signal.attributes.kind
+                    payload:
+                      var:
+                        - row.payload.to
+                        - null
+                    subject:
+                      var:
+                        - row.subject.to
+                        - null
+                    description:
+                      var:
+                        - row.signal.attributes.description
+                        - null
+            when:
+              $expr:
+                ===:
+                  - var: row.signal.attributes.kind
+                  - var: parameter.kind
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:SignalByKindSelectorParams
+          returnsContract:
+            kind: model
+            model: model:SignalByKindSelectorResult

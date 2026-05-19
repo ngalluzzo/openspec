@@ -1,0 +1,124 @@
+openspec: "1.0"
+documents:
+  - id: facet.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.facet.v1
+      owner: protocol.protocol:openspec.facet.v1
+      lowering:
+        - id: facet.declarations
+          source:
+            path: facets
+            as: facet
+          facts:
+            - kind: facet
+              id:
+                $expr:
+                  cat:
+                    - var: facet.kind
+                    - ":"
+                    - var: facet.id
+              factKind:
+                $expr:
+                  var: facet.kind
+              target:
+                $expr:
+                  var: facet.target
+              value:
+                $expr:
+                  var: facet.value
+
+      selectors:
+        - id: facet.all
+          sources:
+            facet:
+              kind: facets
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FacetSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:FacetAllSelectorResult
+
+        - id: facet.forTarget
+          sources:
+            facet:
+              kind: facets
+              filter:
+                target:
+                  $expr:
+                    var: parameter.target
+              optional: true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FacetTargetSelectorParams
+          returnsContract:
+            kind: model
+            model: model:FacetForTargetSelectorResult
+
+        - id: facet.forTargetKind
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr:
+                    var: parameter.kind
+                target:
+                  $expr:
+                    var: parameter.target
+              optional: true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FacetTargetKindSelectorParams
+          returnsContract:
+            kind: model
+            model: model:FacetForTargetKindSelectorResult

@@ -1,0 +1,22 @@
+openspec: "1.0"
+documents:
+  - id: typescript-recipe-apply.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:typescript.recipe.apply
+      capabilities:
+        - id: typescript.recipe.apply
+          kind: typescript.recipe.apply
+          description: Apply a TypeScript recipe invocation into a generated TypeScript module.
+          methods:
+            apply:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: TypeScriptRecipeApplyInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: TypeScriptRecipeApplyResult

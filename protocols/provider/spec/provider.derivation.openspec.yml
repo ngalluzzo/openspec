@@ -1,0 +1,57 @@
+openspec: "1.0"
+documents:
+  - id: provider.selection.derivation
+    protocol: openspec.derivation.v1
+    document:
+      owner: protocol.protocol:openspec.provider.v1
+      rules:
+        - id: provider.selection
+          source:
+            selector: provider.selectedRows
+            as: selection
+          facts:
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "provider.selection:"
+                  - kind: path
+                    path: selection.id
+              factKind: provider.selection
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: path
+                    path: selection.id
+                  request:
+                    kind: path
+                    path: selection.request
+                  target:
+                    kind: path
+                    path: selection.target
+                  role:
+                    kind: path
+                    path: selection.role
+                  provider:
+                    kind: path
+                    path: selection.provider
+                  offering:
+                    kind: path
+                    path: selection.offering
+                  dialect:
+                    kind: path
+                    path: selection.dialect
+                    optional: true
+                  adapter:
+                    kind: path
+                    path: selection.adapter
+                    optional: true
+                  projectionKind:
+                    kind: path
+                    path: selection.projectionKind
+                    optional: true
+                  params:
+                    kind: path
+                    path: selection.params
+                    optional: true

@@ -1,0 +1,23 @@
+openspec: "1.0"
+documents:
+  - id: compiler.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: package.package:openspec.compiler
+
+      capabilities:
+        - id: compiler
+          kind: openspec.compiler
+          description: Compile OpenSpec documents into a semantic graph and graph runtime.
+          methods:
+            compile:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: CompilerInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: CompilerResult

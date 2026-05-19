@@ -1,0 +1,78 @@
+openspec: "1.0"
+documents:
+  - id: principal.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.principal.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: PrincipalSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: PrincipalByIdSelectorParams
+          fields:
+            - name: principal
+              type: nonEmptyString
+
+        - kind: object
+          name: PrincipalByKindSelectorParams
+          fields:
+            - name: kind
+              type: nonEmptyString
+
+        # ── Principal contract ─────────────────────────────────────────────────
+        # A principal is a named identity that can act in the system.
+        # `kind` classifies the identity type:
+        #   - human    — a person with credentials (user, admin, operator)
+        #   - service  — an internal service acting on behalf of the system
+        #   - device   — an IoT device or hardware agent
+        #   - api-key  — a programmatic caller identified by a key
+        # `entity` is the entity nodeId that stores this principal's record.
+        # When `entity` is declared, the principal's identity field maps to
+        # the entity's identity field (the primary key).
+
+        - kind: object
+          name: PrincipalContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: entity
+              type: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: PrincipalAllSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: PrincipalContract
+
+        - kind: alias
+          name: PrincipalByIdSelectorResult
+          type:
+            kind: ref
+            name: PrincipalContract
+
+        - kind: alias
+          name: PrincipalByKindSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: PrincipalContract

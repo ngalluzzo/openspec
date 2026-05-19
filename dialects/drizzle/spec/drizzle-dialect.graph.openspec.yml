@@ -1,0 +1,167 @@
+openspec: "1.0"
+documents:
+  - id: drizzle-dialect.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: dialect.package:drizzle
+      owner: dialect.package:drizzle
+      selectors:
+        - id: drizzle.tablesForUnit
+          sources:
+            table:
+              kind: facets
+              filter:
+                kind:
+                  $expr: drizzle.table
+                value:
+                  unit:
+                    $expr:
+                      var: parameter.unit
+            column:
+              kind: facets
+              optional: true
+              filter:
+                kind:
+                  $expr: drizzle.column
+          where:
+            $expr:
+              or:
+                - "!":
+                    - var:
+                        - row.column
+                        - null
+                - ===:
+                    - var: row.column.value.table
+                    - var: row.table.value.storageEntity
+          groupBy:
+            $expr:
+              var: row.table.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.table.id
+                    unit:
+                      var: row.table.value.unit
+                    storageEntity:
+                      var: row.table.value.storageEntity
+                    name:
+                      var: row.table.value.name
+                    columns:
+                      os_distinct:
+                        - os_map:
+                            - var: group.rows
+                            - item
+                            - var: item.column.value
+                            - true
+                            - var: item.column
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:DrizzleSyntaxUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:DrizzleTablesSelectorResult
+
+        - id: drizzle.relationsForUnit
+          sources:
+            relation:
+              kind: facets
+              filter:
+                kind:
+                  $expr: drizzle.relation
+                value:
+                  unit:
+                    $expr:
+                      var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.relation.value
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:DrizzleSyntaxUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:DrizzleRelationsSelectorResult
+
+        - id: drizzle.syntaxRenderInput
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.syntaxUnit
+                kind:
+                  $expr: syntax.unit
+            asset:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.asset
+                kind:
+                  $expr: asset.asset
+            table:
+              kind: selector
+              optional: true
+              selector:
+                $expr: drizzle.tablesForUnit
+              params:
+                $expr:
+                  os_object:
+                    - unit:
+                        var: parameter.syntaxUnit
+            relation:
+              kind: selector
+              optional: true
+              selector:
+                $expr: drizzle.relationsForUnit
+              params:
+                $expr:
+                  os_object:
+                    - unit:
+                        var: parameter.syntaxUnit
+          groupBy:
+            $expr:
+              var: row.unit.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - unit:
+                      var: row.unit.attributes
+                    asset:
+                      var: row.asset.attributes
+                    tables:
+                      os_distinct:
+                        - os_map:
+                            - var: group.rows
+                            - item
+                            - var: item.table
+                            - true
+                            - var: item.table
+                    relations:
+                      os_distinct:
+                        - os_map:
+                            - var: group.rows
+                            - item
+                            - var: item.relation
+                            - true
+                            - var: item.relation
+          paramsContract:
+            kind: model
+            model: model:DrizzleSyntaxRenderSelectorParams
+          returnsContract:
+            kind: model
+            model: model:DrizzleSyntaxRenderInput

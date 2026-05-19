@@ -1,0 +1,134 @@
+openspec: "1.0"
+documents:
+  - id: capability-fulfillment.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: capability.fulfillment
+        name: Capability Fulfillment Pattern
+      patterns:
+        - id: capability.fulfillment
+          owner: pattern.package:capability.fulfillment
+          name: Capability fulfillment
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .artifact
+                protocol: openspec.asset.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  namespace:
+                    expr:
+                      kind: path
+                      path: input.id
+                  assets:
+                    - id: output
+                      kind: generated.artifact
+                      locator:
+                        kind: file
+                        path:
+                          expr:
+                            kind: path
+                            path: input.artifact.path
+                      disposition: generated
+                      mediaType:
+                        expr:
+                          kind: path
+                          path: input.artifact.mediaType
+                          optional: true
+                      language:
+                        expr:
+                          kind: path
+                          path: input.artifact.language
+                          optional: true
+                      subjects:
+                        expr:
+                          kind: array
+                          items:
+                            - kind: path
+                              path: input.capability
+                      metadata:
+                        expr:
+                          kind: path
+                          path: input.artifact.metadata
+                          optional: true
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .fulfillment
+                protocol: openspec.facet.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  facets:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      kind: capability.fulfillment
+                      target:
+                        expr:
+                          kind: path
+                          path: input.capability
+                      value:
+                        expr:
+                          kind: object
+                          fields:
+                            id:
+                              kind: path
+                              path: input.id
+                            owner:
+                              kind: path
+                              path: input.owner
+                            projectionKind:
+                              kind: path
+                              path: input.projection.kind
+                            adapter:
+                              kind: path
+                              path: input.adapter
+                              optional: true
+                            params:
+                              kind: path
+                              path: input.params
+                              optional: true
+                            inputs:
+                              kind: path
+                              path: input.projection.inputs
+                              optional: true
+                            source:
+                              kind: path
+                              path: input.projection.source
+                              optional: true
+                            externalSource:
+                              kind: path
+                              path: input.projection.externalSource
+                              optional: true
+                            artifact:
+                              kind: concat
+                              items:
+                                - kind: literal
+                                  value: "asset.asset:"
+                                - kind: path
+                                  path: input.id
+                                - kind: literal
+                                  value: ".output"
+                            metadata:
+                              kind: path
+                              path: input.metadata
+                              optional: true

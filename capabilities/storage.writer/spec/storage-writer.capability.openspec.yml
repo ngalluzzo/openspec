@@ -1,0 +1,23 @@
+openspec: "1.0"
+documents:
+  - id: storage.writer.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:storage.writer
+
+      capabilities:
+        - id: storage.writer
+          kind: storage.writing
+          description: Write a batch of content to addressable storage. Local FS, S3, GCS are all adapters.
+          methods:
+            write:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: WriteBatch
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: WriteReport

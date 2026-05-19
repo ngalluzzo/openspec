@@ -1,0 +1,167 @@
+openspec: "1.0"
+documents:
+  - id: prisma-dialect.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: dialect.package:prisma
+      owner: dialect.package:prisma
+      selectors:
+        - id: prisma.modelsForUnit
+          sources:
+            model:
+              kind: facets
+              filter:
+                kind:
+                  $expr: prisma.model
+                value:
+                  unit:
+                    $expr:
+                      var: parameter.unit
+            field:
+              kind: facets
+              optional: true
+              filter:
+                kind:
+                  $expr: prisma.field
+          where:
+            $expr:
+              or:
+                - "!":
+                    - var:
+                        - row.field
+                        - null
+                - ===:
+                    - var: row.field.value.model
+                    - var: row.model.value.storageEntity
+          groupBy:
+            $expr:
+              var: row.model.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.model.id
+                    unit:
+                      var: row.model.value.unit
+                    storageEntity:
+                      var: row.model.value.storageEntity
+                    name:
+                      var: row.model.value.name
+                    fields:
+                      os_distinct:
+                        - os_map:
+                            - var: group.rows
+                            - item
+                            - var: item.field.value
+                            - true
+                            - var: item.field
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:PrismaSyntaxUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:PrismaModelsSelectorResult
+
+        - id: prisma.relationsForUnit
+          sources:
+            relation:
+              kind: facets
+              filter:
+                kind:
+                  $expr: prisma.relation
+                value:
+                  unit:
+                    $expr:
+                      var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.relation.value
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:PrismaSyntaxUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:PrismaRelationsSelectorResult
+
+        - id: prisma.syntaxRenderInput
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.syntaxUnit
+                kind:
+                  $expr: syntax.unit
+            asset:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.asset
+                kind:
+                  $expr: asset.asset
+            model:
+              kind: selector
+              optional: true
+              selector:
+                $expr: prisma.modelsForUnit
+              params:
+                $expr:
+                  os_object:
+                    - unit:
+                        var: parameter.syntaxUnit
+            relation:
+              kind: selector
+              optional: true
+              selector:
+                $expr: prisma.relationsForUnit
+              params:
+                $expr:
+                  os_object:
+                    - unit:
+                        var: parameter.syntaxUnit
+          groupBy:
+            $expr:
+              var: row.unit.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - unit:
+                      var: row.unit.attributes
+                    asset:
+                      var: row.asset.attributes
+                    models:
+                      os_distinct:
+                        - os_map:
+                            - var: group.rows
+                            - item
+                            - var: item.model
+                            - true
+                            - var: item.model
+                    relations:
+                      os_distinct:
+                        - os_map:
+                            - var: group.rows
+                            - item
+                            - var: item.relation
+                            - true
+                            - var: item.relation
+          paramsContract:
+            kind: model
+            model: model:PrismaSyntaxRenderSelectorParams
+          returnsContract:
+            kind: model
+            model: model:PrismaSyntaxRenderInput

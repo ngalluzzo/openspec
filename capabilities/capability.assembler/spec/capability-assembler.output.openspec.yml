@@ -1,0 +1,33 @@
+openspec: "1.0"
+documents:
+  - id: capability.assembler.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: capability.assembler.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:capability.assembler
+            id: capability.assembler
+            namespace: capability.assembler
+            capability: capability.capability:capability.assembler
+            models: []
+            methods:
+              - name: assemble
+            artifacts:
+              types:
+                path: capabilities/capability.assembler/src/sdk/capability-assembler-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/capability.assembler/src/sdk/capability-assembler.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./capability-assembler-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: CapabilityAssemblerAdapter
+              contractTypeName: CapabilityAssemblerAdapterContract
+              contractConstName: capabilityAssemblerAdapterContract
+              implementFunctionName: implementCapabilityAssemblerAdapter
+              aliasName: CapabilityAssembler

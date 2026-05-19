@@ -1,0 +1,213 @@
+openspec: "1.0"
+documents:
+  - id: fact.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.fact.v1
+      owner: protocol.protocol:openspec.fact.v1
+      lowering:
+
+        # ── Fact kind declarations ─────────────────────────────────────────────
+        # Lowers each entry in `facts:` into a fact.kind node owned by the
+        # declaring package or protocol. This makes the graph schema explicit
+        # and queryable — fact kinds are no longer implicit in lowering rules.
+
+        - id: fact.kind.declarations
+          source:
+            path: facts
+            as: fact
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - fact.kind
+                    - var: fact.id
+              factKind:
+                $expr: fact.kind
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: fact.id
+                      kind:
+                        var: fact.kind
+                      owner:
+                        var: document.owner
+                      attributes:
+                        var:
+                          - fact.attributes
+                          - null
+                      from:
+                        var:
+                          - fact.from
+                          - null
+                      to:
+                        var:
+                          - fact.to
+                          - null
+                      description:
+                        var:
+                          - fact.description
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .fact.kind.
+                    - var: fact.id
+              factKind:
+                $expr: fact.owner.kind
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - fact.kind
+                    - var: fact.id
+
+        # ── Derivation rule declarations ───────────────────────────────────────
+        # Lowers each entry in `derive:` into a graph.derive.rule node — the
+        # same fact kind produced by openspec.graph.v1. The existing
+        # evaluateDerivation engine picks these up automatically; no new engine
+        # code is required. The subject is openspec.fact.v1, meaning derivation
+        # rules in fact documents are not tied to any one domain protocol.
+
+        - id: fact.derivation.declarations
+          source:
+            path: derive
+            as: rule
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - graph.derive.rule
+                    - openspec.fact.v1
+                    - var: rule.id
+              factKind:
+                $expr: graph.derive.rule
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: rule.id
+                      subject:
+                        var: openspec.fact.v1
+                      selector:
+                        var: rule.source.selector
+                      as:
+                        var: rule.source.as
+                      optional:
+                        var:
+                          - rule.source.optional
+                          - null
+                      after:
+                        var:
+                          - rule.after
+                          - null
+                      facts:
+                        var: rule.facts
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .fact.derivation.
+                    - var: rule.id
+              factKind:
+                $expr: fact.owner.derivation
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - graph.derive.rule
+                    - openspec.fact.v1
+                    - var: rule.id
+
+      selectors:
+
+        # All declared fact kinds across all fact documents.
+        - id: fact.kinds
+          sources:
+            fact:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: fact.kind
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.fact.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FactSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:FactKindsSelectorResult
+
+        # Single fact kind by id.
+        - id: fact.kindById
+          sources:
+            fact:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - fact.kind
+                      - var: parameter.id
+                kind:
+                  $expr: fact.kind
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.fact.attributes
+          paramsContract:
+            kind: model
+            model: model:FactKindByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:FactKindByIdSelectorResult
+
+        # All derivation rules declared via fact documents.
+        # Distinguished from graph.v1 derive rules by subject === openspec.fact.v1.
+        - id: fact.derivations
+          sources:
+            derivation:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: graph.derive.rule
+          where:
+            $expr:
+              ===:
+                - var: row.derivation.attributes.subject
+                - openspec.fact.v1
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.derivation.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:FactSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:FactDerivationsSelectorResult

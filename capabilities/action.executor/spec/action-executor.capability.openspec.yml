@@ -1,0 +1,68 @@
+openspec: "1.0"
+documents:
+  - id: action.executor.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:action.executor
+
+      capabilities:
+        - id: action.executor
+          kind: action.execution
+          description: Execute all derived planning.action nodes and produce content outputs.
+          methods:
+            execute:
+              inputs:
+                root:
+                  type: nonEmptyString
+                  required: true
+                  description: Workspace root path — used to resolve output locations.
+                environment:
+                  type: nonEmptyString
+                  required: false
+                graph:
+                  type: unknown
+                  required: true
+                  description: The compiled SemanticGraph — passed from the compiler.compile step.
+                runtime:
+                  type: unknown
+                  required: false
+                  description: The compiled GraphRuntime for the graph snapshot.
+              output:
+                type:
+                  kind: array
+                  items:
+                    kind: ref
+                    name: ActionOutput
+            sync:
+              inputs:
+                root:
+                  type: nonEmptyString
+                  required: true
+                graph:
+                  type: unknown
+                  required: true
+                  description: The compiled SemanticGraph — passed from the compiler.compile step.
+                runtime:
+                  type: unknown
+                  required: false
+                  description: The compiled GraphRuntime for the graph snapshot.
+                preview:
+                  type: boolean
+                  required: false
+                  description: When true, mutations are computed but platform.apply is not called.
+                forceBreaking:
+                  type: boolean
+                  required: false
+                  description: Allow supported breaking mutations to be passed to platform.apply adapters.
+                yes:
+                  type: boolean
+                  required: false
+                  description: Non-interactive confirmation flag for hosts that require explicit apply confirmation.
+                target:
+                  type: nonEmptyString
+                  required: false
+                  description: Limit execution to a single sync.action by id.
+              output:
+                type:
+                  kind: ref
+                  name: SyncExecutorOutput

@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/entrypoint-surface-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/entrypoint-surface.pattern.openspec.yml"]
+		}
+	}
+}

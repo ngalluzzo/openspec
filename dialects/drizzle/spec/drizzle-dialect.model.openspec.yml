@@ -1,0 +1,165 @@
+openspec: "1.0"
+documents:
+  - id: drizzle-dialect.model
+    protocol: openspec.model.v1
+    document:
+      owner: dialect.package:drizzle
+      declarations:
+        - kind: object
+          name: DrizzleSyntaxUnitSelectorParams
+          fields:
+            - name: unit
+              type: nonEmptyString
+
+        - kind: object
+          name: DrizzleSyntaxRenderSelectorParams
+          fields:
+            - name: syntaxUnit
+              type: nonEmptyString
+            - name: asset
+              type: nonEmptyString
+
+        - kind: object
+          name: SyntaxUnitContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+              required: false
+            - name: id
+              type: nonEmptyString
+              required: false
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: subject
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: AssetContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+              required: false
+            - name: id
+              type: nonEmptyString
+              required: false
+            - name: locator
+              type: unknown
+              required: false
+            - name: mediaType
+              type: nonEmptyString
+              required: false
+            - name: disposition
+              type: nonEmptyString
+              required: false
+            - name: language
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: DrizzleColumnContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: table
+              type: nonEmptyString
+            - name: storageField
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type: nonEmptyString
+            - name: nullable
+              type: boolean
+            - name: identity
+              type: boolean
+            - name: unique
+              type: boolean
+
+        - kind: object
+          name: DrizzleTableContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: storageEntity
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: columns
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: DrizzleColumnContract
+
+        - kind: object
+          name: DrizzleRelationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: storageRelation
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: cardinality
+              type: nonEmptyString
+            - name: required
+              type: boolean
+              required: false
+
+        - kind: object
+          name: DrizzleSyntaxRenderInput
+          fields:
+            - name: unit
+              type:
+                kind: ref
+                name: SyntaxUnitContract
+            - name: asset
+              type:
+                kind: ref
+                name: AssetContract
+            - name: tables
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: DrizzleTableContract
+            - name: relations
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: DrizzleRelationContract
+
+        - kind: alias
+          name: DrizzleTablesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: DrizzleTableContract
+
+        - kind: alias
+          name: DrizzleRelationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: DrizzleRelationContract

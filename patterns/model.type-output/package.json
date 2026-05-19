@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/model-type-output-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/model-type-output.pattern.openspec.yml"]
+		}
+	}
+}

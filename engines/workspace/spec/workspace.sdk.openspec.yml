@@ -1,0 +1,108 @@
+openspec: "1.0"
+documents:
+  - id: workspace.sdk
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: workspace.types
+          pattern: pattern.declaration:model.type-output
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.types
+            namespace: workspace.types
+            unit:
+              id: types
+            declarations:
+              - name: BuildRequest
+              - name: BuildReport
+              - name: SyncRequest
+              - name: SyncReport
+              - name: SyncMutationSummary
+            artifact:
+              path: engines/workspace/src/sdk/workspace-types.generated.ts
+              language: typescript
+              mediaType: text/x.typescript
+
+        - id: workspace.build.contract.surface
+          pattern: pattern.declaration:capability.contract-surface
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.build.contract
+            namespace: workspace.build.contract
+            capability: capability.capability:workspace.build
+            methods:
+              - name: run
+
+        - id: workspace.build.implementation.surface
+          pattern: pattern.declaration:capability.adapter-contract-surface
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.build.implementation
+            namespace: workspace.build.implementation
+            capability: capability.capability:workspace.build
+            unit:
+              id: adapter
+            methods:
+              - name: run
+            metadata:
+              modelImportPath: ./workspace-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: WorkspaceBuildAdapter
+              contractTypeName: WorkspaceBuildAdapterContract
+              contractConstName: workspaceBuildAdapterContract
+              implementFunctionName: implementWorkspaceBuildAdapter
+              aliasName: WorkspaceBuild
+
+        - id: workspace.build.implementation.output
+          pattern: pattern.declaration:syntax.projection
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.build.implementation
+            syntaxUnit: syntax.unit:workspace.build.implementation.adapter
+            dialect: typescript
+            artifact:
+              path: engines/workspace/src/sdk/workspace-build.generated.ts
+              language: typescript
+              mediaType: text/x.typescript
+
+        - id: workspace.sync.contract.surface
+          pattern: pattern.declaration:capability.contract-surface
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.sync.contract
+            namespace: workspace.sync.contract
+            capability: capability.capability:workspace.sync
+            methods:
+              - name: run
+
+        - id: workspace.sync.implementation.surface
+          pattern: pattern.declaration:capability.adapter-contract-surface
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.sync.implementation
+            namespace: workspace.sync.implementation
+            capability: capability.capability:workspace.sync
+            unit:
+              id: adapter
+            methods:
+              - name: run
+            metadata:
+              modelImportPath: ./workspace-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: WorkspaceSyncAdapter
+              contractTypeName: WorkspaceSyncAdapterContract
+              contractConstName: workspaceSyncAdapterContract
+              implementFunctionName: implementWorkspaceSyncAdapter
+              aliasName: WorkspaceSync
+
+        - id: workspace.sync.implementation.output
+          pattern: pattern.declaration:syntax.projection
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.sync.implementation
+            syntaxUnit: syntax.unit:workspace.sync.implementation.adapter
+            dialect: typescript
+            artifact:
+              path: engines/workspace/src/sdk/workspace-sync.generated.ts
+              language: typescript
+              mediaType: text/x.typescript

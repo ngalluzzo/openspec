@@ -1,0 +1,256 @@
+openspec: "1.0"
+documents:
+  - id: procedure.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: procedure
+        name: Procedure Patterns
+      patterns:
+        - id: procedure
+          owner: pattern.package:procedure
+          name: Procedure
+          input:
+            model: model:ProcedureInput
+          expands:
+            documents:
+              # A procedure is authored as a flow whose activities are method
+              # invocation steps. The flow remains generic; method semantics are
+              # attached by bindings below.
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .flow
+                protocol: openspec.flow.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  flows:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      name:
+                        expr:
+                          kind: path
+                          path: input.name
+                          optional: true
+                      kind:
+                        expr:
+                          kind: path
+                          path: input.kind
+                          optional: true
+                          default:
+                            kind: literal
+                            value: coordination.procedure
+                      input:
+                        expr:
+                          kind: path
+                          path: input.input
+                          optional: true
+                      output:
+                        expr:
+                          kind: path
+                          path: input.output
+                          optional: true
+                      activities:
+                        expr:
+                          kind: map
+                          path: input.steps
+                          as: step
+                          value:
+                            kind: object
+                            fields:
+                              id:
+                                kind: path
+                                path: step.id
+                              name:
+                                kind: path
+                                path: step.name
+                                optional: true
+                              kind:
+                                kind: path
+                                path: step.kind
+                                optional: true
+                                default:
+                                  kind: literal
+                                  value: activity.task
+                              input:
+                                kind: path
+                                path: step.input
+                                optional: true
+                              output:
+                                kind: path
+                                path: step.output
+                                optional: true
+                              outcomes:
+                                kind: path
+                                path: step.outcomes
+                                optional: true
+                              condition:
+                                kind: path
+                                path: step.condition
+                                optional: true
+                              description:
+                                kind: path
+                                path: step.description
+                                optional: true
+                              metadata:
+                                kind: path
+                                path: step.metadata
+                                optional: true
+                      links:
+                        expr:
+                          kind: map
+                          path: input.links
+                          as: link
+                          optional: true
+                          value:
+                            kind: object
+                            fields:
+                              id:
+                                kind: path
+                                path: link.id
+                              kind:
+                                kind: path
+                                path: link.kind
+                                optional: true
+                                default:
+                                  kind: literal
+                                  value: flow.data
+                              from:
+                                kind: path
+                                path: link.from
+                              to:
+                                kind: path
+                                path: link.to
+                              sourcePort:
+                                kind: path
+                                path: link.sourcePort
+                                optional: true
+                              targetPort:
+                                kind: path
+                                path: link.targetPort
+                                optional: true
+                              condition:
+                                kind: path
+                                path: link.condition
+                                optional: true
+                              description:
+                                kind: path
+                                path: link.description
+                                optional: true
+                              metadata:
+                                kind: path
+                                path: link.metadata
+                                optional: true
+                      outcomes:
+                        expr:
+                          kind: path
+                          path: input.outcomes
+                          optional: true
+                      description:
+                        expr:
+                          kind: path
+                          path: input.description
+                          optional: true
+                      metadata:
+                        expr:
+                          kind: object
+                          fields:
+                            outputMapping:
+                              kind: path
+                              path: input.outputMapping
+                              optional: true
+                            value:
+                              kind: path
+                              path: input.metadata
+                              optional: true
+
+              # Each step is bound to the capability method it invokes. This is
+              # the narrowed procedure semantics; the flow protocol itself never
+              # knows what executes an activity.
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .procedure-bindings
+                protocol: openspec.binding.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  bindings:
+                    expr:
+                      kind: map
+                      path: input.steps
+                      as: step
+                      value:
+                        kind: object
+                        fields:
+                          id:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.id
+                              - kind: literal
+                                value: .
+                              - kind: path
+                                path: step.id
+                              - kind: literal
+                                value: .invocation
+                          kind:
+                            kind: literal
+                            value: flow.activity.invocation
+                          subject:
+                            kind: concat
+                            items:
+                              - kind: literal
+                                value: "flow.activity:"
+                              - kind: path
+                                path: input.id
+                              - kind: literal
+                                value: "."
+                              - kind: path
+                                path: step.id
+                          slot:
+                            kind: path
+                            path: step.method
+                          value:
+                            kind: object
+                            fields:
+                              flow:
+                                kind: path
+                                path: input.id
+                              activity:
+                                kind: path
+                                path: step.id
+                              method:
+                                kind: path
+                                path: step.method
+                              inputMapping:
+                                kind: path
+                                path: step.inputMapping
+                                optional: true
+                              outputMapping:
+                                kind: path
+                                path: step.outputMapping
+                                optional: true
+                              metadata:
+                                kind: path
+                                path: step.metadata
+                                optional: true
+                          description:
+                            kind: path
+                            path: step.description
+                            optional: true

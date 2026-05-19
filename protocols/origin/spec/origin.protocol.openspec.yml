@@ -1,0 +1,190 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.origin.v1
+package:
+  id: "@openspec/origin"
+documentModels:
+  - model:OriginDocument
+validation:
+  - id: origin.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.origin.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: origin.owner.invalid
+        message: Origin documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-origins
+        scope: selector
+        selector: origin.origins
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: origin.declarations.empty
+        message: Origin documents must declare at least one origin.
+
+      - id: origin-id-format
+        scope: selector
+        selector: origin.origins
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: origin.id.invalid
+        message: Origin ids must be stable lowercase dot-separated identifiers.
+        details:
+          $expr:
+            os_object:
+              - origin:
+                  var: item.id
+
+      - id: origin-kind-format
+        scope: selector
+        selector: origin.origins
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$
+        code: origin.kind.invalid
+        message: Origin kinds must be lowercase namespaced identifiers, such as system.knack or file.yaml.
+        details:
+          $expr:
+            os_object:
+              - origin:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: element-id-format
+        scope: selector
+        selector: origin.elements
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: origin.element.id.invalid
+        message: Origin element ids must be stable lowercase dot-separated identifiers.
+        details:
+          $expr:
+            os_object:
+              - element:
+                  var: item.id
+
+      - id: element-origin-format
+        scope: selector
+        selector: origin.elements
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.origin
+              - ^origin\.origin:.+$
+        code: origin.element.origin.invalid
+        message: Origin elements must reference an origin.origin:* node.
+        details:
+          $expr:
+            os_object:
+              - element:
+                  var: item.id
+                origin:
+                  var: item.origin
+
+      - id: element-kind-format
+        scope: selector
+        selector: origin.elements
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$
+        code: origin.element.kind.invalid
+        message: Origin element kinds must be lowercase namespaced identifiers, such as schema.table or schema.field.
+        details:
+          $expr:
+            os_object:
+              - element:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: lineage-from-format
+        scope: selector
+        selector: origin.lineage
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.from
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: origin.lineage.from.invalid
+        message: Origin lineage 'from' values must be canonical nodeIds.
+        details:
+          $expr:
+            os_object:
+              - lineage:
+                  var: item.id
+                from:
+                  var: item.from
+
+      - id: lineage-to-format
+        scope: selector
+        selector: origin.lineage
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.to
+              - ^origin\.(origin|element):.+$
+        code: origin.lineage.to.invalid
+        message: Origin lineage 'to' values must reference origin.origin:* or origin.element:* nodes.
+        details:
+          $expr:
+            os_object:
+              - lineage:
+                  var: item.id
+                to:
+                  var: item.to
+
+      - id: lineage-kind-format
+        scope: selector
+        selector: origin.lineage
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)+$
+        code: origin.lineage.kind.invalid
+        message: Origin lineage kinds must be lowercase namespaced identifiers, such as derived.from.
+        details:
+          $expr:
+            os_object:
+              - lineage:
+                  var: item.id
+                kind:
+                  var: item.kind

@@ -1,0 +1,425 @@
+openspec: "1.0"
+documents:
+  - id: storage-schema-output.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: pattern.package:storage.schema-output
+      owner: pattern.package:storage.schema-output
+      selectors:
+        - id: storage.schemaSurfaces
+          sources:
+            surface:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.unit
+          where:
+            $expr:
+              ===:
+                - var: row.surface.attributes.role
+                - storage.schema.surface
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - unit:
+                      var: row.surface.id
+                    owner:
+                      var: row.surface.attributes.owner
+                    namespace:
+                      var: row.surface.attributes.namespace
+                    subject:
+                      var:
+                        - row.surface.attributes.subject
+                        - null
+                    policy:
+                      var:
+                        - row.surface.attributes.metadata.policy
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.unit
+          paramsContract:
+            kind: model
+            model: model:StorageSchemaOutputSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StorageSchemaSurfacesSelectorResult
+
+        - id: storage.schemaEntities
+          sources:
+            surface:
+              kind: selector
+              selector:
+                $expr: storage.schemaSurfaces
+              params:
+                $expr:
+                  os_object: []
+            entity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entity.declaration
+          where:
+            $expr:
+              ===:
+                - var: row.entity.attributes.owner
+                - var: row.surface.owner
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      cat:
+                        - "storage.entity:"
+                        - var: row.surface.namespace
+                        - "."
+                        - var: row.entity.id
+                    surface:
+                      var: row.surface.unit
+                    source:
+                      var: row.entity.id
+                    owner:
+                      var: row.surface.owner
+                    name:
+                      var: row.entity.attributes.name
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:StorageSchemaOutputSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StorageEntitiesSelectorResult
+
+        - id: storage.schemaFields
+          sources:
+            surface:
+              kind: selector
+              selector:
+                $expr: storage.schemaSurfaces
+              params:
+                $expr:
+                  os_object: []
+            entity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entity.declaration
+            fieldEdge:
+              kind: edges
+              filter:
+                kind:
+                  $expr: entity.declaration.field
+                from:
+                  $expr:
+                    var: row.entity.id
+            field:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entity.field
+                id:
+                  $expr:
+                    var: row.fieldEdge.to
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.entity.attributes.owner
+                    - var: row.surface.owner
+                - or:
+                    - ===:
+                        - var:
+                            - row.surface.policy.omitComputedFields
+                            - null
+                        - false
+                    - "!==":
+                        - var:
+                            - row.field.attributes.computed
+                            - false
+                        - true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      cat:
+                        - "storage.field:"
+                        - var: row.surface.namespace
+                        - "."
+                        - var: row.entity.id
+                        - "."
+                        - var: row.field.attributes.name
+                    surface:
+                      var: row.surface.unit
+                    entity:
+                      cat:
+                        - "storage.entity:"
+                        - var: row.surface.namespace
+                        - "."
+                        - var: row.entity.id
+                    source:
+                      var: row.field.id
+                    name:
+                      var: row.field.attributes.name
+                    type:
+                      var: row.field.attributes.type
+                    nullable:
+                      "!":
+                        - var:
+                            - row.field.attributes.required
+                            - false
+                    identity:
+                      var:
+                        - row.field.attributes.identity
+                        - false
+                    unique:
+                      var:
+                        - row.field.attributes.unique
+                        - false
+                    computed:
+                      var:
+                        - row.field.attributes.computed
+                        - false
+          orderBy:
+            - $expr:
+                var: row.value.entity
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:StorageSchemaOutputSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StorageFieldsSelectorResult
+
+        - id: storage.schemaRelations
+          sources:
+            surface:
+              kind: selector
+              selector:
+                $expr: storage.schemaSurfaces
+              params:
+                $expr:
+                  os_object: []
+            relation:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: relation.declaration
+            fromEdge:
+              kind: edges
+              filter:
+                kind:
+                  $expr: relation.endpoint.from
+                from:
+                  $expr:
+                    var: row.relation.id
+            toEdge:
+              kind: edges
+              filter:
+                kind:
+                  $expr: relation.endpoint.to
+                from:
+                  $expr:
+                    var: row.relation.id
+            fromEntity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entity.declaration
+                id:
+                  $expr:
+                    var: row.fromEdge.to
+            toEntity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entity.declaration
+                id:
+                  $expr:
+                    var: row.toEdge.to
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.fromEntity.attributes.owner
+                    - var: row.surface.owner
+                - ===:
+                    - var: row.toEntity.attributes.owner
+                    - var: row.surface.owner
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      cat:
+                        - "storage.relation:"
+                        - var: row.surface.namespace
+                        - "."
+                        - var: row.relation.id
+                    surface:
+                      var: row.surface.unit
+                    source:
+                      var: row.relation.id
+                    name:
+                      var: row.relation.attributes.name
+                    from:
+                      cat:
+                        - "storage.entity:"
+                        - var: row.surface.namespace
+                        - "."
+                        - var: row.fromEntity.id
+                    to:
+                      cat:
+                        - "storage.entity:"
+                        - var: row.surface.namespace
+                        - "."
+                        - var: row.toEntity.id
+                    cardinality:
+                      var: row.relation.attributes.cardinality
+                    direction:
+                      var:
+                        - row.relation.attributes.direction
+                        - unidirectional
+                    ownership:
+                      var:
+                        - row.relation.attributes.ownership
+                        - none
+                    required:
+                      var:
+                        - row.relation.attributes.required
+                        - false
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:StorageSchemaOutputSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StorageRelationsSelectorResult
+
+        - id: storage.materializedEntities
+          sources:
+            entity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: storage.entity
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.entity.id
+                    surface:
+                      var: row.entity.attributes.surface
+                    source:
+                      var: row.entity.attributes.source
+                    owner:
+                      var: row.entity.attributes.owner
+                    name:
+                      var: row.entity.attributes.name
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:StorageSchemaOutputSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StorageEntitiesSelectorResult
+
+        - id: storage.materializedFields
+          sources:
+            field:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: storage.field
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.field.id
+                    surface:
+                      var: row.field.attributes.surface
+                    entity:
+                      var: row.field.attributes.entity
+                    source:
+                      var: row.field.attributes.source
+                    name:
+                      var: row.field.attributes.name
+                    type:
+                      var: row.field.attributes.type
+                    nullable:
+                      var: row.field.attributes.nullable
+                    identity:
+                      var: row.field.attributes.identity
+                    unique:
+                      var: row.field.attributes.unique
+                    computed:
+                      var: row.field.attributes.computed
+          orderBy:
+            - $expr:
+                var: row.value.entity
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:StorageSchemaOutputSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StorageFieldsSelectorResult
+
+        - id: storage.materializedRelations
+          sources:
+            relation:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: storage.relation
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.relation.id
+                    surface:
+                      var: row.relation.attributes.surface
+                    source:
+                      var: row.relation.attributes.source
+                    name:
+                      var: row.relation.attributes.name
+                    from:
+                      var: row.relation.attributes.from
+                    to:
+                      var: row.relation.attributes.to
+                    cardinality:
+                      var: row.relation.attributes.cardinality
+                    direction:
+                      var: row.relation.attributes.direction
+                    ownership:
+                      var: row.relation.attributes.ownership
+                    required:
+                      var: row.relation.attributes.required
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:StorageSchemaOutputSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StorageRelationsSelectorResult

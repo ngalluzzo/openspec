@@ -1,0 +1,465 @@
+openspec: "1.0"
+documents:
+  - id: state.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.state.v1
+      owner: protocol.protocol:openspec.state.v1
+      lowering:
+        - id: state.machines
+          source:
+            path: machines
+            as: machine
+          facts:
+            # state.machine node — stores values and transitions inline from the
+            # authored document so state.machines can be queried without a join.
+            # Separate state.value and state.transition nodes are also produced
+            # for graph traversal and flat cross-machine queries.
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - state.machine
+                    - var: machine.id
+              factKind:
+                $expr: state.machine
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: machine.id
+                      name:
+                        var:
+                          - machine.name
+                          - var: machine.id
+                      owner:
+                        var: document.owner
+                      subject:
+                        var: machine.subject
+                      field:
+                        var:
+                          - machine.field
+                          - null
+                      description:
+                        var:
+                          - machine.description
+                          - null
+                      values:
+                        var: machine.values
+                      transitions:
+                        var:
+                          - machine.transitions
+                          - null
+
+            # state.machine.subject edge — machine → entity
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - state.machine
+                        - var: machine.id
+                    - .subject.
+                    - var: machine.subject
+              factKind:
+                $expr: state.machine.subject
+              from:
+                $expr:
+                  os_node_id:
+                    - state.machine
+                    - var: machine.id
+              to:
+                $expr:
+                  var: machine.subject
+
+            # state.owner.machine edge — owner → machine
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .state.machine.
+                    - var: machine.id
+              factKind:
+                $expr: state.owner.machine
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - state.machine
+                    - var: machine.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      machine:
+                        var: machine.id
+
+            # state.value nodes and state.machine.value edges
+            - kind: forEach
+              path: machine.values
+              as: value
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - state.value
+                        - var: machine.id
+                        - var: value.name
+                  factKind:
+                    $expr: state.value
+                  attributes:
+                    $expr:
+                      os_object:
+                        - machine:
+                            var: machine.id
+                          name:
+                            var: value.name
+                          label:
+                            var:
+                              - value.label
+                              - null
+                          initial:
+                            var:
+                              - value.initial
+                              - false
+                          terminal:
+                            var:
+                              - value.terminal
+                              - false
+                          description:
+                            var:
+                              - value.description
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - state.machine
+                            - var: machine.id
+                        - .value.
+                        - var: value.name
+                  factKind:
+                    $expr: state.machine.value
+                  from:
+                    $expr:
+                      os_node_id:
+                        - state.machine
+                        - var: machine.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - state.value
+                        - var: machine.id
+                        - var: value.name
+                  attributes:
+                    $expr:
+                      os_object:
+                        - machine:
+                            var: machine.id
+                          value:
+                            var: value.name
+
+            # state.transition nodes and state.machine.transition edges
+            - kind: forEach
+              path: machine.transitions
+              as: transition
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - state.transition
+                        - var: machine.id
+                        - var: transition.name
+                  factKind:
+                    $expr: state.transition
+                  attributes:
+                    $expr:
+                      os_object:
+                        - id:
+                            cat:
+                              - var: machine.id
+                              - .
+                              - var: transition.name
+                          name:
+                            var: transition.name
+                          machine:
+                            var: machine.id
+                          from:
+                            var: transition.from
+                          to:
+                            var: transition.to
+                          trigger:
+                            var:
+                              - transition.trigger
+                              - null
+                          requires:
+                            var:
+                              - transition.requires
+                              - null
+                          emits:
+                            var:
+                              - transition.emits
+                              - null
+                          description:
+                            var:
+                              - transition.description
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - state.machine
+                            - var: machine.id
+                        - .transition.
+                        - var: transition.name
+                  factKind:
+                    $expr: state.machine.transition
+                  from:
+                    $expr:
+                      os_node_id:
+                        - state.machine
+                        - var: machine.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - state.transition
+                        - var: machine.id
+                        - var: transition.name
+                  attributes:
+                    $expr:
+                      os_object:
+                        - machine:
+                            var: machine.id
+                          transition:
+                            cat:
+                              - var: machine.id
+                              - .
+                              - var: transition.name
+
+                # state.transition.to edge — transition → target value node
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - state.transition
+                            - var: machine.id
+                            - var: transition.name
+                        - .to.
+                        - var: transition.to
+                  factKind:
+                    $expr: state.transition.to
+                  from:
+                    $expr:
+                      os_node_id:
+                        - state.transition
+                        - var: machine.id
+                        - var: transition.name
+                  to:
+                    $expr:
+                      os_node_id:
+                        - state.value
+                        - var: machine.id
+                        - var: transition.to
+
+                # state.transition.trigger edge (when trigger declared)
+                - kind: edge
+                  when:
+                    $expr:
+                      var:
+                        - transition.trigger
+                        - null
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - state.transition
+                            - var: machine.id
+                            - var: transition.name
+                        - .trigger.
+                        - var: transition.trigger.ref
+                  factKind:
+                    $expr: state.transition.trigger
+                  from:
+                    $expr:
+                      os_node_id:
+                        - state.transition
+                        - var: machine.id
+                        - var: transition.name
+                  to:
+                    $expr:
+                      var: transition.trigger.ref
+                  attributes:
+                    $expr:
+                      os_object:
+                        - kind:
+                            var: transition.trigger.kind
+
+                # state.transition.requires edges — transition → capability nodeIds
+                - kind: forEach
+                  path: transition.requires
+                  as: capability
+                  optional: true
+                  facts:
+                    - kind: edge
+                      id:
+                        $expr:
+                          cat:
+                            - os_node_id:
+                                - state.transition
+                                - var: machine.id
+                                - var: transition.name
+                            - .requires.
+                            - var: capability
+                      factKind:
+                        $expr: state.transition.requires
+                      from:
+                        $expr:
+                          os_node_id:
+                            - state.transition
+                            - var: machine.id
+                            - var: transition.name
+                      to:
+                        $expr:
+                          var: capability
+
+                # state.transition.emits edges — transition → signal nodeIds
+                - kind: forEach
+                  path: transition.emits
+                  as: signal
+                  optional: true
+                  facts:
+                    - kind: edge
+                      id:
+                        $expr:
+                          cat:
+                            - os_node_id:
+                                - state.transition
+                                - var: machine.id
+                                - var: transition.name
+                            - .emits.
+                            - var: signal
+                      factKind:
+                        $expr: state.transition.emits
+                      from:
+                        $expr:
+                          os_node_id:
+                            - state.transition
+                            - var: machine.id
+                            - var: transition.name
+                      to:
+                        $expr:
+                          var: signal
+
+      selectors:
+        # All declared state machines with their inline values and transitions.
+        - id: state.machines
+          sources:
+            machine:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: state.machine
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.machine.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:StateSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StateMachinesSelectorResult
+
+        # Single machine by ID.
+        - id: state.byId
+          sources:
+            machine:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - state.machine
+                      - var: parameter.machine
+                kind:
+                  $expr: state.machine
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.machine.attributes
+          paramsContract:
+            kind: model
+            model: model:StateMachineSelectorParams
+          returnsContract:
+            kind: model
+            model: model:StateMachineSelectorResult
+
+        # All values across all machines — for validation and graph traversal.
+        # Results include the `machine` field for cross-machine queries.
+        - id: state.values
+          sources:
+            value:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: state.value
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.value.attributes
+          orderBy:
+            - $expr:
+                var: row.value.machine
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:StateSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StateValuesSelectorResult
+
+        # All transitions across all machines — for validation and graph traversal.
+        # Results include the `machine` and compound `id` fields.
+        - id: state.transitions
+          sources:
+            transition:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: state.transition
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.transition.attributes
+          orderBy:
+            - $expr:
+                var: row.value.machine
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:StateSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:StateTransitionsSelectorResult

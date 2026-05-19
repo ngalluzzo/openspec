@@ -1,0 +1,228 @@
+openspec: "1.0"
+documents:
+  - id: adapter.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.adapter.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: AdapterSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: AdapterByIdSelectorParams
+          fields:
+            - name: adapter
+              type: nonEmptyString
+
+        - kind: object
+          name: AdapterByCapabilitySelectorParams
+          fields:
+            - name: capability
+              type: nonEmptyString
+
+        - kind: object
+          name: AdapterByKindSelectorParams
+          fields:
+            - name: kind
+              type: nonEmptyString
+
+        - kind: object
+          name: AdapterImplementationMethodsSelectorParams
+          fields:
+            - name: adapter
+              type: nonEmptyString
+
+        # ── Document contract ─────────────────────────────────────────────────
+
+        - kind: object
+          name: AdapterDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: adapters
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: AdapterContract
+
+        # ── Requirement contract ───────────────────────────────────────────────
+        # An adapter requirement declares a capability dependency that must be
+        # injected at runtime. The environment resolves WHICH adapter satisfies it —
+        # the adapter itself only declares WHAT it needs.
+        # `as` is the local binding name used inside the adapter implementation.
+        # `optional` defaults to false.
+
+        - kind: object
+          name: AdapterRequirementContract
+          fields:
+            - name: as
+              type: nonEmptyString
+            - name: capability
+              type: nonEmptyString
+            - name: optional
+              type: boolean
+              required: false
+
+        # ── Constraints ────────────────────────────────────────────────────────
+
+        - kind: object
+          name: AdapterConstraints
+          fields:
+            - name: platform
+              type:
+                kind: union
+                options:
+                  - nonEmptyString
+                  - kind: array
+                    item: nonEmptyString
+              required: false
+            - name: language
+              type:
+                kind: union
+                options:
+                  - nonEmptyString
+                  - kind: array
+                    item: nonEmptyString
+              required: false
+            - name: framework
+              type:
+                kind: union
+                options:
+                  - nonEmptyString
+                  - kind: array
+                    item: nonEmptyString
+              required: false
+
+        # ── Adapter contract ───────────────────────────────────────────────────
+        # An adapter is a concrete implementation of a capability contract.
+        # `capability` is the capability.capability nodeId this adapter implements.
+        # `kind` is the adapter's implementation strategy/category. It does not
+        # have to match the capability kind.
+        # `requires` lists capability dependencies to be injected by the environment.
+        #
+        # Code generation, projection, asset outputs, and factory construction
+        # are NOT declared here. Those are concerns of asset and pattern
+        # protocols. An adapter declaration is purely semantic: "I implement this."
+
+        - kind: object
+          name: AdapterContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: capability
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: params
+              type: unknown
+              required: false
+              description: Free-form key-value metadata for adapter disambiguation when multiple adapters satisfy the same capability. Matched against projection.params in capability.fulfillment.
+            - name: requires
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: AdapterRequirementContract
+              required: false
+            - name: constraints
+              type:
+                kind: ref
+                name: AdapterConstraints
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Requirement selector contract ──────────────────────────────────────
+        # Flat view of requirements with adapter context — for environment
+        # resolution and dependency validation.
+
+        - kind: object
+          name: AdapterRequirementSelectorContract
+          fields:
+            - name: adapter
+              type: nonEmptyString
+            - name: as
+              type: nonEmptyString
+            - name: capability
+              type: nonEmptyString
+            - name: optional
+              type: boolean
+              required: false
+
+        - kind: object
+          name: AdapterImplementationMethodContract
+          fields:
+            - name: adapter
+              type:
+                kind: ref
+                name: AdapterContract
+            - name: capability
+              type:
+                kind: ref
+                name: CapabilityContract
+            - name: method
+              type:
+                kind: ref
+                name: CapabilityMethodContract
+            - name: guards
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FlowGuardContract
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: AdapterAdaptersSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AdapterContract
+
+        - kind: alias
+          name: AdapterByIdSelectorResult
+          type:
+            kind: ref
+            name: AdapterContract
+
+        - kind: alias
+          name: AdapterByCapabilitySelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AdapterContract
+
+        - kind: alias
+          name: AdapterByKindSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AdapterContract
+
+        - kind: alias
+          name: AdapterRequirementsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AdapterRequirementSelectorContract
+
+        - kind: alias
+          name: AdapterImplementationMethodsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AdapterImplementationMethodContract

@@ -1,0 +1,11 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.source.knack.objects.v1
+package:
+  id: "@openspec/source-knack"
+documentModels:
+  - model:KnackObjectsSourceDocument
+metadata:
+  sourceKind: knack
+  sourceProtocols:
+    - objects

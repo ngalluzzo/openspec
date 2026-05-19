@@ -1,0 +1,70 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.provider.v1
+package:
+  id: "@openspec/provider"
+documentModels:
+  - model: ProviderDocument
+validation:
+  - id: provider.validation
+    rules:
+      - id: provider-id-format
+        scope: selector
+        selector: provider.providers
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: provider.id.invalid
+        message: Provider ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: provider-selection-missing
+        scope: selector
+        selector: provider.selectionMissing
+        forEach: true
+        assert:
+          $expr: false
+        code: provider.selection.missing
+        message: Provider selection request has no matching provider offering.
+        details:
+          $expr:
+            os_object:
+              - request:
+                  var: item.id
+                target:
+                  var: item.target
+                role:
+                  var: item.role
+                dialect:
+                  var:
+                    - item.dialect
+                    - null
+
+      - id: provider-selection-ambiguous
+        scope: selector
+        selector: provider.selectionAmbiguous
+        forEach: true
+        assert:
+          $expr: false
+        code: provider.selection.ambiguous
+        message: Provider selection request matches multiple provider offerings.
+        details:
+          $expr:
+            os_object:
+              - request:
+                  var: item.request
+                target:
+                  var: item.target
+                role:
+                  var: item.role
+                offering:
+                  var: item.offering
+                otherOffering:
+                  var: item.otherOffering

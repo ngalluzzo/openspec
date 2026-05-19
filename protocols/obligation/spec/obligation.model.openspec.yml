@@ -1,0 +1,130 @@
+openspec: "1.0"
+documents:
+  - id: obligation.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.obligation.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: ObligationSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: ObligationByTargetSelectorParams
+          fields:
+            - name: target
+              type: nonEmptyString
+
+        # ── Failure contract ───────────────────────────────────────────────────
+        # Describes what to report when the obligation is violated.
+        # `severity` is one of: error, warning, info.
+
+        - kind: object
+          name: ObligationFailureContract
+          fields:
+            - name: code
+              type: nonEmptyString
+              required: false
+            - name: message
+              type: nonEmptyString
+              required: false
+            - name: severity
+              type: nonEmptyString
+              required: false
+
+        # ── Obligation contract ────────────────────────────────────────────────
+        # An obligation is a named assertion on the semantic graph.
+        # `target` is the nodeId this obligation governs (optional — omit for
+        #   graph-wide obligations not tied to a specific node).
+        # `assertion` is the condition that must hold. Its format is defined by
+        #   the pattern or document that declares the obligation — the protocol
+        #   makes no assumption about evaluation strategy.
+        # `failure` describes the diagnostic emitted when the assertion does not
+        #   hold. All failure fields are optional; evaluators provide defaults.
+
+        - kind: object
+          name: ObligationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+              required: false
+            - name: assertion
+              type: unknown
+              required: false
+            - name: failure
+              type:
+                kind: ref
+                name: ObligationFailureContract
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Evaluator capability ──────────────────────────────────────────────
+        # Input/output types for the obligation.assertion.evaluator capability.
+        # `assertion` remains unknown — the provider interprets it based on the
+        #   kind registered for the adapter (e.g. expression.assertion).
+
+        - kind: object
+          name: ObligationAssertionDiagnosticContract
+          fields:
+            - name: obligation
+              type: nonEmptyString
+            - name: code
+              type: nonEmptyString
+            - name: message
+              type: nonEmptyString
+            - name: severity
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: ObligationAssertionEvaluatorInput
+          fields:
+            - name: target
+              type: nonEmptyString
+            - name: value
+              type: unknown
+            - name: obligations
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ObligationContract
+
+        - kind: object
+          name: ObligationAssertionEvaluatorResult
+          fields:
+            - name: valid
+              type: boolean
+            - name: diagnostics
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ObligationAssertionDiagnosticContract
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: ObligationAllSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ObligationContract
+
+        - kind: alias
+          name: ObligationByTargetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ObligationContract
+

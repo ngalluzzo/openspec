@@ -1,0 +1,71 @@
+openspec: "1.0"
+documents:
+  - id: platform.apply.model
+    protocol: openspec.model.v1
+    document:
+      owner: capability.package:platform.apply
+
+      declarations:
+        - kind: object
+          name: PlatformMutationResult
+          fields:
+            - name: id
+              type: nonEmptyString
+              description: Semantic ID of the mutation that was applied (matches PlatformMutation.id).
+            - name: operation
+              type: nonEmptyString
+              description: The operation that was applied (matches PlatformMutation.operation).
+            - name: status
+              type: nonEmptyString
+              description: "One of: applied, skipped, failed"
+            - name: message
+              type: string
+              required: false
+              description: Human-readable outcome detail — required when status is 'failed'.
+
+        - kind: object
+          name: ApplyDiagnostic
+          fields:
+            - name: severity
+              type: nonEmptyString
+              required: false
+            - name: code
+              type: nonEmptyString
+            - name: message
+              type: string
+            - name: details
+              type: unknown
+              required: false
+
+        - kind: object
+          name: PlatformApplyInput
+          fields:
+            - name: mutations
+              type: unknown
+              description: Ordered PlatformMutation[] produced by the paired SyncProjectionAdapter. Shape is PlatformMutation from platform.sync-capability.
+            - name: config
+              type: unknown
+              required: false
+              description: Execution-time resolved config. Secret values must not appear in graph facts.
+            - name: root
+              type: nonEmptyString
+              description: Workspace root path.
+            - name: graph
+              type: unknown
+              description: The compiled SemanticGraph — available for adapters that need to resolve additional graph context during apply.
+
+        - kind: object
+          name: PlatformApplyOutput
+          fields:
+            - name: applied
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: PlatformMutationResult
+            - name: diagnostics
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ApplyDiagnostic

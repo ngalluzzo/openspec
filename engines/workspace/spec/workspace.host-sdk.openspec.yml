@@ -1,0 +1,33 @@
+openspec: "1.0"
+documents:
+  - id: workspace.host.dispatch-surface
+    protocol: openspec.syntax.v1
+    document:
+      owner: provider.provider:workspace
+      namespace: workspace.host.dispatches
+      units:
+        - id: methods
+          kind: host.dispatch.surface
+          subject: host.environment:workspace
+          role: host.dispatch.surface
+          metadata:
+            environment: workspace
+            flow: workspace.build
+            dispatchesConstName: WorkspaceHostDispatches
+            factoryName: createWorkspaceHostDispatchesMethods
+
+  - id: workspace.host.dispatch-output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: workspace.host.dispatches
+          pattern: pattern.declaration:syntax.projection
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.host.dispatches
+            syntaxUnit: syntax.unit:workspace.host.dispatches.methods
+            dialect: typescript
+            artifact:
+              path: engines/workspace/src/sdk/workspace-host-dispatches.generated.ts
+              language: typescript
+              mediaType: text/x.typescript

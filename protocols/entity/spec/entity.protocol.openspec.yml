@@ -1,0 +1,123 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.entity.v1
+package:
+  id: "@openspec/entity"
+documentModels:
+  - model:EntityDocument
+validation:
+  - id: entity.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.entity.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: entity.owner.invalid
+        message: Entity documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-entities
+        scope: selector
+        selector: entity.all
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: entity.declarations.empty
+        message: Entity documents must declare at least one entity.
+
+      - id: has-identity-field
+        scope: selector
+        selector: entity.all
+        forEach: true
+        assert:
+          $expr:
+            os_some:
+              - var: item.fields
+              - field
+              - var:
+                  - field.identity
+                  - false
+        code: entity.identity.missing
+        message: >
+          Every entity must declare exactly one identity field.
+          Add identity: true to the field that serves as the primary key.
+        details:
+          $expr:
+            os_object:
+              - entity:
+                  var: item.id
+
+      - id: one-identity-field
+        scope: selector
+        selector: entity.all
+        forEach: true
+        assert:
+          $expr:
+            "!":
+              - ">":
+                  - os_count:
+                      - os_filter:
+                          - var: item.fields
+                          - field
+                          - var:
+                              - field.identity
+                              - false
+                  - 1
+        code: entity.identity.multiple
+        message: >
+          An entity cannot declare more than one identity field.
+        details:
+          $expr:
+            os_object:
+              - entity:
+                  var: item.id
+
+      - id: no-entity-ref-in-fields
+        scope: selector
+        selector: entity.fields
+        forEach: true
+        when:
+          $expr:
+            ===:
+              - var:
+                  - item.type.kind
+                  - null
+              - ref
+        assert:
+          $expr:
+            "!":
+              - regex_test:
+                  - var:
+                      - item.type.name
+                      - ""
+                  - ^[A-Z].*Entity$
+        code: entity.field.ref.entity.forbidden
+        message: >
+          Entity fields cannot reference other entities directly.
+          Cross-entity relationships are declared using the relation protocol.
+          Use a scalar identity field (e.g. userId: UserId) and declare a relation separately.
+        details:
+          $expr:
+            os_object:
+              - entity:
+                  var: item.entity
+                field:
+                  var: item.name
+                ref:
+                  var: item.type.name

@@ -1,0 +1,48 @@
+{
+	"name": "@openspec/zod-dialect",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "bun test",
+		"typecheck": "tsc -b"
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.ts",
+			"default": "./src/index.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/zod-dialect-types.generated.ts",
+			"import": "./src/sdk/zod-dialect-types.generated.ts",
+			"default": "./src/sdk/zod-dialect-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"dependencies": {
+		"@openspec/artifact-render-capability": "workspace:*",
+		"zod": "^4.4.3"
+	},
+	"openspec": {
+		"documents": [
+			"spec/zod-dialect.model.openspec.yml",
+			"spec/zod-dialect.graph.openspec.yml",
+			"spec/zod-dialect.derivation.openspec.yml",
+			"spec/zod-dialect.capability.openspec.yml",
+			"spec/zod-dialect.provider.openspec.yml",
+			"spec/zod-dialect.output.openspec.yml"
+		],
+		"adapters": {
+			"implementations": [
+				{
+					"id": "zod.syntax.render",
+					"kind": "projection.syntax.render",
+					"capability": "capability.capability:artifact.render",
+					"module": "./src/index.ts",
+					"export": "zodSyntaxRenderAdapter"
+				}
+			]
+		}
+	}
+}

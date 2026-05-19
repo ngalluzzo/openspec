@@ -1,0 +1,38 @@
+openspec: "1.0"
+documents:
+  - id: projection.execute.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: projection.execute.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:projection.execute
+            id: projection.execute
+            namespace: projection.execute
+            capability: capability.capability:projection.execute
+            models:
+              - name: ProjectionFile
+              - name: ProjectionDiagnostic
+              - name: ProjectionOutput
+              - name: ProjectionAction
+              - name: ProjectionExecuteInput
+            methods:
+              - name: project
+            artifacts:
+              types:
+                path: capabilities/projection.execute/src/sdk/projection-execute-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/projection.execute/src/sdk/projection-execute.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./projection-execute-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: ProjectionExecuteAdapter
+              contractTypeName: ProjectionExecuteAdapterContract
+              contractConstName: projectionExecuteAdapterContract
+              implementFunctionName: implementProjectionExecuteAdapter
+              aliasName: ProjectionExecute

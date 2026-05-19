@@ -1,0 +1,46 @@
+{
+	"name": "@openspec/commander-dialect",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "bun test",
+		"typecheck": "tsc -b"
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.ts",
+			"default": "./src/index.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/commander-dialect-types.generated.ts",
+			"import": "./src/sdk/commander-dialect-types.generated.ts",
+			"default": "./src/sdk/commander-dialect-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"dependencies": {
+		"@openspec/typescript-dialect": "workspace:*",
+		"@openspec/typescript-recipe-apply-capability": "workspace:*"
+	},
+	"openspec": {
+		"documents": [
+			"spec/commander-dialect.model.openspec.yml",
+			"spec/commander-dialect.graph.openspec.yml",
+			"spec/commander-dialect.derivation.openspec.yml",
+			"spec/commander-dialect.provider.openspec.yml"
+		],
+		"adapters": {
+			"implementations": [
+				{
+					"id": "commander.program.recipe",
+					"kind": "typescript.module.recipe",
+					"capability": "capability.capability:typescript.recipe.apply",
+					"module": "./src/index.ts",
+					"export": "commanderProgramRecipeAdapter"
+				}
+			]
+		}
+	}
+}

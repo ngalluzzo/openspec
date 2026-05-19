@@ -1,0 +1,69 @@
+openspec: "1.0"
+documents:
+  - id: host.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.host.v1
+      declarations:
+        - kind: object
+          name: HostSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: HostDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: environments
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: HostEnvironmentContract
+
+        - kind: object
+          name: HostEnvironmentContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: dispatches
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: HostMethodDispatchContract
+
+        - kind: object
+          name: HostMethodDispatchContract
+          fields:
+            - name: adapter
+              type: nonEmptyString
+            - name: method
+              type: nonEmptyString
+            - name: dispatch
+              type: nonEmptyString
+
+        - kind: object
+          name: HostMethodDispatchSelectorContract
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: environment
+              type: nonEmptyString
+            - name: adapter
+              type: nonEmptyString
+            - name: method
+              type: nonEmptyString
+            - name: dispatch
+              type: nonEmptyString
+
+        - kind: alias
+          name: HostMethodDispatchesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: HostMethodDispatchSelectorContract

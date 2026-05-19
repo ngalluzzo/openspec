@@ -1,0 +1,127 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.context.v1
+package:
+  id: "@openspec/context"
+documentModels:
+  - model:ContextDocument
+validation:
+  - id: context.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.context.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: context.owner.invalid
+        message: Context documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-scopes
+        scope: selector
+        selector: context.all
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: context.scopes.empty
+        message: Context documents must declare at least one scope.
+
+      - id: derived-requires-expression
+        scope: selector
+        selector: context.slots
+        forEach: true
+        when:
+          $expr:
+            and:
+              - ===:
+                  - var: item.source
+                  - derived
+              - os_is_empty:
+                  - var:
+                      - item.expression
+                      - null
+        assert:
+          $expr: false
+        code: context.slot.derived.expression.missing
+        message: >
+          Derived context slots must declare an expression.
+          The expression computes the slot value from other slots in the same scope.
+        details:
+          $expr:
+            os_object:
+              - scope:
+                  var: item.scope
+                slot:
+                  var: item.name
+
+      - id: non-derived-no-expression
+        scope: selector
+        selector: context.slots
+        forEach: true
+        when:
+          $expr:
+            and:
+              - "!":
+                  - ===:
+                      - var: item.source
+                      - derived
+              - "!":
+                  - os_is_empty:
+                      - var:
+                          - item.expression
+                          - null
+        assert:
+          $expr: false
+        code: context.slot.expression.unexpected
+        message: >
+          Only derived slots can declare an expression.
+          Remove the expression or change the source to 'derived'.
+        details:
+          $expr:
+            os_object:
+              - scope:
+                  var: item.scope
+                slot:
+                  var: item.name
+                source:
+                  var: item.source
+
+      - id: extends-no-self-reference
+        scope: selector
+        selector: context.all
+        forEach: true
+        when:
+          $expr:
+            "!":
+              - os_is_empty:
+                  - var:
+                      - item.extends
+                      - null
+        assert:
+          $expr:
+            "!":
+              - ===:
+                  - var: item.id
+                  - var: item.extends
+        code: context.scope.extends.self
+        message: A context scope cannot extend itself.
+        details:
+          $expr:
+            os_object:
+              - scope:
+                  var: item.id

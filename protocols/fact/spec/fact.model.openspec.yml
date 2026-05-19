@@ -1,0 +1,204 @@
+openspec: "1.0"
+documents:
+  - id: fact.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.fact.v1
+      declarations:
+
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: FactSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: FactKindByIdSelectorParams
+          fields:
+            - name: id
+              type: nonEmptyString
+
+        # ── Document contract ──────────────────────────────────────────────────
+
+        - kind: object
+          name: FactAttributeDeclaration
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type: unknown
+            - name: required
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: FactKindDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+              description: Namespaced fact kind identifier (e.g. planning.action, entity.field).
+            - name: kind
+              type: nonEmptyString
+              description: One of node, edge, or facet.
+            - name: attributes
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FactAttributeDeclaration
+              required: false
+            - name: from
+              type: nonEmptyString
+              required: false
+              description: For edge kinds — the fact kind id of the source node.
+            - name: to
+              type: nonEmptyString
+              required: false
+              description: For edge kinds — the fact kind id of the target node.
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # Derivation rules reuse the same source + facts shape as graph.v1
+        # derive rules. The engine produces graph.derive.rule nodes from both,
+        # so the existing evaluateDerivation engine handles them automatically.
+        # `source.selector` must be a selector that accepts no params (or all
+        # params optional), since derivation runs selectors with empty params.
+
+        - kind: object
+          name: FactDerivationSource
+          fields:
+            - name: selector
+              type: nonEmptyString
+              description: ID of the selector to run. Must accept empty params.
+            - name: as
+              type: nonEmptyString
+              description: Variable name bound to each selector result row.
+            - name: optional
+              type: boolean
+              required: false
+              description: If true, skip this rule when the selector is not found.
+
+        - kind: object
+          name: FactDerivationDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: source
+              type:
+                kind: ref
+                name: FactDerivationSource
+            - name: after
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+              required: false
+              description: Derivation rule IDs that must run before this one.
+            - name: facts
+              type:
+                kind: array
+                item: unknown
+              description: >
+                Lowering fact definitions applied per selector result row.
+                Same shape as lowering facts in openspec.graph.v1 documents.
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: FactDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+              description: Canonical nodeId of the protocol or package that owns these declarations.
+            - name: facts
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FactKindDeclaration
+              required: false
+            - name: derive
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FactDerivationDeclaration
+              required: false
+
+        # ── Selector contracts ─────────────────────────────────────────────────
+
+        - kind: object
+          name: FactKindContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: attributes
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FactAttributeDeclaration
+              required: false
+            - name: from
+              type: nonEmptyString
+              required: false
+            - name: to
+              type: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: FactDerivationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: source
+              type:
+                kind: ref
+                name: FactDerivationSource
+            - name: after
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: alias
+          name: FactKindsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: FactKindContract
+
+        - kind: alias
+          name: FactKindByIdSelectorResult
+          type:
+            kind: ref
+            name: FactKindContract
+
+        - kind: alias
+          name: FactDerivationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: FactDerivationContract

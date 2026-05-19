@@ -1,0 +1,127 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.relation.v1
+package:
+  id: "@openspec/relation"
+documentModels:
+  - model:RelationDocument
+validation:
+  - id: relation.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.relation.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: relation.owner.invalid
+        message: Relation documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-relations
+        scope: selector
+        selector: relation.all
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: relation.declarations.empty
+        message: Relation documents must declare at least one relation.
+
+      - id: cardinality-valid
+        scope: selector
+        selector: relation.all
+        assert:
+          $expr:
+            includes:
+              - - one-to-one
+                - one-to-many
+                - many-to-many
+              - var: result.cardinality
+        code: relation.cardinality.invalid
+        message: "Relation cardinality must be one-to-one, one-to-many, or many-to-many."
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: result.id
+                cardinality:
+                  var: result.cardinality
+
+      - id: via-only-on-singular
+        scope: selector
+        selector: relation.all
+        when:
+          $expr:
+            and:
+              - "!":
+                  - var:
+                      - result.via
+                      - null
+              - ===:
+                  - var: result.cardinality
+                  - many-to-many
+        assert:
+          $expr:
+            literal: false
+        code: relation.via.invalid
+        message: >
+          Relation 'via' is not valid on many-to-many cardinality.
+          Many-to-many relations are resolved through a join entity, not a foreign key field.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: result.id
+                cardinality:
+                  var: result.cardinality
+                via:
+                  var: result.via
+
+      - id: inverse-only-on-bidirectional
+        scope: selector
+        selector: relation.all
+        when:
+          $expr:
+            and:
+              - "!":
+                  - var:
+                      - result.inverse
+                      - null
+              - "!":
+                  - ===:
+                      - var:
+                          - result.direction
+                          - unidirectional
+                      - bidirectional
+        assert:
+          $expr:
+            literal: false
+        code: relation.inverse.invalid
+        message: >
+          Relation 'inverse' is only valid on bidirectional relations.
+          Set direction: bidirectional to declare an inverse.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: result.id
+                direction:
+                  var:
+                    - result.direction
+                    - unidirectional
+                inverse:
+                  var: result.inverse

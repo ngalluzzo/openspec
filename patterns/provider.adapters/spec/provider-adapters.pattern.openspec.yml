@@ -1,0 +1,107 @@
+openspec: "1.0"
+documents:
+  - id: provider-adapters.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: provider.adapters
+        name: Provider Adapters Pattern
+      patterns:
+        - id: provider.adapters
+          owner: pattern.package:provider.adapters
+          name: Provider adapters
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.provider.id
+                      - kind: literal
+                        value: .provider
+                protocol: openspec.provider.v1
+                document:
+                  providers:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.provider.id
+                      name:
+                        expr:
+                          kind: path
+                          path: input.provider.name
+                          optional: true
+                      exports:
+                        expr:
+                          kind: object
+                          fields:
+                            adapters:
+                              kind: map
+                              path: input.adapters
+                              as: adapter
+                              optional: true
+                              value:
+                                kind: concat
+                                items:
+                                  - kind: literal
+                                    value: "adapter.adapter:"
+                                  - kind: path
+                                    path: adapter.id
+                      metadata:
+                        expr:
+                          kind: path
+                          path: input.provider.metadata
+                          optional: true
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.provider.id
+                      - kind: literal
+                        value: .adapters
+                protocol: openspec.adapter.v1
+                document:
+                  owner:
+                    expr:
+                      kind: concat
+                      items:
+                        - kind: literal
+                          value: "provider.provider:"
+                        - kind: path
+                          path: input.provider.id
+                  adapters:
+                    expr:
+                      kind: map
+                      path: input.adapters
+                      as: adapter
+                      value:
+                        kind: object
+                        fields:
+                          id:
+                            kind: path
+                            path: adapter.id
+                          capability:
+                            kind: path
+                            path: adapter.capability
+                          kind:
+                            kind: path
+                            path: adapter.kind
+                          params:
+                            kind: path
+                            path: adapter.params
+                            optional: true
+                          requires:
+                            kind: path
+                            path: adapter.requires
+                            optional: true
+                          constraints:
+                            kind: path
+                            path: adapter.constraints
+                            optional: true
+                          description:
+                            kind: path
+                            path: adapter.description
+                            optional: true

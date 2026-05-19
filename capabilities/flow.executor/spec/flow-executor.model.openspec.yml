@@ -1,0 +1,46 @@
+openspec: "1.0"
+documents:
+  - id: flow.executor.model
+    protocol: openspec.model.v1
+    document:
+      owner: capability.package:flow.executor
+
+      declarations:
+
+        - kind: object
+          name: ExecuteFlowRequest
+          fields:
+            - name: flow
+              type: nonEmptyString
+              description: The flow nodeId to execute (e.g. flow.flow:workspace.build).
+            - name: inputs
+              type: unknown
+              required: false
+              description: Input values for the flow, keyed by input name.
+
+        - kind: object
+          name: FlowDiagnostic
+          fields:
+            - name: severity
+              type: nonEmptyString
+              required: false
+            - name: code
+              type: nonEmptyString
+            - name: message
+              type: nonEmptyString
+            - name: details
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ExecuteFlowResult
+          fields:
+            - name: outputs
+              type: unknown
+              description: Output values produced by the flow, keyed by output name.
+            - name: diagnostics
+              type:
+                kind: array
+                items:
+                  kind: ref
+                  name: FlowDiagnostic

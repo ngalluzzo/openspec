@@ -1,0 +1,98 @@
+openspec: "1.0"
+documents:
+  - id: syntax-asset.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: syntax.asset
+        name: Syntax Asset Pattern
+      patterns:
+        - id: syntax.asset
+          owner: pattern.package:syntax.asset
+          name: Syntax asset
+          metadata:
+            composes:
+              - openspec.syntax.v1
+              - openspec.asset.v1
+            relation: Binds a syntax unit to a material output asset through asset subjects.
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .asset
+                protocol: openspec.asset.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  namespace:
+                    expr:
+                      kind: path
+                      path: input.namespace
+                      optional: true
+                      default:
+                        kind: path
+                        path: input.id
+                  assets:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.asset.id
+                          optional: true
+                          default:
+                            kind: literal
+                            value: output
+                      kind:
+                        expr:
+                          kind: path
+                          path: input.asset.kind
+                          optional: true
+                          default:
+                            kind: literal
+                            value: syntax.output
+                      locator:
+                        kind: file
+                        path:
+                          expr:
+                            kind: path
+                            path: input.asset.path
+                      role:
+                        expr:
+                          kind: path
+                          path: input.asset.role
+                          optional: true
+                      disposition:
+                        expr:
+                          kind: path
+                          path: input.asset.disposition
+                          optional: true
+                          default:
+                            kind: literal
+                            value: generated
+                      mediaType:
+                        expr:
+                          kind: path
+                          path: input.asset.mediaType
+                          optional: true
+                      language:
+                        expr:
+                          kind: path
+                          path: input.asset.language
+                          optional: true
+                      subjects:
+                        expr:
+                          kind: array
+                          items:
+                            - kind: path
+                              path: input.syntaxUnit
+                      metadata:
+                        expr:
+                          kind: path
+                          path: input.asset.metadata
+                          optional: true

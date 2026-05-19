@@ -1,0 +1,119 @@
+openspec: "1.0"
+documents:
+  - id: workspace.operation
+    protocol: openspec.operation.v1
+    document:
+      owner: provider.provider:workspace
+      groups:
+        - name: workspace
+          description: Workspace operations
+          operations:
+            - name: build
+              kind: workspace.build
+              input:
+                model: model:provider.provider:workspace.BuildRequest
+              output:
+                model: model:provider.provider:workspace.BuildReport
+              description: Build the workspace
+
+            - name: sync
+              kind: workspace.sync
+              input:
+                model: model:provider.provider:workspace.SyncRequest
+              output:
+                model: model:provider.provider:workspace.SyncReport
+              description: Sync the semantic graph to live platform targets (Knack, Airtable, etc.)
+
+  - id: workspace.transport
+    protocol: openspec.transport.v1
+    document:
+      owner: provider.provider:workspace
+      transports:
+        - id: workspace.stdio
+          kind: stdio
+          description: Workspace command-line standard IO transport.
+
+  - id: workspace.cli.patterns
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: workspace.build.fulfillment
+          pattern: pattern.declaration:operation.fulfillment
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.build.fulfillment
+            operation: operation.operation:workspace.build
+            target: capability.method:workspace.build.run
+
+        - id: workspace.build.cli
+          pattern: pattern.declaration:cli.transport.command
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.build.cli
+            operation: operation.operation:workspace.build
+            transport: transport.transport:workspace.stdio
+            command: build
+            description: Build the workspace
+            options:
+              root:
+                description: Workspace root path
+              environment:
+                description: Build environment
+                defaultValue: default
+              policy:
+                description: "Overwrite policy: overwrite-generated | error-on-conflict"
+                defaultValue: overwrite-generated
+                values:
+                  - overwrite-generated
+                  - error-on-conflict
+
+        - id: workspace.sync.fulfillment
+          pattern: pattern.declaration:operation.fulfillment
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.sync.fulfillment
+            operation: operation.operation:workspace.sync
+            target: capability.method:workspace.sync.run
+
+        - id: workspace.sync.cli
+          pattern: pattern.declaration:cli.transport.command
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.sync.cli
+            operation: operation.operation:workspace.sync
+            transport: transport.transport:workspace.stdio
+            command: sync
+            description: Sync the semantic graph to live platform targets
+            options:
+              root:
+                description: Workspace root path
+              environment:
+                description: Build environment
+                defaultValue: default
+              preview:
+                description: Compute and display mutations without applying them
+                defaultValue: "false"
+              target:
+                description: Limit sync to a single sync.action id
+              json:
+                description: Emit the sync report as JSON
+                defaultValue: "false"
+              forceBreaking:
+                description: Allow supported breaking mutations to be applied
+                defaultValue: "false"
+              yes:
+                description: Non-interactive confirmation flag for deliberate automation
+                defaultValue: "false"
+
+  - id: workspace.cli.dialect.facets
+    protocol: openspec.facet.v1
+    document:
+      owner: provider.provider:workspace
+      facets:
+        - id: workspace.stdio.transport
+          kind: stdio.transport
+          target: transport.transport:workspace.stdio
+          value:
+            input: stdin
+            output: stdout
+            error: stderr

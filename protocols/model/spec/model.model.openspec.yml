@@ -1,0 +1,367 @@
+openspec: "1.0"
+documents:
+  - id: model.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.model.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: ModelSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: ModelOwnerSelectorParams
+          fields:
+            - name: owner
+              type: nonEmptyString
+
+        - kind: object
+          name: ModelByNameSelectorParams
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+              required: false
+
+        # ── Declaration kinds ──────────────────────────────────────────────────
+
+        - kind: enum
+          name: ModelDeclarationKind
+          values:
+            - object
+            - alias
+            - enum
+            - branded
+
+        # ── Type contract ──────────────────────────────────────────────────────
+
+        - kind: alias
+          name: ModelLiteralValueContract
+          type:
+            kind: union
+            options:
+              - string
+              - number
+              - boolean
+              - "null"
+
+        - kind: object
+          name: ModelScalarTypeContract
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: scalar
+            - name: name
+              type: nonEmptyString
+
+        - kind: object
+          name: ModelLiteralTypeContract
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: literal
+            - name: value
+              type:
+                kind: ref
+                name: ModelLiteralValueContract
+
+        - kind: object
+          name: ModelRefTypeContract
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: ref
+            - name: name
+              type: nonEmptyString
+
+        - kind: object
+          name: ModelArrayTypeContract
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: array
+            - name: item
+              type:
+                kind: ref
+                name: ModelTypeContract
+
+        - kind: object
+          name: ModelRecordTypeContract
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: record
+            - name: value
+              type:
+                kind: ref
+                name: ModelTypeContract
+
+        - kind: object
+          name: ModelMapTypeContract
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: map
+            - name: key
+              type:
+                kind: ref
+                name: ModelTypeContract
+            - name: value
+              type:
+                kind: ref
+                name: ModelTypeContract
+
+        - kind: object
+          name: ModelUnionTypeContract
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: union
+            - name: options
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ModelTypeContract
+
+        - kind: object
+          name: ModelEnumTypeContract
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: enum
+            - name: values
+              type:
+                kind: array
+                item: nonEmptyString
+
+        - kind: alias
+          name: ModelTypeContract
+          type:
+            kind: union
+            options:
+              - nonEmptyString
+              - kind: ref
+                name: ModelScalarTypeContract
+              - kind: ref
+                name: ModelLiteralTypeContract
+              - kind: ref
+                name: ModelRefTypeContract
+              - kind: ref
+                name: ModelArrayTypeContract
+              - kind: ref
+                name: ModelRecordTypeContract
+              - kind: ref
+                name: ModelMapTypeContract
+              - kind: ref
+                name: ModelUnionTypeContract
+              - kind: ref
+                name: ModelEnumTypeContract
+
+        # ── Field contract ─────────────────────────────────────────────────────
+
+        - kind: object
+          name: ModelFieldContract
+          fields:
+            - name: declaration
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type:
+                kind: ref
+                name: ModelTypeContract
+            - name: required
+              type: boolean
+            - name: unique
+              type: boolean
+              required: false
+            - name: identity
+              type: boolean
+              required: false
+            - name: computed
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Declaration contract ───────────────────────────────────────────────
+        # `type` is populated for alias and branded declarations.
+        # `values` is populated for enum declarations.
+        # `open` is populated for object declarations that allow extra fields.
+        # `fields` is populated for object declarations.
+        # Projections are not a model concern — see the presentation protocol.
+
+        - kind: object
+          name: ModelDeclarationContract
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type:
+                kind: ref
+                name: ModelDeclarationKind
+            - name: type
+              type:
+                kind: ref
+                name: ModelTypeContract
+              required: false
+            - name: values
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: open
+              type:
+                kind: ref
+                name: ModelTypeContract
+              required: false
+            - name: fields
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ModelFieldContract
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: ModelDeclarationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ModelDeclarationContract
+
+        - kind: alias
+          name: ModelByNameSelectorResult
+          type:
+            kind: ref
+            name: ModelDeclarationContract
+
+        - kind: alias
+          name: ModelFieldsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ModelFieldContract
+
+        # ── Capability input/output contracts ────────────────────────────────
+
+        - kind: object
+          name: ModelValueDiagnosticContract
+          fields:
+            - name: code
+              type: nonEmptyString
+            - name: message
+              type: nonEmptyString
+            - name: path
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: severity
+              type: nonEmptyString
+              required: false
+            - name: expected
+              type: unknown
+              required: false
+            - name: actual
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ModelValueParserInput
+          fields:
+            - name: model
+              type: nonEmptyString
+            - name: value
+              type: unknown
+            - name: declarations
+              type: unknown
+
+        - kind: object
+          name: ModelValueParserResult
+          fields:
+            - name: value
+              type: unknown
+            - name: diagnostics
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ModelValueDiagnosticContract
+              required: false
+
+        - kind: object
+          name: ModelValueValidatorInput
+          fields:
+            - name: model
+              type: nonEmptyString
+            - name: value
+              type: unknown
+            - name: declarations
+              type: unknown
+            - name: rules
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ModelValueValidatorResult
+          fields:
+            - name: valid
+              type: boolean
+            - name: value
+              type: unknown
+              required: false
+            - name: diagnostics
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ModelValueDiagnosticContract
+
+        - kind: object
+          name: ModelSchemaProjectionInput
+          fields:
+            - name: owner
+              type: nonEmptyString
+              required: false
+            - name: declarations
+              type: unknown
+            - name: format
+              type: nonEmptyString
+            - name: options
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ModelSchemaProjectionResult
+          fields:
+            - name: format
+              type: nonEmptyString
+            - name: schema
+              type: unknown
+            - name: diagnostics
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ModelValueDiagnosticContract
+              required: false

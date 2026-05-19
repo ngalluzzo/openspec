@@ -1,0 +1,17 @@
+openspec: "1.0"
+documents:
+  - id: materializer.provider
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: materializer.provider
+          pattern: pattern.declaration:provider.adapters
+          inputs:
+            provider:
+              id: materializer
+              name: Materializer provider
+            adapters:
+              - id: materializer.local-fs
+                capability: capability.capability:storage.writer
+                kind: materializer.local-fs
+                description: Writes content to the local filesystem.

@@ -1,0 +1,406 @@
+openspec: "1.0"
+documents:
+  - id: flow.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.flow.v1
+      declarations:
+        # -- Selector params ----------------------------------------------------
+
+        - kind: object
+          name: FlowSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: FlowByIdSelectorParams
+          fields:
+            - name: flow
+              type: nonEmptyString
+
+        - kind: object
+          name: FlowActivitySelectorParams
+          fields:
+            - name: activity
+              type: nonEmptyString
+
+        - kind: object
+          name: FlowActivitiesForFlowSelectorParams
+          fields:
+            - name: flow
+              type: nonEmptyString
+
+        - kind: object
+          name: FlowLinksForFlowSelectorParams
+          fields:
+            - name: flow
+              type: nonEmptyString
+
+        # -- Authored document contracts ---------------------------------------
+
+        - kind: object
+          name: FlowPortDeclarationContract
+          fields:
+            - name: model
+              type: nonEmptyString
+              required: false
+            - name: source
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: FlowOutcomeContract
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: output
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: FlowActivityDeclarationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: kind
+              type: nonEmptyString
+            - name: input
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowPortDeclarationContract
+              required: false
+            - name: output
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowPortDeclarationContract
+              required: false
+            - name: outcomes
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowOutcomeContract
+              required: false
+            - name: condition
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: FlowLinkDeclarationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: sourcePort
+              type: nonEmptyString
+              required: false
+            - name: targetPort
+              type: nonEmptyString
+              required: false
+            - name: condition
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: FlowDeclarationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: input
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowPortDeclarationContract
+              required: false
+            - name: output
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowPortDeclarationContract
+              required: false
+            - name: activities
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FlowActivityDeclarationContract
+            - name: links
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FlowLinkDeclarationContract
+              required: false
+            - name: outcomes
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowOutcomeContract
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: FlowDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: flows
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FlowDeclarationContract
+
+        # -- Core contracts -----------------------------------------------------
+
+        - kind: object
+          name: FlowPortContract
+          fields:
+            - name: flow
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: direction
+              type: nonEmptyString
+            - name: scope
+              type: nonEmptyString
+            - name: activity
+              type: nonEmptyString
+              required: false
+            - name: model
+              type: nonEmptyString
+              required: false
+            - name: source
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: FlowActivityContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: flow
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: input
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowPortContract
+              required: false
+            - name: output
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowPortContract
+              required: false
+            - name: outcomes
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowOutcomeContract
+              required: false
+            - name: condition
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: FlowLinkContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: flow
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: sourcePort
+              type: nonEmptyString
+              required: false
+            - name: targetPort
+              type: nonEmptyString
+              required: false
+            - name: condition
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: FlowContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: input
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowPortDeclarationContract
+              required: false
+            - name: output
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowPortDeclarationContract
+              required: false
+            - name: activities
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FlowActivityDeclarationContract
+            - name: links
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FlowLinkDeclarationContract
+              required: false
+            - name: outcomes
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: FlowOutcomeContract
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        # -- Selector results ---------------------------------------------------
+
+        - kind: alias
+          name: FlowFlowsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: FlowContract
+
+        - kind: alias
+          name: FlowByIdSelectorResult
+          type:
+            kind: ref
+            name: FlowContract
+
+        - kind: alias
+          name: FlowActivitiesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: FlowActivityContract
+
+        - kind: alias
+          name: FlowActivityByIdSelectorResult
+          type:
+            kind: ref
+            name: FlowActivityContract
+
+        - kind: alias
+          name: FlowLinksSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: FlowLinkContract
+
+        - kind: alias
+          name: FlowPortsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: FlowPortContract

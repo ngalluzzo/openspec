@@ -1,0 +1,44 @@
+{
+	"name": "@reforge/adapters",
+	"version": "0.1.0",
+	"type": "module",
+	"exports": {
+		"./typescript": {
+			"types": "./src/typescript/index.ts",
+			"default": "./dist/typescript/index.js"
+		},
+		"./css": {
+			"types": "./src/css/index.ts",
+			"default": "./dist/css/index.js"
+		}
+	},
+	"scripts": {
+		"build": "bun run build:css && bun run build:ts --external typescript --external postcss",
+		"build:css": "bun build --outdir dist/css ./src/css/index.ts",
+		"build:ts": "bun build --outdir dist/typescript ./src/typescript/index.ts",
+		"lint": "biome lint ./src",
+		"lint:fix": "biome lint ./src --write",
+		"format": "biome format ./src",
+		"test": "bun test",
+		"typecheck": "tsc --noEmit"
+	},
+	"peerDependencies": {
+		"postcss": "^8",
+		"typescript": "^5"
+	},
+	"peerDependenciesMeta": {
+		"postcss": {
+			"optional": true
+		},
+		"typescript": {
+			"optional": true
+		}
+	},
+	"dependencies": {
+		"@reforge/core": "*"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.12",
+		"typescript": "^5"
+	}
+}

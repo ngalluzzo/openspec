@@ -1,0 +1,21 @@
+# expresso runtime layout
+
+- `compile/`
+  - `apply.ts`: runtime apply/compile entrypoints and compiled rule helpers
+  - `builder.ts`: fluent RuleBuilder construction DSL
+  - `compiler.ts`: static rule analysis and strict validation
+  - `optimizer.ts`: structural rule normalization
+- `engine/`
+  - `engine.ts`: public runtime engine exports
+  - `engine-sync.ts`: synchronous recursive rule evaluator
+  - `engine-async.ts`: asynchronous recursive rule evaluator
+  - `engine-internals.ts`: data-marker and trace internals used by engine execution
+  - `engine-errors.ts`: evaluation error taxonomy
+- `contracts/`
+  - `types.ts`: canonical runtime contracts (Rule, EvaluationContext, Operator)
+- `bootstrap/`
+  - `init.ts`: runtime operator/plugin initialization orchestration
+- `tracing/`
+  - `trace-utils.ts`: trace formatting, summary, and filtering helpers
+- `shared/`
+  - `utils.ts`: primitive/truthiness/object utility helpers used during evaluation

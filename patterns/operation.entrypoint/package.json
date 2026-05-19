@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/operation-entrypoint-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/operation-entrypoint.pattern.openspec.yml"]
+		}
+	}
+}

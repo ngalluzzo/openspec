@@ -1,0 +1,229 @@
+openspec: "1.0"
+documents:
+  - id: zod-dialect.model
+    protocol: openspec.model.v1
+    document:
+      owner: dialect.package:zod
+      declarations:
+        - kind: object
+          name: ZodDialectSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: ZodDialectTargetSelectorParams
+          fields:
+            - name: target
+              type: nonEmptyString
+
+        - kind: object
+          name: ZodDialectUnitSelectorParams
+          fields:
+            - name: unit
+              type: nonEmptyString
+
+        - kind: object
+          name: ZodSchemaExpressionFacetValue
+          fields:
+            - name: provider
+              type:
+                kind: literal
+                value: zod
+            - name: role
+              type:
+                kind: literal
+                value: value.expression
+            - name: unit
+              type: nonEmptyString
+              required: false
+            - name: expression
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: ZodSchemaExpressionFacetContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+              required: false
+            - name: value
+              type:
+                kind: ref
+                name: ZodSchemaExpressionFacetValue
+
+        - kind: alias
+          name: ZodSchemaExpressionFacetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ZodSchemaExpressionFacetContract
+
+        - kind: object
+          name: ZodSyntaxUnitSelectorParams
+          fields:
+            - name: unit
+              type: nonEmptyString
+
+        - kind: object
+          name: ZodSyntaxRenderSelectorParams
+          fields:
+            - name: syntaxUnit
+              type: nonEmptyString
+            - name: asset
+              type: nonEmptyString
+
+        - kind: object
+          name: SyntaxUnitContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+              required: false
+            - name: id
+              type: nonEmptyString
+              required: false
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: subject
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: AssetContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+              required: false
+            - name: id
+              type: nonEmptyString
+              required: false
+            - name: locator
+              type: unknown
+              required: false
+            - name: mediaType
+              type: nonEmptyString
+              required: false
+            - name: disposition
+              type: nonEmptyString
+              required: false
+            - name: language
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: ProviderSelectionContract
+          fields:
+            - name: id
+              type: nonEmptyString
+              required: false
+            - name: request
+              type: nonEmptyString
+              required: false
+            - name: target
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: provider
+              type: nonEmptyString
+              required: false
+            - name: offering
+              type: nonEmptyString
+              required: false
+            - name: dialect
+              type: nonEmptyString
+              required: false
+            - name: adapter
+              type: nonEmptyString
+              required: false
+            - name: projectionKind
+              type: nonEmptyString
+              required: false
+            - name: params
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ZodFieldContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: schema
+              type: nonEmptyString
+            - name: storageField
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type: nonEmptyString
+            - name: nullable
+              type: boolean
+            - name: identity
+              type: boolean
+
+        - kind: object
+          name: ZodSchemaContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: storageEntity
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: fields
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ZodFieldContract
+
+        - kind: object
+          name: ZodSyntaxRenderInput
+          fields:
+            - name: unit
+              type:
+                kind: ref
+                name: SyntaxUnitContract
+            - name: asset
+              type:
+                kind: ref
+                name: AssetContract
+            - name: selections
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProviderSelectionContract
+              required: false
+            - name: schemas
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ZodSchemaContract
+
+        - kind: alias
+          name: ZodSchemasSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ZodSchemaContract

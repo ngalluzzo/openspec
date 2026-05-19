@@ -1,0 +1,147 @@
+openspec: "1.0"
+documents:
+  - id: http-dialect.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: dialect.package:http
+      selectors:
+        - id: http.transports
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: http.transport
+            transport:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.facet.target
+                kind:
+                  $expr: transport.transport
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    transport:
+                      var: row.transport.attributes
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.target
+          paramsContract:
+            kind: model
+            model: model:HttpDialectSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:HttpTransportFacetSelectorResult
+
+        - id: http.routes
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: http.route
+            route:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.facet.target
+                kind:
+                  $expr: route.route
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.target
+          paramsContract:
+            kind: model
+            model: model:HttpDialectSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:HttpRouteFacetSelectorResult
+
+        - id: http.invalidRouteFacets
+          sources:
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: http.route
+          where:
+            $expr:
+              "!":
+                - regex_test:
+                    - var:
+                        - row.facet.value.method
+                        - ""
+                    - ^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)$
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.facet.id
+                    kind:
+                      var: row.facet.kind
+                    target:
+                      var: row.facet.target
+                    route:
+                      var: row.route.attributes
+                    value:
+                      var: row.facet.value
+          orderBy:
+            - $expr:
+                var: row.value.target
+          paramsContract:
+            kind: model
+            model: model:HttpDialectSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:HttpRouteFacetSelectorResult
+
+      validate:
+        - id: http.route.validation
+          rules:
+            - id: http-route-method-format
+              scope: selector
+              selector: http.invalidRouteFacets
+              forEach: true
+              assert:
+                $expr: false
+              code: http.route.method.invalid
+              message: HTTP route facets must declare an uppercase HTTP method.
+              details:
+                $expr:
+                  os_object:
+                    - facet:
+                        var: item.id
+                      target:
+                        var: item.target
+                      method:
+                        var:
+                          - item.value.method
+                          - null

@@ -1,0 +1,1324 @@
+openspec: "1.0"
+documents:
+  - id: syntax.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.syntax.v1
+      owner: protocol.protocol:openspec.syntax.v1
+      lowering:
+        - id: syntax.units
+          source:
+            path: units
+            as: unit
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - syntax.unit
+                    - var: document.namespace
+                    - var: unit.id
+              factKind:
+                $expr: syntax.unit
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - syntax.unit
+                          - var: document.namespace
+                          - var: unit.id
+                      id:
+                        var: unit.id
+                      namespace:
+                        var: document.namespace
+                      owner:
+                        var: document.owner
+                      kind:
+                        var: unit.kind
+                      asset:
+                        var:
+                          - unit.asset
+                          - null
+                      subject:
+                        var:
+                          - unit.subject
+                          - null
+                      role:
+                        var:
+                          - unit.role
+                          - null
+                      metadata:
+                        var:
+                          - unit.metadata
+                          - null
+
+        - id: syntax.symbols
+          source:
+            path: symbols
+            as: symbol
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - syntax.symbol
+                    - var: document.namespace
+                    - var: symbol.id
+              factKind:
+                $expr: syntax.symbol
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - syntax.symbol
+                          - var: document.namespace
+                          - var: symbol.id
+                      id:
+                        var: symbol.id
+                      unit:
+                        var: symbol.unit
+                      unitNodeId:
+                        os_node_id:
+                          - syntax.unit
+                          - var: document.namespace
+                          - var: symbol.unit
+                      namespace:
+                        var: document.namespace
+                      owner:
+                        var: document.owner
+                      kind:
+                        var: symbol.kind
+                      name:
+                        var: symbol.name
+                      target:
+                        var:
+                          - symbol.target
+                          - null
+                      role:
+                        var:
+                          - symbol.role
+                          - null
+                      order:
+                        var:
+                          - symbol.order
+                          - null
+                      metadata:
+                        var:
+                          - symbol.metadata
+                          - null
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - syntax.unit
+                        - var: document.namespace
+                        - var: symbol.unit
+                    - .symbol.
+                    - var: symbol.id
+              factKind:
+                $expr: syntax.unit.symbol
+              from:
+                $expr:
+                  os_node_id:
+                    - syntax.unit
+                    - var: document.namespace
+                    - var: symbol.unit
+              to:
+                $expr:
+                  os_node_id:
+                    - syntax.symbol
+                    - var: document.namespace
+                    - var: symbol.id
+
+        - id: syntax.slots
+          source:
+            path: slots
+            as: slot
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - syntax.slot
+                    - var: document.namespace
+                    - var: slot.id
+              factKind:
+                $expr: syntax.slot
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - syntax.slot
+                          - var: document.namespace
+                          - var: slot.id
+                      id:
+                        var: slot.id
+                      unit:
+                        var: slot.unit
+                      unitNodeId:
+                        os_node_id:
+                          - syntax.unit
+                          - var: document.namespace
+                          - var: slot.unit
+                      namespace:
+                        var: document.namespace
+                      owner:
+                        var: document.owner
+                      kind:
+                        var: slot.kind
+                      target:
+                        var:
+                          - slot.target
+                          - null
+                      symbol:
+                        var:
+                          - slot.symbol
+                          - null
+                      role:
+                        var:
+                          - slot.role
+                          - null
+                      order:
+                        var:
+                          - slot.order
+                          - null
+                      metadata:
+                        var:
+                          - slot.metadata
+                          - null
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - syntax.unit
+                        - var: document.namespace
+                        - var: slot.unit
+                    - .slot.
+                    - var: slot.id
+              factKind:
+                $expr: syntax.unit.slot
+              from:
+                $expr:
+                  os_node_id:
+                    - syntax.unit
+                    - var: document.namespace
+                    - var: slot.unit
+              to:
+                $expr:
+                  os_node_id:
+                    - syntax.slot
+                    - var: document.namespace
+                    - var: slot.id
+
+        - id: syntax.fragments
+          source:
+            path: fragments
+            as: fragment
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - syntax.fragment
+                    - var: document.namespace
+                    - var: fragment.id
+              factKind:
+                $expr: syntax.fragment
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - syntax.fragment
+                          - var: document.namespace
+                          - var: fragment.id
+                      id:
+                        var: fragment.id
+                      unit:
+                        var: fragment.unit
+                      unitNodeId:
+                        os_node_id:
+                          - syntax.unit
+                          - var: document.namespace
+                          - var: fragment.unit
+                      namespace:
+                        var: document.namespace
+                      owner:
+                        var: document.owner
+                      kind:
+                        var: fragment.kind
+                      target:
+                        var: fragment.target
+                      role:
+                        var:
+                          - fragment.role
+                          - null
+                      order:
+                        var:
+                          - fragment.order
+                          - null
+                      metadata:
+                        var:
+                          - fragment.metadata
+                          - null
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - syntax.unit
+                        - var: document.namespace
+                        - var: fragment.unit
+                    - .fragment.
+                    - var: fragment.id
+              factKind:
+                $expr: syntax.unit.fragment
+              from:
+                $expr:
+                  os_node_id:
+                    - syntax.unit
+                    - var: document.namespace
+                    - var: fragment.unit
+              to:
+                $expr:
+                  os_node_id:
+                    - syntax.fragment
+                    - var: document.namespace
+                    - var: fragment.id
+
+        - id: syntax.references
+          source:
+            path: references
+            as: reference
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - syntax.reference
+                    - var: document.namespace
+                    - var: reference.id
+              factKind:
+                $expr: syntax.reference
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - syntax.reference
+                          - var: document.namespace
+                          - var: reference.id
+                      id:
+                        var: reference.id
+                      unit:
+                        var: reference.unit
+                      unitNodeId:
+                        os_node_id:
+                          - syntax.unit
+                          - var: document.namespace
+                          - var: reference.unit
+                      namespace:
+                        var: document.namespace
+                      owner:
+                        var: document.owner
+                      kind:
+                        var: reference.kind
+                      from:
+                        var: reference.from
+                      to:
+                        var: reference.to
+                      role:
+                        var:
+                          - reference.role
+                          - null
+                      order:
+                        var:
+                          - reference.order
+                          - null
+                      metadata:
+                        var:
+                          - reference.metadata
+                          - null
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - syntax.unit
+                        - var: document.namespace
+                        - var: reference.unit
+                    - .reference.
+                    - var: reference.id
+              factKind:
+                $expr: syntax.unit.reference
+              from:
+                $expr:
+                  os_node_id:
+                    - syntax.unit
+                    - var: document.namespace
+                    - var: reference.unit
+              to:
+                $expr:
+                  os_node_id:
+                    - syntax.reference
+                    - var: document.namespace
+                    - var: reference.id
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - syntax.reference
+                        - var: document.namespace
+                        - var: reference.id
+                    - .from.
+                    - var: reference.from
+              factKind:
+                $expr: syntax.reference.from
+              from:
+                $expr:
+                  os_node_id:
+                    - syntax.reference
+                    - var: document.namespace
+                    - var: reference.id
+              to:
+                $expr:
+                  var: reference.from
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - syntax.reference
+                        - var: document.namespace
+                        - var: reference.id
+                    - .to.
+                    - var: reference.to
+              factKind:
+                $expr: syntax.reference.to
+              from:
+                $expr:
+                  os_node_id:
+                    - syntax.reference
+                    - var: document.namespace
+                    - var: reference.id
+              to:
+                $expr:
+                  var: reference.to
+
+        - id: syntax.dependencies
+          source:
+            path: dependencies
+            as: dependency
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - syntax.dependency
+                    - var: document.namespace
+                    - var: dependency.id
+              factKind:
+                $expr: syntax.dependency
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - syntax.dependency
+                          - var: document.namespace
+                          - var: dependency.id
+                      id:
+                        var: dependency.id
+                      unit:
+                        var: dependency.unit
+                      unitNodeId:
+                        os_node_id:
+                          - syntax.unit
+                          - var: document.namespace
+                          - var: dependency.unit
+                      namespace:
+                        var: document.namespace
+                      owner:
+                        var: document.owner
+                      kind:
+                        var: dependency.kind
+                      from:
+                        var: dependency.from
+                      to:
+                        var: dependency.to
+                      role:
+                        var:
+                          - dependency.role
+                          - null
+                      order:
+                        var:
+                          - dependency.order
+                          - null
+                      metadata:
+                        var:
+                          - dependency.metadata
+                          - null
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - syntax.unit
+                        - var: document.namespace
+                        - var: dependency.unit
+                    - .dependency.
+                    - var: dependency.id
+              factKind:
+                $expr: syntax.unit.dependency
+              from:
+                $expr:
+                  os_node_id:
+                    - syntax.unit
+                    - var: document.namespace
+                    - var: dependency.unit
+              to:
+                $expr:
+                  os_node_id:
+                    - syntax.dependency
+                    - var: document.namespace
+                    - var: dependency.id
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: dependency.from
+                    - .syntaxDependency.
+                    - var: dependency.to
+              factKind:
+                $expr: syntax.dependency.edge
+              from:
+                $expr:
+                  var: dependency.from
+              to:
+                $expr:
+                  var: dependency.to
+              attributes:
+                $expr:
+                  os_object:
+                    - dependency:
+                        os_node_id:
+                          - syntax.dependency
+                          - var: document.namespace
+                          - var: dependency.id
+                      kind:
+                        var: dependency.kind
+                      role:
+                        var:
+                          - dependency.role
+                          - null
+
+      selectors:
+        - id: syntax.units
+          sources:
+            unit:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.unit.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxUnitsSelectorResult
+
+        - id: syntax.symbols
+          sources:
+            symbol:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.symbol
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.symbol.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxSymbolsSelectorResult
+
+        - id: syntax.slots
+          sources:
+            slot:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.slot
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.slot.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxSlotsSelectorResult
+
+        - id: syntax.fragments
+          sources:
+            fragment:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.fragment
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.fragment.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxFragmentsSelectorResult
+
+        - id: syntax.references
+          sources:
+            reference:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.reference
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.reference.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxReferencesSelectorResult
+
+        - id: syntax.dependencies
+          sources:
+            dependency:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.dependency
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.dependency.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxDependenciesSelectorResult
+
+        - id: syntax.symbolsForUnit
+          sources:
+            symbol:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.symbol
+          where:
+            $expr:
+              or:
+                - ===:
+                    - var: row.symbol.attributes.unit
+                    - var: parameter.unit
+                - ===:
+                    - var: row.symbol.attributes.unitNodeId
+                    - var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.symbol.attributes
+          orderBy:
+            - $expr:
+                var:
+                  - row.value.order
+                  - 0
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxByUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxSymbolsSelectorResult
+
+        - id: syntax.slotsForUnit
+          sources:
+            slot:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.slot
+          where:
+            $expr:
+              or:
+                - ===:
+                    - var: row.slot.attributes.unit
+                    - var: parameter.unit
+                - ===:
+                    - var: row.slot.attributes.unitNodeId
+                    - var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.slot.attributes
+          orderBy:
+            - $expr:
+                var:
+                  - row.value.order
+                  - 0
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxByUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxSlotsSelectorResult
+
+        - id: syntax.fragmentsForUnit
+          sources:
+            fragment:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.fragment
+          where:
+            $expr:
+              or:
+                - ===:
+                    - var: row.fragment.attributes.unit
+                    - var: parameter.unit
+                - ===:
+                    - var: row.fragment.attributes.unitNodeId
+                    - var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.fragment.attributes
+          orderBy:
+            - $expr:
+                var:
+                  - row.value.order
+                  - 0
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxByUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxFragmentsSelectorResult
+
+        - id: syntax.referencesForUnit
+          sources:
+            reference:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.reference
+          where:
+            $expr:
+              or:
+                - ===:
+                    - var: row.reference.attributes.unit
+                    - var: parameter.unit
+                - ===:
+                    - var: row.reference.attributes.unitNodeId
+                    - var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.reference.attributes
+          orderBy:
+            - $expr:
+                var:
+                  - row.value.order
+                  - 0
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxByUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxReferencesSelectorResult
+
+        - id: syntax.dependenciesForUnit
+          sources:
+            dependency:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.dependency
+          where:
+            $expr:
+              or:
+                - ===:
+                    - var: row.dependency.attributes.unit
+                    - var: parameter.unit
+                - ===:
+                    - var: row.dependency.attributes.unitNodeId
+                    - var: parameter.unit
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.dependency.attributes
+          orderBy:
+            - $expr:
+                var:
+                  - row.value.order
+                  - 0
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxByUnitSelectorParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxDependenciesSelectorResult
+
+        - id: syntax.symbolsByTarget
+          sources:
+            symbol:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.symbol
+          where:
+            $expr:
+              ===:
+                - var: row.symbol.attributes.target
+                - var: parameter.target
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.symbol.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxByTargetSelectorParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxSymbolsSelectorResult
+
+        - id: syntax.slotsByTarget
+          sources:
+            slot:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.slot
+          where:
+            $expr:
+              ===:
+                - var: row.slot.attributes.target
+                - var: parameter.target
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.slot.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:SyntaxByTargetSelectorParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxSlotsSelectorResult
+
+        - id: syntax.invalidSymbolUnitLinks
+          sources:
+            symbol:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.symbol
+            unit:
+              kind: nodes
+              optional: true
+              filter:
+                id:
+                  $expr:
+                    var: row.symbol.attributes.unitNodeId
+                kind:
+                  $expr: syntax.unit
+          where:
+            $expr:
+              "!":
+                - var:
+                    - row.unit
+                    - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - nodeId:
+                      var: row.symbol.attributes.nodeId
+                    id:
+                      var: row.symbol.attributes.id
+                    unit:
+                      var: row.symbol.attributes.unit
+                    unitNodeId:
+                      var: row.symbol.attributes.unitNodeId
+                    kind:
+                      var: row.symbol.attributes.kind
+                    sourceKind:
+                      $expr: syntax.symbol
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxInvalidUnitLinksSelectorResult
+
+        - id: syntax.invalidSlotUnitLinks
+          sources:
+            slot:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.slot
+            unit:
+              kind: nodes
+              optional: true
+              filter:
+                id:
+                  $expr:
+                    var: row.slot.attributes.unitNodeId
+                kind:
+                  $expr: syntax.unit
+          where:
+            $expr:
+              "!":
+                - var:
+                    - row.unit
+                    - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - nodeId:
+                      var: row.slot.attributes.nodeId
+                    id:
+                      var: row.slot.attributes.id
+                    unit:
+                      var: row.slot.attributes.unit
+                    unitNodeId:
+                      var: row.slot.attributes.unitNodeId
+                    kind:
+                      var: row.slot.attributes.kind
+                    sourceKind:
+                      $expr: syntax.slot
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxInvalidUnitLinksSelectorResult
+
+        - id: syntax.invalidFragmentUnitLinks
+          sources:
+            fragment:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.fragment
+            unit:
+              kind: nodes
+              optional: true
+              filter:
+                id:
+                  $expr:
+                    var: row.fragment.attributes.unitNodeId
+                kind:
+                  $expr: syntax.unit
+          where:
+            $expr:
+              "!":
+                - var:
+                    - row.unit
+                    - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - nodeId:
+                      var: row.fragment.attributes.nodeId
+                    id:
+                      var: row.fragment.attributes.id
+                    unit:
+                      var: row.fragment.attributes.unit
+                    unitNodeId:
+                      var: row.fragment.attributes.unitNodeId
+                    kind:
+                      var: row.fragment.attributes.kind
+                    sourceKind:
+                      $expr: syntax.fragment
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxInvalidUnitLinksSelectorResult
+
+        - id: syntax.invalidReferenceUnitLinks
+          sources:
+            reference:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.reference
+            unit:
+              kind: nodes
+              optional: true
+              filter:
+                id:
+                  $expr:
+                    var: row.reference.attributes.unitNodeId
+                kind:
+                  $expr: syntax.unit
+          where:
+            $expr:
+              "!":
+                - var:
+                    - row.unit
+                    - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - nodeId:
+                      var: row.reference.attributes.nodeId
+                    id:
+                      var: row.reference.attributes.id
+                    unit:
+                      var: row.reference.attributes.unit
+                    unitNodeId:
+                      var: row.reference.attributes.unitNodeId
+                    kind:
+                      var: row.reference.attributes.kind
+                    sourceKind:
+                      $expr: syntax.reference
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxInvalidUnitLinksSelectorResult
+
+        - id: syntax.invalidDependencyUnitLinks
+          sources:
+            dependency:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: syntax.dependency
+            unit:
+              kind: nodes
+              optional: true
+              filter:
+                id:
+                  $expr:
+                    var: row.dependency.attributes.unitNodeId
+                kind:
+                  $expr: syntax.unit
+          where:
+            $expr:
+              "!":
+                - var:
+                    - row.unit
+                    - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - nodeId:
+                      var: row.dependency.attributes.nodeId
+                    id:
+                      var: row.dependency.attributes.id
+                    unit:
+                      var: row.dependency.attributes.unit
+                    unitNodeId:
+                      var: row.dependency.attributes.unitNodeId
+                    kind:
+                      var: row.dependency.attributes.kind
+                    sourceKind:
+                      $expr: syntax.dependency
+          paramsContract:
+            kind: model
+            model: model:SyntaxSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:SyntaxInvalidUnitLinksSelectorResult
+
+      validate:
+        - id: syntax.validation
+          rules:
+            - id: unit-kind-format
+              scope: selector
+              selector: syntax.units
+              forEach: true
+              assert:
+                $expr:
+                  regex_test:
+                    - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+                    - var: item.kind
+              code: syntax.unit.kind.invalid
+              message: Syntax unit kind must be a lowercase namespaced identifier.
+              details:
+                $expr:
+                  os_object:
+                    - unit:
+                        var: item.nodeId
+                      kind:
+                        var: item.kind
+
+            - id: symbol-kind-format
+              scope: selector
+              selector: syntax.symbols
+              forEach: true
+              assert:
+                $expr:
+                  regex_test:
+                    - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+                    - var: item.kind
+              code: syntax.symbol.kind.invalid
+              message: Syntax symbol kind must be a lowercase namespaced identifier.
+              details:
+                $expr:
+                  os_object:
+                    - symbol:
+                        var: item.nodeId
+                      kind:
+                        var: item.kind
+
+            - id: slot-kind-format
+              scope: selector
+              selector: syntax.slots
+              forEach: true
+              assert:
+                $expr:
+                  regex_test:
+                    - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+                    - var: item.kind
+              code: syntax.slot.kind.invalid
+              message: Syntax slot kind must be a lowercase namespaced identifier.
+              details:
+                $expr:
+                  os_object:
+                    - slot:
+                        var: item.nodeId
+                      kind:
+                        var: item.kind
+
+            - id: fragment-kind-format
+              scope: selector
+              selector: syntax.fragments
+              forEach: true
+              assert:
+                $expr:
+                  regex_test:
+                    - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+                    - var: item.kind
+              code: syntax.fragment.kind.invalid
+              message: Syntax fragment kind must be a lowercase namespaced identifier.
+              details:
+                $expr:
+                  os_object:
+                    - fragment:
+                        var: item.nodeId
+                      kind:
+                        var: item.kind
+
+            - id: reference-kind-format
+              scope: selector
+              selector: syntax.references
+              forEach: true
+              assert:
+                $expr:
+                  regex_test:
+                    - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+                    - var: item.kind
+              code: syntax.reference.kind.invalid
+              message: Syntax reference kind must be a lowercase namespaced identifier.
+              details:
+                $expr:
+                  os_object:
+                    - reference:
+                        var: item.nodeId
+                      kind:
+                        var: item.kind
+
+            - id: dependency-kind-format
+              scope: selector
+              selector: syntax.dependencies
+              forEach: true
+              assert:
+                $expr:
+                  regex_test:
+                    - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+                    - var: item.kind
+              code: syntax.dependency.kind.invalid
+              message: Syntax dependency kind must be a lowercase namespaced identifier.
+              details:
+                $expr:
+                  os_object:
+                    - dependency:
+                        var: item.nodeId
+                      kind:
+                        var: item.kind
+
+            - id: symbol-unit-link
+              scope: selector
+              selector: syntax.invalidSymbolUnitLinks
+              forEach: true
+              assert:
+                $expr: false
+              code: syntax.symbol.unit.missing
+              message: Syntax symbols must reference an existing syntax unit.
+              details:
+                $expr:
+                  os_object:
+                    - symbol:
+                        var: item.nodeId
+                      unit:
+                        var: item.unit
+                      unitNodeId:
+                        var: item.unitNodeId
+
+            - id: slot-unit-link
+              scope: selector
+              selector: syntax.invalidSlotUnitLinks
+              forEach: true
+              assert:
+                $expr: false
+              code: syntax.slot.unit.missing
+              message: Syntax slots must reference an existing syntax unit.
+              details:
+                $expr:
+                  os_object:
+                    - slot:
+                        var: item.nodeId
+                      unit:
+                        var: item.unit
+                      unitNodeId:
+                        var: item.unitNodeId
+
+            - id: fragment-unit-link
+              scope: selector
+              selector: syntax.invalidFragmentUnitLinks
+              forEach: true
+              assert:
+                $expr: false
+              code: syntax.fragment.unit.missing
+              message: Syntax fragments must reference an existing syntax unit.
+              details:
+                $expr:
+                  os_object:
+                    - fragment:
+                        var: item.nodeId
+                      unit:
+                        var: item.unit
+                      unitNodeId:
+                        var: item.unitNodeId
+
+            - id: reference-unit-link
+              scope: selector
+              selector: syntax.invalidReferenceUnitLinks
+              forEach: true
+              assert:
+                $expr: false
+              code: syntax.reference.unit.missing
+              message: Syntax references must reference an existing syntax unit.
+              details:
+                $expr:
+                  os_object:
+                    - reference:
+                        var: item.nodeId
+                      unit:
+                        var: item.unit
+                      unitNodeId:
+                        var: item.unitNodeId
+
+            - id: dependency-unit-link
+              scope: selector
+              selector: syntax.invalidDependencyUnitLinks
+              forEach: true
+              assert:
+                $expr: false
+              code: syntax.dependency.unit.missing
+              message: Syntax dependencies must reference an existing syntax unit.
+              details:
+                $expr:
+                  os_object:
+                    - dependency:
+                        var: item.nodeId
+                      unit:
+                        var: item.unit
+                      unitNodeId:
+                        var: item.unitNodeId

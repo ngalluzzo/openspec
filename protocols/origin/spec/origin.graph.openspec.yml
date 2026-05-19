@@ -1,0 +1,393 @@
+openspec: "1.0"
+documents:
+  - id: origin.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.origin.v1
+      owner: protocol.protocol:openspec.origin.v1
+      lowering:
+        - id: origin.declarations
+          source:
+            path: origins
+            as: origin
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - origin.origin
+                    - var: origin.id
+              factKind:
+                $expr: origin.origin
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - origin.origin
+                          - var: origin.id
+                      id:
+                        var: origin.id
+                      kind:
+                        var: origin.kind
+                      owner:
+                        var: document.owner
+                      name:
+                        var:
+                          - origin.name
+                          - null
+                      description:
+                        var:
+                          - origin.description
+                          - null
+                      locator:
+                        var:
+                          - origin.locator
+                          - null
+                      version:
+                        var:
+                          - origin.version
+                          - null
+                      capturedAt:
+                        var:
+                          - origin.capturedAt
+                          - null
+                      fingerprint:
+                        var:
+                          - origin.fingerprint
+                          - null
+                      metadata:
+                        var:
+                          - origin.metadata
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .origin.
+                    - var: origin.id
+              factKind:
+                $expr: origin.owner.origin
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - origin.origin
+                    - var: origin.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      origin:
+                        var: origin.id
+
+        - id: origin.elements
+          source:
+            path: elements
+            as: element
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - origin.element
+                    - var: element.id
+              factKind:
+                $expr: origin.element
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - origin.element
+                          - var: element.id
+                      id:
+                        var: element.id
+                      origin:
+                        var: element.origin
+                      kind:
+                        var: element.kind
+                      owner:
+                        var: document.owner
+                      name:
+                        var:
+                          - element.name
+                          - null
+                      nativeId:
+                        var:
+                          - element.nativeId
+                          - null
+                      locator:
+                        var:
+                          - element.locator
+                          - null
+                      metadata:
+                        var:
+                          - element.metadata
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: element.origin
+                    - .contains.
+                    - var: element.id
+              factKind:
+                $expr: origin.contains
+              from:
+                $expr:
+                  var: element.origin
+              to:
+                $expr:
+                  os_node_id:
+                    - origin.element
+                    - var: element.id
+              attributes:
+                $expr:
+                  os_object:
+                    - origin:
+                        var: element.origin
+                      element:
+                        var: element.id
+                      kind:
+                        var: element.kind
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .originElement.
+                    - var: element.id
+              factKind:
+                $expr: origin.owner.element
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - origin.element
+                    - var: element.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      origin:
+                        var: element.origin
+                      element:
+                        var: element.id
+
+        - id: origin.lineage.declarations
+          source:
+            path: lineage
+            as: lineage
+            optional: true
+          facts:
+            - kind: edge
+              id:
+                $expr:
+                  os_node_id:
+                    - origin.lineage
+                    - var: lineage.id
+              factKind:
+                $expr: origin.lineage
+              from:
+                $expr:
+                  var: lineage.from
+              to:
+                $expr:
+                  var: lineage.to
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: lineage.id
+                      from:
+                        var: lineage.from
+                      to:
+                        var: lineage.to
+                      kind:
+                        var: lineage.kind
+                      mapping:
+                        var:
+                          - lineage.mapping
+                          - null
+                      metadata:
+                        var:
+                          - lineage.metadata
+                          - null
+
+      selectors:
+        - id: origin.origins
+          sources:
+            origin:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: origin.origin
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.origin.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:OriginSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:OriginOriginsSelectorResult
+
+        - id: origin.byNodeId
+          sources:
+            origin:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.nodeId
+                kind:
+                  $expr: origin.origin
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.origin.attributes
+          paramsContract:
+            kind: model
+            model: model:OriginByNodeIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:OriginByNodeIdSelectorResult
+
+        - id: origin.elements
+          sources:
+            element:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: origin.element
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.element.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:OriginSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:OriginElementsSelectorResult
+
+        - id: origin.elementByNodeId
+          sources:
+            element:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.nodeId
+                kind:
+                  $expr: origin.element
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.element.attributes
+          paramsContract:
+            kind: model
+            model: model:OriginByNodeIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:OriginElementByNodeIdSelectorResult
+
+        - id: origin.elementsForOrigin
+          sources:
+            element:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: parameter.origin
+              filter:
+                kind:
+                  $expr: origin.contains
+                direction:
+                  $expr: out
+              optional: true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.element.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:OriginElementsForOriginSelectorParams
+          returnsContract:
+            kind: model
+            model: model:OriginElementsSelectorResult
+
+        - id: origin.lineage
+          sources:
+            lineage:
+              kind: edges
+              filter:
+                kind:
+                  $expr: origin.lineage
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.lineage.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:OriginSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:OriginLineageSelectorResult
+
+        - id: origin.lineageForTarget
+          sources:
+            lineage:
+              kind: edges
+              filter:
+                kind:
+                  $expr: origin.lineage
+          where:
+            $expr:
+              ===:
+                - var: row.lineage.attributes.from
+                - var: parameter.target
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.lineage.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:OriginLineageForTargetSelectorParams
+          returnsContract:
+            kind: model
+            model: model:OriginLineageSelectorResult

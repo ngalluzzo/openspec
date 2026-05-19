@@ -1,0 +1,17 @@
+{
+	"name": "@openspec/protocols-model",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/model.protocol.openspec.yml",
+			"spec/model.model.openspec.yml",
+			"spec/model.graph.openspec.yml",
+			"spec/model.capability.openspec.yml"
+		]
+	}
+}

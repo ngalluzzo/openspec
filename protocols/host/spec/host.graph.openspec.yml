@@ -1,0 +1,82 @@
+openspec: "1.0"
+documents:
+  - id: host.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.host.v1
+      owner: protocol.protocol:openspec.host.v1
+      lowering:
+        - id: host.environments
+          source:
+            path: environments
+            as: environment
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - host.environment
+                    - var: environment.id
+              factKind:
+                $expr: host.environment
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: environment.id
+                      name:
+                        var:
+                          - environment.name
+                          - null
+                      owner:
+                        var: document.owner
+
+            - kind: forEach
+              path: environment.dispatches
+              as: dispatch
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - host.method.dispatch
+                        - var: environment.id
+                        - var: dispatch.dispatch
+                  factKind:
+                    $expr: host.method.dispatch
+                  attributes:
+                    $expr:
+                      os_object:
+                        - owner:
+                            var: document.owner
+                          environment:
+                            var: environment.id
+                          adapter:
+                            var: dispatch.adapter
+                          method:
+                            var: dispatch.method
+                          dispatch:
+                            var: dispatch.dispatch
+
+      selectors:
+        - id: host.methodDispatches
+          sources:
+            dispatch:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: host.method.dispatch
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.dispatch.attributes
+          orderBy:
+            - $expr:
+                var: row.value.method
+          paramsContract:
+            kind: model
+            model: model:HostSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:HostMethodDispatchesSelectorResult

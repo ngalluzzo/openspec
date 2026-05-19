@@ -1,0 +1,12 @@
+{
+	"name": "@openspec/stdio-dialect",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"documents": [
+			"spec/stdio-dialect.model.openspec.yml",
+			"spec/stdio-dialect.graph.openspec.yml"
+		]
+	}
+}

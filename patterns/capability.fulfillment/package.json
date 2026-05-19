@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/capability-fulfillment-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/capability-fulfillment.pattern.openspec.yml"]
+		}
+	}
+}

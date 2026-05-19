@@ -1,0 +1,108 @@
+openspec: "1.0"
+documents:
+  - id: transport.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.transport.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: TransportSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: TransportByIdSelectorParams
+          fields:
+            - name: transport
+              type: nonEmptyString
+
+        - kind: object
+          name: TransportByKindSelectorParams
+          fields:
+            - name: kind
+              type: nonEmptyString
+
+        # ── Document contract ─────────────────────────────────────────────────
+
+        - kind: object
+          name: TransportDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: transports
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TransportDeclaration
+
+        # ── Transport contracts ────────────────────────────────────────────────
+        # A transport is a generic delivery/reachability substrate.
+        # Concrete protocols such as HTTP or stdio are patterns/adapters over this.
+
+        - kind: object
+          name: TransportDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: address
+              type: unknown
+              required: false
+            - name: config
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: TransportContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: address
+              type: unknown
+              required: false
+            - name: config
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: TransportTransportsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: TransportContract
+
+        - kind: alias
+          name: TransportByIdSelectorResult
+          type:
+            kind: ref
+            name: TransportContract
+
+        - kind: alias
+          name: TransportByKindSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: TransportContract

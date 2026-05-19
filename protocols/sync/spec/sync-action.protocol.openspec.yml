@@ -1,0 +1,9 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.sync.action.v1
+package:
+  id: "@openspec/sync"
+documentModels:
+  - model:SyncActionDocument
+metadata:
+  syncKind: action

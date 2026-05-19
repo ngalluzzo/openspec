@@ -1,0 +1,27 @@
+{
+	"name": "reforge",
+	"private": true,
+	"workspaces": [
+		"packages/*"
+	],
+	"scripts": {
+		"api:generate": "typedoc && node scripts/generate-api.mjs",
+		"build": "bun run --filter './packages/*' build",
+		"docs:dev": "vitepress dev docs",
+		"docs:build": "vitepress build docs",
+		"docs:preview": "vitepress preview docs",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint . --write",
+		"format": "biome format .",
+		"test": "bun run --filter './packages/*' test",
+		"typecheck": "bun run --filter './packages/*' typecheck"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.12",
+		"@types/bun": "^1.3.12",
+		"typescript": "^6",
+		"@vueuse/core": "^14.2.1",
+		"typedoc": "^0.28.19",
+		"vitepress": "^1.6.4"
+	}
+}

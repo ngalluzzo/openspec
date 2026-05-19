@@ -1,0 +1,23 @@
+openspec: "1.0"
+documents:
+  - id: external.source.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:external.source
+
+      capabilities:
+        - id: external.source
+          kind: external.source.read
+          description: Read current external state (DB schema, file system snapshot, remote API state) for use by sync projection adapters.
+          methods:
+            read:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ExternalSourceInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ExternalSourceOutput

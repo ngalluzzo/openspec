@@ -1,0 +1,462 @@
+openspec: "1.0"
+documents:
+  - id: syntax.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.syntax.v1
+      declarations:
+        - kind: object
+          name: SyntaxSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: SyntaxByUnitSelectorParams
+          fields:
+            - name: unit
+              type: nonEmptyString
+
+        - kind: object
+          name: SyntaxByTargetSelectorParams
+          fields:
+            - name: target
+              type: nonEmptyString
+
+        - kind: object
+          name: SyntaxDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: units
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: SyntaxUnitDeclaration
+              required: false
+            - name: symbols
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: SyntaxSymbolDeclaration
+              required: false
+            - name: slots
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: SyntaxSlotDeclaration
+              required: false
+            - name: fragments
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: SyntaxFragmentDeclaration
+              required: false
+            - name: references
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: SyntaxReferenceDeclaration
+              required: false
+            - name: dependencies
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: SyntaxDependencyDeclaration
+              required: false
+
+        - kind: object
+          name: SyntaxUnitDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: asset
+              type: nonEmptyString
+              required: false
+            - name: subject
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxSymbolDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxSlotDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+              required: false
+            - name: symbol
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxFragmentDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxReferenceDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxDependencyDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxUnitContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: asset
+              type: nonEmptyString
+              required: false
+            - name: subject
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxSymbolContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: unitNodeId
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxSlotContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: unitNodeId
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+              required: false
+            - name: symbol
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxFragmentContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: unitNodeId
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxReferenceContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: unitNodeId
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxDependencyContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: unitNodeId
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyntaxInvalidUnitLinkContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: unitNodeId
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: sourceKind
+              type: nonEmptyString
+
+        - kind: alias
+          name: SyntaxUnitsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: SyntaxUnitContract
+
+        - kind: alias
+          name: SyntaxSymbolsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: SyntaxSymbolContract
+
+        - kind: alias
+          name: SyntaxSlotsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: SyntaxSlotContract
+
+        - kind: alias
+          name: SyntaxFragmentsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: SyntaxFragmentContract
+
+        - kind: alias
+          name: SyntaxReferencesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: SyntaxReferenceContract
+
+        - kind: alias
+          name: SyntaxDependenciesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: SyntaxDependencyContract
+
+        - kind: alias
+          name: SyntaxInvalidUnitLinksSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: SyntaxInvalidUnitLinkContract

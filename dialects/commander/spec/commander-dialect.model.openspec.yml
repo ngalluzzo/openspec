@@ -1,0 +1,96 @@
+openspec: "1.0"
+documents:
+  - id: commander-dialect.model
+    protocol: openspec.model.v1
+    document:
+      owner: dialect.package:commander
+      declarations:
+        - kind: object
+          name: CommanderDialectSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: CommanderCommandOptionContract
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: flag
+              type: nonEmptyString
+            - name: valueType
+              type: nonEmptyString
+            - name: required
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: defaultValue
+              type: unknown
+              required: false
+            - name: values
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+
+        - kind: object
+          name: CommanderCommandContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: command
+              type: nonEmptyString
+            - name: actionName
+              type: nonEmptyString
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: options
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: CommanderCommandOptionContract
+
+        - kind: object
+          name: CommanderProgramContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: providerSelection
+              type: nonEmptyString
+            - name: factoryName
+              type: nonEmptyString
+            - name: programName
+              type: nonEmptyString
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: commands
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: CommanderCommandContract
+
+        - kind: object
+          name: CommanderProgramRecipeInput
+          fields:
+            - name: program
+              type:
+                kind: ref
+                name: CommanderProgramContract
+
+        - kind: alias
+          name: CommanderProgramSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: CommanderProgramContract

@@ -1,0 +1,129 @@
+openspec: "1.0"
+documents:
+  - id: sync.action.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.sync.action.v1
+      owner: protocol.protocol:openspec.sync.action.v1
+      lowering:
+        - id: sync.action.root
+          source:
+            as: action
+          facts:
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "sync.action:"
+                  - kind: path
+                    path: document.owner
+                  - "."
+                  - kind: path
+                    path: document.syncKind
+                  - "."
+                  - kind: path
+                    path: document.id
+                    default:
+                      kind: concat
+                      items:
+                        - kind: path
+                          path: document.owner
+                        - "."
+                        - kind: path
+                          path: document.syncKind
+              factKind: sync.action
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: path
+                    path: document.id
+                    default:
+                      kind: concat
+                      items:
+                        - kind: path
+                          path: document.owner
+                        - "."
+                        - kind: path
+                          path: document.syncKind
+                  owner:
+                    kind: path
+                    path: document.owner
+                  syncKind:
+                    kind: path
+                    path: document.syncKind
+                    optional: true
+                  externalSource:
+                    kind: path
+                    path: document.externalSource
+                    optional: true
+                  syncAdapter:
+                    kind: path
+                    path: document.syncAdapter
+                    optional: true
+                  platformTarget:
+                    kind: path
+                    path: document.platformTarget
+                    optional: true
+                  config:
+                    kind: path
+                    path: document.config
+                    optional: true
+
+      selectors:
+        - id: sync.action.missingRequiredFields
+          sources:
+            action:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: sync.action
+          where:
+            $expr:
+              or:
+                - "!":
+                    - var:
+                        - row.action.attributes.owner
+                        - null
+                - "!":
+                    - var:
+                        - row.action.attributes.syncKind
+                        - null
+                - "!":
+                    - var:
+                        - row.action.attributes.externalSource
+                        - null
+                - "!":
+                    - var:
+                        - row.action.attributes.syncAdapter
+                        - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.action.attributes
+
+      validate:
+        - id: sync.action.validation
+          rules:
+            - id: required-fields
+              scope: selector
+              selector: sync.action.missingRequiredFields
+              forEach: true
+              assert:
+                $expr: false
+              code: sync.action.requiredField.missing
+              message: Sync action documents must declare owner, syncKind, externalSource, and syncAdapter.
+              details:
+                $expr:
+                  os_object:
+                    - id:
+                        var: item.id
+                      owner:
+                        var: item.owner
+                      syncKind:
+                        var: item.syncKind
+                      externalSource:
+                        var: item.externalSource
+                      syncAdapter:
+                        var: item.syncAdapter

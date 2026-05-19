@@ -1,0 +1,67 @@
+openspec: "1.0"
+documents:
+  - id: planner.model
+    protocol: openspec.model.v1
+    document:
+      owner: provider.provider:planner
+
+      declarations:
+
+        # ── PlanningAction ────────────────────────────────────────────────────────
+        # A derived fact emitted by graph spec derive rules. Represents a single
+        # resolved unit of work. Authors never write these — they are always
+        # derived from bindings, request facets, adapters, and assets.
+
+        - kind: object
+          name: PlanningAction
+          fields:
+            - name: id
+              type: nonEmptyString
+
+            - name: adapterId
+              type: nonEmptyString
+              description: >
+                The adapter that executes this action. Resolved at
+                graph-derive time from the fulfillment binding.
+
+            - name: capability
+              type: nonEmptyString
+              description: The capability node id being fulfilled.
+
+            - name: projectionKind
+              type: nonEmptyString
+              description: The projection kind (e.g. code.typescript.contract).
+
+            - name: location
+              type: nonEmptyString
+              description: >
+                Where the output is written. Interpreted by the storage.writer
+                adapter — filesystem path, S3 key, etc.
+
+            - name: projectionInputs
+              type: unknown
+              required: false
+
+            - name: source
+              type: unknown
+              required: false
+
+        # ── PlannedActionOutput ───────────────────────────────────────────────────
+        # Returned by action.executor after executing a single action.
+        # Carries content only — storage location comes from the action itself.
+
+        - kind: object
+          name: PlannedActionOutput
+          fields:
+            - name: location
+              type: nonEmptyString
+              description: The location this content should be written to.
+
+            - name: content
+              type: nonEmptyString
+              description: The produced content.
+
+            - name: disposition
+              type: nonEmptyString
+              required: false
+              description: Write disposition hint (generated or scaffold).

@@ -1,0 +1,94 @@
+openspec: "1.0"
+documents:
+  - id: expresso.models
+    protocol: openspec.model.v1
+    document:
+      owner: provider.provider:expresso
+      declarations:
+        - kind: object
+          name: ExpressionEvaluateInput
+          fields:
+            - name: context
+              type: unknown
+            - name: expression
+              type: unknown
+            - name: expressions
+              type: unknown
+              required: false
+        - kind: alias
+          name: ExpressionEvaluateResult
+          type: unknown
+
+  - id: expresso.sdk.patterns
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: expresso.adapters
+          pattern: pattern.declaration:provider.adapters
+          inputs:
+            provider:
+              id: expresso
+              name: Expresso provider
+            adapters:
+              - id: expresso.expression.evaluate
+                capability: capability.capability:expression.evaluate
+                kind: expresso.expression.evaluate
+                description: Evaluates OpenSpec expressions using the Expresso runtime.
+
+        - id: expresso.expression.evaluate.types
+          pattern: pattern.declaration:model.type-output
+          inputs:
+            owner: provider.provider:expresso
+            id: expresso.expression.evaluate.types
+            namespace: expresso.expression.evaluate.types
+            unit:
+              id: types
+            declarations:
+              - name: ExpressionEvaluateInput
+              - name: ExpressionEvaluateResult
+            artifact:
+              path: providers/expresso/src/sdk/expression-evaluate-types.generated.ts
+              language: typescript
+              mediaType: text/x.typescript
+
+        - id: expresso.expression.evaluate.contract.surface
+          pattern: pattern.declaration:capability.contract-surface
+          inputs:
+            owner: provider.provider:expresso
+            id: expresso.expression.evaluate.contract
+            namespace: expresso.expression.evaluate.contract
+            capability: capability.capability:expression.evaluate
+            methods:
+              - name: evaluate
+
+        - id: expresso.expression.evaluate.implementation.surface
+          pattern: pattern.declaration:capability.adapter-contract-surface
+          inputs:
+            owner: provider.provider:expresso
+            id: expresso.expression.evaluate.implementation
+            namespace: expresso.expression.evaluate.implementation
+            capability: capability.capability:expression.evaluate
+            unit:
+              id: adapter
+            methods:
+              - name: evaluate
+            metadata:
+              modelImportPath: ./expression-evaluate-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: ExpressionEvaluateAdapter
+              contractTypeName: ExpressionEvaluateAdapterContract
+              contractConstName: expressionEvaluateAdapterContract
+              implementFunctionName: implementExpressionEvaluateAdapter
+              aliasName: ExpressExpressionEvaluateImplementation
+
+        - id: expresso.expression.evaluate.implementation.output
+          pattern: pattern.declaration:syntax.projection
+          inputs:
+            owner: provider.provider:expresso
+            id: expresso.expression.evaluate.implementation
+            syntaxUnit: syntax.unit:expresso.expression.evaluate.implementation.adapter
+            dialect: typescript
+            artifact:
+              path: providers/expresso/src/sdk/expression-evaluate.generated.ts
+              language: typescript
+              mediaType: text/x.typescript

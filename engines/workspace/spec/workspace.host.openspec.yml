@@ -1,0 +1,36 @@
+openspec: "1.0"
+documents:
+  - id: workspace.host
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: workspace.host
+          pattern: pattern.declaration:host.runtime
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace
+            name: Workspace host
+            dispatches:
+              - adapter: adapter.adapter:workspace.compiler.default
+                method: capability.method:compiler.compile
+                dispatch: compiler.compile
+              - adapter: adapter.adapter:action.executor.default
+                method: capability.method:action.executor.execute
+                dispatch: action.executor.default.execute
+              - adapter: adapter.adapter:materializer.local-fs
+                method: capability.method:storage.writer.write
+                dispatch: materializer.local-fs.write
+
+        - id: workspace.cli.host
+          pattern: pattern.declaration:host.runtime
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.cli
+            name: Workspace CLI host
+            dispatches:
+              - adapter: adapter.adapter:workspace.build.default
+                method: capability.method:workspace.build.run
+                dispatch: workspace.build.default.run
+              - adapter: adapter.adapter:workspace.sync.default
+                method: capability.method:workspace.sync.run
+                dispatch: workspace.sync.default.run

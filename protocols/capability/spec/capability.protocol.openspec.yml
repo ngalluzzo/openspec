@@ -1,0 +1,103 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.capability.v1
+package:
+  id: "@openspec/capability"
+documentModels:
+  - model:CapabilityDocument
+validation:
+  - id: capability.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.capability.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: capability.owner.invalid
+        message: Capability documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-capabilities
+        scope: selector
+        selector: capability.capabilities
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: capability.declarations.empty
+        message: Capability documents must declare at least one capability.
+
+      - id: capability-id-format
+        scope: selector
+        selector: capability.capabilities
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: capability.id.invalid
+        message: >
+          Capability ids must be lowercase namespaced identifiers
+          (e.g. user.service, order.repository).
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: capability-kind-format
+        scope: selector
+        selector: capability.capabilities
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: capability.kind.invalid
+        message: >
+          Capability kind must be a lowercase namespaced identifier
+          (e.g. service.http, repository.pg, client.http).
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: method-name-format
+        scope: selector
+        selector: capability.methods
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.name
+              - ^[a-z][A-Za-z0-9]*$
+        code: capability.method.name.invalid
+        message: >
+          Capability method names must be camelCase identifiers
+          (e.g. findById, createUser, listAll).
+        details:
+          $expr:
+            os_object:
+              - capability:
+                  var: item.capability
+                method:
+                  var: item.name

@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/flow-executor-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/flow-executor.generated.ts",
+			"import": "./src/sdk/flow-executor.generated.ts",
+			"default": "./src/sdk/flow-executor.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/flow-executor-types.generated.ts",
+			"import": "./src/sdk/flow-executor-types.generated.ts",
+			"default": "./src/sdk/flow-executor-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/flow-executor.model.openspec.yml",
+			"spec/flow-executor.capability.openspec.yml",
+			"spec/flow-executor.output.openspec.yml"
+		]
+	}
+}

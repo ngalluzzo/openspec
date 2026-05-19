@@ -1,0 +1,198 @@
+openspec: "1.0"
+documents:
+  - id: syntax-projection.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: syntax.projection
+        name: Syntax Projection Pattern
+      patterns:
+        - id: syntax.projection
+          owner: pattern.package:syntax.projection
+          name: Syntax projection
+          metadata:
+            composes:
+              - openspec.syntax.v1
+              - openspec.projection.v1
+            relation: Requests rendering for a syntax unit and asset without selecting a provider or renderer.
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .provider.selection
+                protocol: openspec.provider.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  selectionRequests:
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .renderer
+                      target:
+                        expr:
+                          kind: path
+                          path: input.syntaxUnit
+                      role: module.render
+                      dialect:
+                        expr:
+                          kind: path
+                          path: input.dialect
+                          optional: true
+                      provider:
+                        expr:
+                          kind: path
+                          path: input.provider
+                          optional: true
+                      params:
+                        expr:
+                          kind: path
+                          path: input.params
+                          optional: true
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .projection
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      pattern: pattern.declaration:projection.asset
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: path
+                            path: input.id
+                        capability:
+                          expr:
+                            kind: path
+                            path: input.capability
+                            optional: true
+                            default:
+                              kind: literal
+                              value: capability.capability:artifact.render
+                        artifact:
+                          expr:
+                            kind: path
+                            path: input.artifact
+                        projection:
+                          expr:
+                            kind: object
+                            fields:
+                              kind:
+                                kind: path
+                                path: input.projection.kind
+                                optional: true
+                                default:
+                                  kind: literal
+                                  value: projection.syntax.render
+                              inputs:
+                                kind: object
+                                fields:
+                                  providerSelectionRequest:
+                                    kind: concat
+                                    items:
+                                      - kind: path
+                                        path: input.id
+                                      - kind: literal
+                                        value: .renderer
+                                  syntaxUnit:
+                                    kind: path
+                                    path: input.syntaxUnit
+                                  asset:
+                                    kind: concat
+                                    items:
+                                      - kind: literal
+                                        value: "asset.asset:"
+                                      - kind: path
+                                        path: input.id
+                                      - kind: literal
+                                        value: ".output"
+                                  dialect:
+                                    kind: path
+                                    path: input.dialect
+                                    optional: true
+                                  metadata:
+                                    kind: path
+                                    path: input.metadata
+                                    optional: true
+                              params:
+                                kind: when
+                                condition:
+                                  kind: is
+                                  value:
+                                    kind: path
+                                    path: input.params
+                                    optional: true
+                                then:
+                                  kind: path
+                                  path: input.params
+                                else:
+                                  kind: when
+                                  condition:
+                                    kind: is
+                                    value:
+                                      kind: path
+                                      path: input.dialect
+                                      optional: true
+                                  then:
+                                    kind: object
+                                    fields:
+                                      dialect:
+                                        kind: path
+                                        path: input.dialect
+                                  else:
+                                    kind: literal
+                                    value: null
+                        params:
+                          expr:
+                            kind: when
+                            condition:
+                              kind: is
+                              value:
+                                kind: path
+                                path: input.params
+                                optional: true
+                            then:
+                              kind: path
+                              path: input.params
+                            else:
+                              kind: when
+                              condition:
+                                kind: is
+                                value:
+                                  kind: path
+                                  path: input.dialect
+                                  optional: true
+                              then:
+                                kind: object
+                                fields:
+                                  dialect:
+                                    kind: path
+                                    path: input.dialect
+                              else:
+                                kind: literal
+                                value: null

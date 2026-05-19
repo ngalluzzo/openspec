@@ -1,0 +1,45 @@
+openspec: "1.0"
+documents:
+  - id: entrypoint-surface.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: entrypoint.surface
+        name: Entrypoint Surface Pattern
+      patterns:
+        - id: entrypoint.surface
+          owner: pattern.package:entrypoint.surface
+          name: Entrypoint surface
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .facet
+                protocol: openspec.facet.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  facets:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      kind:
+                        expr:
+                          kind: path
+                          path: input.kind
+                      target:
+                        expr:
+                          kind: path
+                          path: input.entrypoint
+                      value:
+                        expr:
+                          kind: path
+                          path: input.value

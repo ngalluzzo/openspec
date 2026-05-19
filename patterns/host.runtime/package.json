@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/host-runtime-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/host-runtime.pattern.openspec.yml"]
+		}
+	}
+}

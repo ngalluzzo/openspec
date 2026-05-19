@@ -1,0 +1,362 @@
+openspec: "1.0"
+documents:
+  - id: adapter.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.adapter.v1
+      owner: protocol.protocol:openspec.adapter.v1
+      lowering:
+        - id: adapter.declarations
+          source:
+            path: adapters
+            as: adapter
+          facts:
+            # adapter.declaration node
+            # `requires` is stored inline from the document for direct access.
+            # Separate adapter.requirement nodes are also produced for flat queries.
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - adapter.adapter
+                    - var: adapter.id
+              factKind:
+                $expr: adapter.declaration
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: adapter.id
+                      capability:
+                        var: adapter.capability
+                      kind:
+                        var: adapter.kind
+                      owner:
+                        var: document.owner
+                      params:
+                        var:
+                          - adapter.params
+                          - null
+                      requires:
+                        var:
+                          - adapter.requires
+                          - null
+                      constraints:
+                        var:
+                          - adapter.constraints
+                          - null
+                      description:
+                        var:
+                          - adapter.description
+                          - null
+
+            # adapter.owner.declaration edge — owner → adapter
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .adapter.
+                    - var: adapter.id
+              factKind:
+                $expr: adapter.owner.declaration
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - adapter.adapter
+                    - var: adapter.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      adapter:
+                        var: adapter.id
+
+            # adapter.implements edge — adapter → the capability it implements
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - adapter.adapter
+                        - var: adapter.id
+                    - .implements.
+                    - var: adapter.capability
+              factKind:
+                $expr: adapter.implements
+              from:
+                $expr:
+                  os_node_id:
+                    - adapter.adapter
+                    - var: adapter.id
+              to:
+                $expr:
+                  var: adapter.capability
+
+            # adapter.requirement nodes and edges (one per declared requirement)
+            - kind: forEach
+              path: adapter.requires
+              as: requirement
+              optional: true
+              facts:
+                # adapter.requirement node — used by the flat adapter.requirements selector
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - adapter.requirement
+                        - var: adapter.id
+                        - var: requirement.as
+                  factKind:
+                    $expr: adapter.requirement
+                  attributes:
+                    $expr:
+                      os_object:
+                        - adapter:
+                            var: adapter.id
+                          as:
+                            var: requirement.as
+                          capability:
+                            var: requirement.capability
+                          optional:
+                            var:
+                              - requirement.optional
+                              - false
+
+                # adapter.declaration.requirement edge — adapter → requirement node
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - adapter.adapter
+                            - var: adapter.id
+                        - .requires.
+                        - var: requirement.as
+                  factKind:
+                    $expr: adapter.declaration.requirement
+                  from:
+                    $expr:
+                      os_node_id:
+                        - adapter.adapter
+                        - var: adapter.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - adapter.requirement
+                        - var: adapter.id
+                        - var: requirement.as
+
+                # adapter.requirement.capability edge — requirement → capability
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - adapter.requirement
+                            - var: adapter.id
+                            - var: requirement.as
+                        - .capability.
+                        - var: requirement.capability
+                  factKind:
+                    $expr: adapter.requirement.capability
+                  from:
+                    $expr:
+                      os_node_id:
+                        - adapter.requirement
+                        - var: adapter.id
+                        - var: requirement.as
+                  to:
+                    $expr:
+                      var: requirement.capability
+
+      selectors:
+        # All declared adapters.
+        - id: adapter.adapters
+          sources:
+            adapter:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: adapter.declaration
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.adapter.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:AdapterSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:AdapterAdaptersSelectorResult
+
+        # Single adapter by ID.
+        - id: adapter.byId
+          sources:
+            adapter:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - adapter.adapter
+                      - var: parameter.adapter
+                kind:
+                  $expr: adapter.declaration
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.adapter.attributes
+          paramsContract:
+            kind: model
+            model: model:AdapterByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:AdapterByIdSelectorResult
+
+        # All adapters implementing a given capability — used by environment resolution.
+        - id: adapter.byCapability
+          sources:
+            adapter:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: adapter.declaration
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.adapter.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.adapter.attributes.capability
+                  - var: parameter.capability
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:AdapterByCapabilitySelectorParams
+          returnsContract:
+            kind: model
+            model: model:AdapterByCapabilitySelectorResult
+
+        # All adapters of a given implementation kind.
+        - id: adapter.byKind
+          sources:
+            adapter:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: adapter.declaration
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.adapter.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.adapter.attributes.kind
+                  - var: parameter.kind
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:AdapterByKindSelectorParams
+          returnsContract:
+            kind: model
+            model: model:AdapterByKindSelectorResult
+
+        # All declared adapter requirements — for environment resolution and
+        # validation that every required capability has an active adapter selection.
+        - id: adapter.requirements
+          sources:
+            requirement:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: adapter.requirement
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.requirement.attributes
+          orderBy:
+            - $expr:
+                var: row.value.adapter
+            - $expr:
+                var: row.value.as
+          paramsContract:
+            kind: model
+            model: model:AdapterSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:AdapterRequirementsSelectorResult
+
+        # Methods a provider must implement for one adapter — used by
+        # implementation SDK projections.
+        - id: adapter.implementationMethods
+          sources:
+            adapter:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.adapter
+                kind:
+                  $expr: adapter.declaration
+            capability:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.capability
+            method:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.method
+          where:
+            $expr:
+              and:
+                - or:
+                    - ===:
+                        - var: row.adapter.attributes.capability
+                        - var: row.capability.id
+                    - ===:
+                        - var: row.adapter.attributes.capability
+                        - var: row.capability.attributes.id
+                - ===:
+                    - var: row.method.attributes.capability
+                    - var: row.capability.attributes.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - adapter:
+                      var: row.adapter.attributes
+                    capability:
+                      var: row.capability.attributes
+                    method:
+                      var: row.method.attributes
+          orderBy:
+            - $expr:
+                var: row.value.method.name
+          paramsContract:
+            kind: model
+            model: model:AdapterImplementationMethodsSelectorParams
+          returnsContract:
+            kind: model
+            model: model:AdapterImplementationMethodsSelectorResult

@@ -1,0 +1,23 @@
+openspec: "1.0"
+documents:
+  - id: expression.evaluate.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: provider.provider:expresso
+
+      capabilities:
+        - id: expression.evaluate
+          kind: expression.evaluation
+          description: Evaluate OpenSpec expression documents against an input context.
+          methods:
+            evaluate:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ExpressionEvaluateInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ExpressionEvaluateResult

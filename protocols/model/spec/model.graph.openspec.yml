@@ -1,0 +1,933 @@
+openspec: "1.0"
+documents:
+  - id: model.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.model.v1
+      owner: protocol.protocol:openspec.model.v1
+      lowering:
+        - id: model.declarations
+          source:
+            path: declarations
+            as: declaration
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - model
+                    - var: document.owner
+                    - var: declaration.name
+              factKind:
+                $expr: model.declaration
+              attributes:
+                kind: object
+                fields:
+                  name:
+                    kind: path
+                    path: declaration.name
+                  owner:
+                    kind: path
+                    path: document.owner
+                  declarationKind:
+                    kind: path
+                    path: declaration.kind
+                  type:
+                    kind: when
+                    condition:
+                      kind: path
+                      path: declaration.type
+                      optional: true
+                    then:
+                      kind: call
+                      name: model.normalizeType
+                      input:
+                        kind: path
+                        path: declaration.type
+                  base:
+                    kind: path
+                    path: declaration.base
+                    optional: true
+                  values:
+                    kind: path
+                    path: declaration.values
+                    optional: true
+                  open:
+                    kind: when
+                    condition:
+                      kind: path
+                      path: declaration.open
+                      optional: true
+                    then:
+                      kind: call
+                      name: model.normalizeType
+                      input:
+                        kind: path
+                        path: declaration.open
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .model.
+                    - var: declaration.name
+              factKind:
+                $expr: model.owner.declaration
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - model
+                    - var: document.owner
+                    - var: declaration.name
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      declaration:
+                        var: declaration.name
+
+            - kind: forEach
+              path: declaration.fields
+              as: field
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - model
+                        - var: document.owner
+                        - var: declaration.name
+                        - field
+                        - var: field.name
+                  factKind:
+                    $expr: model.field
+                  attributes:
+                    kind: object
+                    fields:
+                      name:
+                        kind: path
+                        path: field.name
+                      required:
+                        kind: when
+                        condition:
+                          kind: equals
+                          left:
+                            kind: path
+                            path: field.required
+                            optional: true
+                          right:
+                            kind: literal
+                            value: false
+                        then:
+                          kind: literal
+                          value: false
+                        else:
+                          kind: literal
+                          value: true
+                      type:
+                        kind: call
+                        name: model.normalizeType
+                        input:
+                          kind: path
+                          path: field.type
+                      unique:
+                        kind: path
+                        path: field.unique
+                        optional: true
+                      identity:
+                        kind: path
+                        path: field.identity
+                        optional: true
+                      computed:
+                        kind: path
+                        path: field.computed
+                        optional: true
+                      description:
+                        kind: path
+                        path: field.description
+                        optional: true
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - model
+                            - var: document.owner
+                            - var: declaration.name
+                        - .field.
+                        - var: field.name
+                  factKind:
+                    $expr: model.declaration.field
+                  from:
+                    $expr:
+                      os_node_id:
+                        - model
+                        - var: document.owner
+                        - var: declaration.name
+                  to:
+                    $expr:
+                      os_node_id:
+                        - model
+                        - var: document.owner
+                        - var: declaration.name
+                        - field
+                        - var: field.name
+
+      selectors:
+        - id: model.declarations
+          sources:
+            declaration:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: model.declaration
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.declaration.id
+              filter:
+                kind:
+                  $expr: model.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+          groupBy:
+            $expr:
+              var: row.declaration.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - name:
+                      var: row.declaration.attributes.name
+                    owner:
+                      var: row.declaration.attributes.owner
+                    kind:
+                      var: row.declaration.attributes.declarationKind
+                    type:
+                      var:
+                        - row.declaration.attributes.type
+                        - null
+                    base:
+                      var:
+                        - row.declaration.attributes.base
+                        - null
+                    values:
+                      var:
+                        - row.declaration.attributes.values
+                        - null
+                    open:
+                      var:
+                        - row.declaration.attributes.open
+                        - null
+                    fields:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - declaration:
+                                var: row.declaration.attributes.name
+                              name:
+                                var: item.field.attributes.name
+                              required:
+                                var: item.field.attributes.required
+                              type:
+                                var: item.field.attributes.type
+                              unique:
+                                var:
+                                  - item.field.attributes.unique
+                                  - null
+                              identity:
+                                var:
+                                  - item.field.attributes.identity
+                                  - null
+                              computed:
+                                var:
+                                  - item.field.attributes.computed
+                                  - null
+                              description:
+                                var:
+                                  - item.field.attributes.description
+                                  - null
+                        - false
+                        - var:
+                            - item.field
+                            - null
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:ModelSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ModelDeclarationsSelectorResult
+
+        - id: model.declarationsForOwner
+          sources:
+            declaration:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: parameter.owner
+              filter:
+                kind:
+                  $expr: model.owner.declaration
+                direction:
+                  $expr: out
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.declaration.id
+              filter:
+                kind:
+                  $expr: model.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+          groupBy:
+            $expr:
+              var: row.declaration.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - name:
+                      var: row.declaration.attributes.name
+                    owner:
+                      var: row.declaration.attributes.owner
+                    kind:
+                      var: row.declaration.attributes.declarationKind
+                    type:
+                      var:
+                        - row.declaration.attributes.type
+                        - null
+                    base:
+                      var:
+                        - row.declaration.attributes.base
+                        - null
+                    values:
+                      var:
+                        - row.declaration.attributes.values
+                        - null
+                    open:
+                      var:
+                        - row.declaration.attributes.open
+                        - null
+                    fields:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - declaration:
+                                var: row.declaration.attributes.name
+                              name:
+                                var: item.field.attributes.name
+                              required:
+                                var: item.field.attributes.required
+                              type:
+                                var: item.field.attributes.type
+                              unique:
+                                var:
+                                  - item.field.attributes.unique
+                                  - null
+                              identity:
+                                var:
+                                  - item.field.attributes.identity
+                                  - null
+                              computed:
+                                var:
+                                  - item.field.attributes.computed
+                                  - null
+                              description:
+                                var:
+                                  - item.field.attributes.description
+                                  - null
+                        - false
+                        - var:
+                            - item.field
+                            - null
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:ModelOwnerSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ModelDeclarationsSelectorResult
+
+        - id: model.byName
+          sources:
+            declaration:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: model.declaration
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.declaration.id
+              filter:
+                kind:
+                  $expr: model.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.declaration.attributes.name
+                    - var: parameter.name
+                - or:
+                    - os_is_empty:
+                        - var:
+                            - parameter.owner
+                            - null
+                    - ===:
+                        - var: row.declaration.attributes.owner
+                        - var: parameter.owner
+          groupBy:
+            $expr:
+              var: row.declaration.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - name:
+                      var: row.declaration.attributes.name
+                    owner:
+                      var: row.declaration.attributes.owner
+                    kind:
+                      var: row.declaration.attributes.declarationKind
+                    type:
+                      var:
+                        - row.declaration.attributes.type
+                        - null
+                    base:
+                      var:
+                        - row.declaration.attributes.base
+                        - null
+                    values:
+                      var:
+                        - row.declaration.attributes.values
+                        - null
+                    open:
+                      var:
+                        - row.declaration.attributes.open
+                        - null
+                    fields:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - declaration:
+                                var: row.declaration.attributes.name
+                              name:
+                                var: item.field.attributes.name
+                              required:
+                                var: item.field.attributes.required
+                              type:
+                                var: item.field.attributes.type
+                              unique:
+                                var:
+                                  - item.field.attributes.unique
+                                  - null
+                              identity:
+                                var:
+                                  - item.field.attributes.identity
+                                  - null
+                              computed:
+                                var:
+                                  - item.field.attributes.computed
+                                  - null
+                              description:
+                                var:
+                                  - item.field.attributes.description
+                                  - null
+                        - false
+                        - var:
+                            - item.field
+                            - null
+          paramsContract:
+            kind: model
+            model: model:ModelByNameSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ModelByNameSelectorResult
+
+        - id: model.fields
+          sources:
+            field:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: model.field
+            declaration:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.field.id
+              filter:
+                kind:
+                  $expr: model.declaration.field
+                direction:
+                  $expr: in
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - declaration:
+                      var: row.declaration.attributes.name
+                    name:
+                      var: row.field.attributes.name
+                    required:
+                      var: row.field.attributes.required
+                    type:
+                      var: row.field.attributes.type
+                    unique:
+                      var:
+                        - row.field.attributes.unique
+                        - null
+                    identity:
+                      var:
+                        - row.field.attributes.identity
+                        - null
+                    computed:
+                      var:
+                        - row.field.attributes.computed
+                        - null
+                    description:
+                      var:
+                        - row.field.attributes.description
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:ModelSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ModelFieldsSelectorResult
+
+        # Resolved model declarations include declared fields plus accepted field
+        # facets. Declared fields win: an facet with the same field
+        # name is ignored rather than overriding the owning declaration.
+        - id: model.resolvedDeclarations
+          sources:
+            declaration:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: model.declaration
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.declaration.id
+              filter:
+                kind:
+                  $expr: model.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: model.field
+                target:
+                  $expr:
+                    var: row.declaration.id
+              optional: true
+          groupBy:
+            $expr:
+              var: row.declaration.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - name:
+                      var: row.declaration.attributes.name
+                    owner:
+                      var: row.declaration.attributes.owner
+                    kind:
+                      var: row.declaration.attributes.declarationKind
+                    type:
+                      var:
+                        - row.declaration.attributes.type
+                        - null
+                    base:
+                      var:
+                        - row.declaration.attributes.base
+                        - null
+                    values:
+                      var:
+                        - row.declaration.attributes.values
+                        - null
+                    open:
+                      var:
+                        - row.declaration.attributes.open
+                        - null
+                    fields:
+                      os_let:
+                        - fieldEntries
+                        - kind: arrayConcat
+                          items:
+                            - kind: uniqueMap
+                              path: group.rows
+                              as: item
+                              key:
+                                kind: path
+                                path: item.field.attributes.name
+                              when:
+                                kind: path
+                                path: item.field
+                                optional: true
+                              value:
+                                kind: object
+                                fields:
+                                  declaration:
+                                    kind: path
+                                    path: row.declaration.attributes.name
+                                  name:
+                                    kind: path
+                                    path: item.field.attributes.name
+                                  required:
+                                    kind: path
+                                    path: item.field.attributes.required
+                                  type:
+                                    kind: path
+                                    path: item.field.attributes.type
+                                    unique:
+                                      kind: path
+                                      path: item.field.attributes.unique
+                                      optional: true
+                                    identity:
+                                      kind: path
+                                      path: item.field.attributes.identity
+                                      optional: true
+                                    computed:
+                                      kind: path
+                                      path: item.field.attributes.computed
+                                      optional: true
+                                    description:
+                                      kind: path
+                                      path: item.field.attributes.description
+                                      optional: true
+                            - kind: uniqueMap
+                              path: group.rows
+                              as: item
+                              key:
+                                kind: path
+                                path: item.facet.value.name
+                              when:
+                                kind: and
+                                items:
+                                  - kind: path
+                                    path: item.facet
+                                    optional: true
+                                  - kind: equals
+                                    left:
+                                      kind: path
+                                      path: item.facet.kind
+                                    right:
+                                      kind: literal
+                                      value: model.field
+                                  - kind: isEmpty
+                                    value:
+                                      kind: find
+                                      path: group.rows
+                                      as: candidate
+                                      optional: true
+                                      condition:
+                                        kind: equals
+                                        left:
+                                          kind: path
+                                          path: candidate.field.attributes.name
+                                          optional: true
+                                        right:
+                                          kind: path
+                                          path: item.facet.value.name
+                              value:
+                                kind: object
+                                fields:
+                                  declaration:
+                                    kind: path
+                                    path: item.facet.value.declaration
+                                    optional: true
+                                    default:
+                                      kind: path
+                                      path: row.declaration.attributes.name
+                                  name:
+                                    kind: path
+                                    path: item.facet.value.name
+                                  required:
+                                    kind: path
+                                    path: item.facet.value.required
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: true
+                                  type:
+                                    kind: path
+                                    path: item.facet.value.type
+                                    unique:
+                                      kind: path
+                                      path: item.facet.value.unique
+                                      optional: true
+                                    identity:
+                                      kind: path
+                                      path: item.facet.value.identity
+                                      optional: true
+                                    computed:
+                                      kind: path
+                                      path: item.facet.value.computed
+                                      optional: true
+                                    description:
+                                      kind: path
+                                      path: item.facet.value.description
+                                      optional: true
+                        - os_values:
+                            kind: objectFromEntries
+                            path: fieldEntries
+                            as: field
+                            key:
+                              kind: path
+                              path: field.name
+                            value:
+                              kind: path
+                              path: field
+          orderBy:
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:ModelSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ModelDeclarationsSelectorResult
+
+        - id: model.resolvedByName
+          sources:
+            declaration:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: model.declaration
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.declaration.id
+              filter:
+                kind:
+                  $expr: model.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: model.field
+                target:
+                  $expr:
+                    var: row.declaration.id
+              optional: true
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.declaration.attributes.name
+                    - var: parameter.name
+                - or:
+                    - os_is_empty:
+                        - var:
+                            - parameter.owner
+                            - null
+                    - ===:
+                        - var: row.declaration.attributes.owner
+                        - var: parameter.owner
+          groupBy:
+            $expr:
+              var: row.declaration.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - name:
+                      var: row.declaration.attributes.name
+                    owner:
+                      var: row.declaration.attributes.owner
+                    kind:
+                      var: row.declaration.attributes.declarationKind
+                    type:
+                      var:
+                        - row.declaration.attributes.type
+                        - null
+                    base:
+                      var:
+                        - row.declaration.attributes.base
+                        - null
+                    values:
+                      var:
+                        - row.declaration.attributes.values
+                        - null
+                    open:
+                      var:
+                        - row.declaration.attributes.open
+                        - null
+                    fields:
+                      os_let:
+                        - fieldEntries
+                        - kind: arrayConcat
+                          items:
+                            - kind: uniqueMap
+                              path: group.rows
+                              as: item
+                              key:
+                                kind: path
+                                path: item.field.attributes.name
+                              when:
+                                kind: path
+                                path: item.field
+                                optional: true
+                              value:
+                                kind: object
+                                fields:
+                                  declaration:
+                                    kind: path
+                                    path: row.declaration.attributes.name
+                                  name:
+                                    kind: path
+                                    path: item.field.attributes.name
+                                  required:
+                                    kind: path
+                                    path: item.field.attributes.required
+                                  type:
+                                    kind: path
+                                    path: item.field.attributes.type
+                                    unique:
+                                      kind: path
+                                      path: item.field.attributes.unique
+                                      optional: true
+                                    identity:
+                                      kind: path
+                                      path: item.field.attributes.identity
+                                      optional: true
+                                    computed:
+                                      kind: path
+                                      path: item.field.attributes.computed
+                                      optional: true
+                                    description:
+                                      kind: path
+                                      path: item.field.attributes.description
+                                      optional: true
+                            - kind: uniqueMap
+                              path: group.rows
+                              as: item
+                              key:
+                                kind: path
+                                path: item.facet.value.name
+                              when:
+                                kind: and
+                                items:
+                                  - kind: path
+                                    path: item.facet
+                                    optional: true
+                                  - kind: equals
+                                    left:
+                                      kind: path
+                                      path: item.facet.kind
+                                    right:
+                                      kind: literal
+                                      value: model.field
+                                  - kind: isEmpty
+                                    value:
+                                      kind: find
+                                      path: group.rows
+                                      as: candidate
+                                      optional: true
+                                      condition:
+                                        kind: equals
+                                        left:
+                                          kind: path
+                                          path: candidate.field.attributes.name
+                                          optional: true
+                                        right:
+                                          kind: path
+                                          path: item.facet.value.name
+                              value:
+                                kind: object
+                                fields:
+                                  declaration:
+                                    kind: path
+                                    path: item.facet.value.declaration
+                                    optional: true
+                                    default:
+                                      kind: path
+                                      path: row.declaration.attributes.name
+                                  name:
+                                    kind: path
+                                    path: item.facet.value.name
+                                  required:
+                                    kind: path
+                                    path: item.facet.value.required
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: true
+                                  type:
+                                    kind: path
+                                    path: item.facet.value.type
+                                    unique:
+                                      kind: path
+                                      path: item.facet.value.unique
+                                      optional: true
+                                    identity:
+                                      kind: path
+                                      path: item.facet.value.identity
+                                      optional: true
+                                    computed:
+                                      kind: path
+                                      path: item.facet.value.computed
+                                      optional: true
+                                    description:
+                                      kind: path
+                                      path: item.facet.value.description
+                                      optional: true
+                        - os_values:
+                            kind: objectFromEntries
+                            path: fieldEntries
+                            as: field
+                            key:
+                              kind: path
+                              path: field.name
+                            value:
+                              kind: path
+                              path: field
+          paramsContract:
+            kind: model
+            model: model:ModelByNameSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ModelByNameSelectorResult

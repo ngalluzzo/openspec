@@ -1,0 +1,20 @@
+openspec: "1.0"
+documents:
+  - id: workspace.cli.program
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: workspace.cli.program
+          pattern: pattern.declaration:cli.program-output
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.cli.program
+            namespace: workspace
+            factoryName: createWorkspaceCliProgram
+            handlerMapTypeName: WorkspaceCliHandlers
+            programName: openspec
+            description: OpenSpec workspace CLI
+            artifact:
+              path: engines/workspace/src/generated/workspace-cli-program.generated.ts
+              language: typescript
+              mediaType: text/x.typescript

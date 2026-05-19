@@ -1,0 +1,13 @@
+{
+	"name": "@openspec/sync",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"documents": [
+			"spec/sync-action.protocol.openspec.yml",
+			"spec/sync-action.model.openspec.yml",
+			"spec/sync-action.graph.openspec.yml"
+		]
+	}
+}

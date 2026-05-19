@@ -1,0 +1,345 @@
+openspec: "1.0"
+documents:
+  - id: entrypoint.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.entrypoint.v1
+      owner: protocol.protocol:openspec.entrypoint.v1
+      lowering:
+        - id: entrypoint.declarations
+          source:
+            path: entrypoints
+            as: entrypoint
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - entrypoint.entrypoint
+                    - var: entrypoint.id
+              factKind:
+                $expr: entrypoint.entrypoint
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: entrypoint.id
+                      handler:
+                        var: entrypoint.handler
+                      owner:
+                        var: document.owner
+                      kind:
+                        var:
+                          - entrypoint.kind
+                          - null
+                      name:
+                        var:
+                          - entrypoint.name
+                          - null
+                      context:
+                        var:
+                          - entrypoint.context
+                          - null
+                      input:
+                        var:
+                          - entrypoint.input
+                          - null
+                      output:
+                        var:
+                          - entrypoint.output
+                          - null
+                      metadata:
+                        var:
+                          - entrypoint.metadata
+                          - null
+                      description:
+                        var:
+                          - entrypoint.description
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .entrypoint.
+                    - var: entrypoint.id
+              factKind:
+                $expr: entrypoint.owner.entrypoint
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - entrypoint.entrypoint
+                    - var: entrypoint.id
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - entrypoint.entrypoint
+                        - var: entrypoint.id
+                    - .handler.
+                    - var: entrypoint.handler
+              factKind:
+                $expr: entrypoint.handler
+              from:
+                $expr:
+                  os_node_id:
+                    - entrypoint.entrypoint
+                    - var: entrypoint.id
+              to:
+                $expr:
+                  var: entrypoint.handler
+
+            - kind: edge
+              when:
+                $expr:
+                  var:
+                    - entrypoint.context
+                    - null
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - entrypoint.entrypoint
+                        - var: entrypoint.id
+                    - .context.
+                    - var: entrypoint.context
+              factKind:
+                $expr: entrypoint.context
+              from:
+                $expr:
+                  os_node_id:
+                    - entrypoint.entrypoint
+                    - var: entrypoint.id
+              to:
+                $expr:
+                  var: entrypoint.context
+
+      selectors:
+        - id: entrypoint.entrypoints
+          sources:
+            entrypoint:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entrypoint.entrypoint
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.entrypoint.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:EntrypointSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:EntrypointEntrypointsSelectorResult
+
+        - id: entrypoint.byId
+          sources:
+            entrypoint:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - entrypoint.entrypoint
+                      - var: parameter.entrypoint
+                kind:
+                  $expr: entrypoint.entrypoint
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.entrypoint.attributes
+          paramsContract:
+            kind: model
+            model: model:EntrypointByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:EntrypointByIdSelectorResult
+
+        - id: entrypoint.byHandler
+          sources:
+            entrypoint:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entrypoint.entrypoint
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.entrypoint.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.entrypoint.attributes.handler
+                  - var: parameter.handler
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:EntrypointByHandlerSelectorParams
+          returnsContract:
+            kind: model
+            model: model:EntrypointByHandlerSelectorResult
+
+        - id: entrypoint.surfaceDispatches
+          sources:
+            surface:
+              kind: facets
+              filter:
+                kind:
+                  $expr:
+                    var:
+                      - parameter.surfaceKind
+                      - null
+            entrypoint:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.surface.target
+                kind:
+                  $expr: entrypoint.entrypoint
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+                to:
+                  $expr:
+                    var: row.entrypoint.id
+            binding:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.subject.from
+                kind:
+                  $expr: binding.binding
+            slot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.binding.id
+            transport:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.slot.to
+                kind:
+                  $expr: transport.transport
+            operation:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.entrypoint.attributes.handler
+                kind:
+                  $expr: operation.operation
+            fulfillmentSubject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+                to:
+                  $expr:
+                    var: row.operation.id
+            fulfillment:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.fulfillmentSubject.from
+                kind:
+                  $expr: binding.binding
+            fulfillmentSlot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.fulfillment.id
+            dispatch:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: host.method.dispatch
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.binding.attributes.kind
+                    - entrypoint.transport
+                - ===:
+                    - var: row.fulfillment.attributes.kind
+                    - operation.fulfillment
+                - ===:
+                    - var: row.dispatch.attributes.method
+                    - var: row.fulfillmentSlot.to
+                - or:
+                    - os_is_empty:
+                        - var:
+                            - parameter.hostId
+                            - null
+                    - ===:
+                        - var: row.dispatch.attributes.environment
+                        - var: parameter.hostId
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.entrypoint.attributes.id
+                    owner:
+                      var: row.entrypoint.attributes.owner
+                    entrypoint:
+                      var: row.entrypoint.id
+                    operation:
+                      var: row.operation.id
+                    operationId:
+                      var: row.operation.attributes.id
+                    transport:
+                      var: row.transport.id
+                    transportKind:
+                      var: row.transport.attributes.kind
+                    surfaceKind:
+                      var: row.surface.kind
+                    surface:
+                      var: row.surface.value
+                    method:
+                      var: row.fulfillmentSlot.to
+                    adapter:
+                      var: row.dispatch.attributes.adapter
+                    dispatch:
+                      var: row.dispatch.attributes.dispatch
+                    environment:
+                      var: row.dispatch.attributes.environment
+          orderBy:
+            - $expr:
+                var: row.value.surfaceKind
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:EntrypointSurfaceDispatchesSelectorParams
+          returnsContract:
+            kind: model
+            model: model:EntrypointSurfaceDispatchesSelectorResult

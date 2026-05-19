@@ -1,0 +1,59 @@
+{
+	"name": "@gooi/expresso-std",
+	"version": "1.0.0",
+	"description": "Standard operators for Expresso (public API: package root, register-standard-plugins, testing helpers, metadata)",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/plugins.ts",
+			"bun": "./src/plugins.ts",
+			"default": "./dist/plugins.js"
+		},
+		"./register-standard-plugins": {
+			"types": "./src/register-standard-plugins.ts",
+			"import": "./src/register-standard-plugins.ts"
+		},
+		"./testing/verify-plugin": {
+			"types": "./src/testing/verify-plugin.ts",
+			"import": "./src/testing/verify-plugin.ts"
+		},
+		"./metadata": "./metadata.json",
+		"./package.json": "./package.json"
+	},
+	"keywords": [
+		"@gooi/expresso",
+		"operators",
+		"jsonlogic",
+		"plugin"
+	],
+	"author": {
+		"name": "Expresso Team"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "github:expresso/expresso",
+		"directory": "features/expresso-language/packages/expresso-std"
+	},
+	"dependencies": {
+		"zod": "4.3.6",
+		"@gooi/expresso-core": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@gooi/expresso-core": "workspace:*"
+	},
+	"scripts": {
+		"typecheck": "tsc -b",
+		"lint": "biome check .",
+		"lint:fix": "biome check . --write",
+		"format": "biome format . --write",
+		"metadata:generate": "bun ./scripts/generate-metadata.mjs"
+	},
+	"@gooi/expresso": {
+		"type": "operator-package",
+		"namespace": "@std",
+		"category": "standard",
+		"operators": []
+	}
+}

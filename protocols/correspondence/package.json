@@ -1,0 +1,16 @@
+{
+	"name": "@openspec/correspondence",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/correspondence.protocol.openspec.yml",
+			"spec/correspondence.model.openspec.yml",
+			"spec/correspondence.graph.openspec.yml"
+		]
+	}
+}

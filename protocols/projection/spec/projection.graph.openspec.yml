@@ -1,0 +1,527 @@
+openspec: "1.0"
+documents:
+  - id: projection.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.projection.v1
+      owner: protocol.protocol:openspec.projection.v1
+
+      lowering:
+        - id: projection.contracts
+          source:
+            path: contracts
+            as: contract
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - projection.contract
+                    - var: contract.id
+              factKind:
+                $expr: projection.contract
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: contract.id
+                      owner:
+                        var: document.owner
+                      capability:
+                        var: contract.capability
+                      projectionKind:
+                        var: contract.projectionKind
+                      description:
+                        var:
+                          - contract.description
+                          - null
+
+        - id: projection.materializers
+          source:
+            path: materializers
+            as: materializer
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - projection.materializer
+                    - var: materializer.id
+              factKind:
+                $expr: projection.materializer
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: materializer.id
+                      owner:
+                        var: document.owner
+                      projectionKind:
+                        var: materializer.projectionKind
+                      paramsSource:
+                        var:
+                          - materializer.paramsSource
+                          - projectionInputs.paramsOrOwner
+                      inputShape:
+                        var:
+                          - materializer.inputShape
+                          - null
+                      outputShape:
+                        var:
+                          - materializer.outputShape
+                          - string
+                      implementationMethod:
+                        var:
+                          - materializer.implementationMethod
+                          - render
+                      inputMode:
+                        var:
+                          - materializer.inputMode
+                          - selectorResult
+                      selectorResultField:
+                        var:
+                          - materializer.selectorResultField
+                          - facts
+                      description:
+                        var:
+                          - materializer.description
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - projection.materializer
+                        - var: materializer.id
+                    - .adapter.
+                    - var: materializer.adapter
+              factKind:
+                $expr: projection.materializer.adapter
+              from:
+                $expr:
+                  os_node_id:
+                    - projection.materializer
+                    - var: materializer.id
+              to:
+                $expr:
+                  var: materializer.adapter
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - projection.materializer
+                        - var: materializer.id
+                    - .selector.
+                    - var: materializer.selector
+              factKind:
+                $expr: projection.materializer.selector
+              from:
+                $expr:
+                  os_node_id:
+                    - projection.materializer
+                    - var: materializer.id
+              to:
+                $expr:
+                  var: materializer.selector
+
+        - id: projection.targets
+          source:
+            path: targets
+            as: target
+            optional: true
+          facts:
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "projection.target:"
+                  - kind: path
+                    path: document.owner
+                    default:
+                      kind: literal
+                      value: unowned
+                  - "."
+                  - kind: path
+                    path: target.id
+                  - "."
+                  - kind: path
+                    path: target.artifact.path
+                    default:
+                      kind: literal
+                      value: no-artifact
+              factKind: projection.target
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: path
+                    path: target.id
+                  owner:
+                    kind: path
+                    path: document.owner
+                    optional: true
+                  projectionKind:
+                    kind: path
+                    path: target.projectionKind
+                    optional: true
+                  adapter:
+                    kind: path
+                    path: target.adapter
+                    optional: true
+                  artifactPath:
+                    kind: path
+                    path: target.artifact.path
+                    optional: true
+                  inputs:
+                    kind: path
+                    path: target.inputs
+                    optional: true
+                  options:
+                    kind: path
+                    path: target.options
+                    optional: true
+
+            - kind: node
+              when:
+                $expr:
+                  and:
+                    - var:
+                        - target.projectionKind
+                        - null
+                    - var:
+                        - target.artifact.path
+                        - null
+              id:
+                kind: concat
+                items:
+                  - "planning.action:"
+                  - kind: path
+                    path: document.owner
+                    default:
+                      kind: literal
+                      value: unowned
+                  - "."
+                  - kind: path
+                    path: target.id
+                  - "."
+                  - kind: path
+                    path: target.artifact.path
+              factKind: planning.action
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: document.owner
+                        default:
+                          kind: literal
+                          value: unowned
+                      - "."
+                      - kind: path
+                        path: target.id
+                      - "."
+                      - kind: path
+                        path: target.artifact.path
+                  owner:
+                    kind: path
+                    path: document.owner
+                    optional: true
+                  capability:
+                    kind: literal
+                    value: capability.capability:projection.execute
+                  projectionKind:
+                    kind: path
+                    path: target.projectionKind
+                  adapterId:
+                    kind: path
+                    path: target.adapter
+                    optional: true
+                  artifactPath:
+                    kind: path
+                    path: target.artifact.path
+                  projectionInputs:
+                    kind: object
+                    fields:
+                      owner:
+                        kind: path
+                        path: document.owner
+                        optional: true
+                      target:
+                        kind: path
+                        path: target.id
+                      inputs:
+                        kind: path
+                        path: target.inputs
+                        optional: true
+                      options:
+                        kind: path
+                        path: target.options
+                        optional: true
+
+      selectors:
+        - id: projection.materializerByAdapterAndKind
+          sources:
+            materializer:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: projection.materializer
+            adapter:
+              kind: edges
+              filter:
+                kind:
+                  $expr: projection.materializer.adapter
+                from:
+                  $expr:
+                    var: row.materializer.id
+            selector:
+              kind: edges
+              filter:
+                kind:
+                  $expr: projection.materializer.selector
+                from:
+                  $expr:
+                    var: row.materializer.id
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.materializer.attributes.projectionKind
+                    - var: parameter.projectionKind
+                - or:
+                    - ===:
+                        - var: row.adapter.to
+                        - var: parameter.adapter
+                    - ===:
+                        - var: row.adapter.to
+                        - cat:
+                            - "adapter.adapter:"
+                            - var: parameter.adapter
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.materializer.attributes.id
+                    owner:
+                      var: row.materializer.attributes.owner
+                    projectionKind:
+                      var: row.materializer.attributes.projectionKind
+                    adapter:
+                      var: row.adapter.to
+                    selector:
+                      str_after:
+                        - var: row.selector.to
+                        - "selector.declaration:"
+                        - true
+                    paramsSource:
+                      var: row.materializer.attributes.paramsSource
+                    inputShape:
+                      var:
+                        - row.materializer.attributes.inputShape
+                        - null
+                    outputShape:
+                      var: row.materializer.attributes.outputShape
+                    implementationMethod:
+                      var: row.materializer.attributes.implementationMethod
+                    inputMode:
+                      var: row.materializer.attributes.inputMode
+                    selectorResultField:
+                      var: row.materializer.attributes.selectorResultField
+                    description:
+                      var:
+                        - row.materializer.attributes.description
+                        - null
+          paramsContract:
+            kind: model
+            model: model:ProjectionMaterializerSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ProjectionMaterializerSelectorResult
+
+        - id: projection.materializerImplementationMethods
+          sources:
+            materializer:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: projection.materializer
+            adapter:
+              kind: edges
+              filter:
+                kind:
+                  $expr: projection.materializer.adapter
+                from:
+                  $expr:
+                    var: row.materializer.id
+            selector:
+              kind: edges
+              filter:
+                kind:
+                  $expr: projection.materializer.selector
+                from:
+                  $expr:
+                    var: row.materializer.id
+          where:
+            $expr:
+              or:
+                - ===:
+                    - var: row.materializer.id
+                    - var: parameter.materializer
+                - ===:
+                    - var: row.materializer.attributes.id
+                    - var: parameter.materializer
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - capability:
+                      os_object:
+                        - id:
+                            var: row.materializer.attributes.id
+                          kind: projection.materializer
+                          owner:
+                            var: row.materializer.attributes.owner
+                    method:
+                      os_object:
+                        - capability:
+                            var: row.materializer.attributes.id
+                          name:
+                            var:
+                              - row.materializer.attributes.implementationMethod
+                              - render
+                          inputs:
+                            os_object:
+                              - input:
+                                  os_object:
+                                    - type:
+                                        var:
+                                          - row.materializer.attributes.inputShape
+                                          - unknown
+                                      required: true
+                          output:
+                            os_object:
+                              - type:
+                                  var:
+                                    - row.materializer.attributes.outputShape
+                                    - string
+                    materializer:
+                      os_object:
+                        - id:
+                            var: row.materializer.attributes.id
+                          owner:
+                            var: row.materializer.attributes.owner
+                          projectionKind:
+                            var: row.materializer.attributes.projectionKind
+                          adapter:
+                            var: row.adapter.to
+                          selector:
+                            str_after:
+                              - var: row.selector.to
+                              - "selector.declaration:"
+                              - true
+                          paramsSource:
+                            var: row.materializer.attributes.paramsSource
+                          inputShape:
+                            var:
+                              - row.materializer.attributes.inputShape
+                              - null
+                          outputShape:
+                            var: row.materializer.attributes.outputShape
+                          implementationMethod:
+                            var: row.materializer.attributes.implementationMethod
+                          inputMode:
+                            var: row.materializer.attributes.inputMode
+                          selectorResultField:
+                            var: row.materializer.attributes.selectorResultField
+                          description:
+                            var:
+                              - row.materializer.attributes.description
+                              - null
+          paramsContract:
+            kind: model
+            model: model:ProjectionMaterializerImplementationMethodsSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ProjectionMaterializerImplementationMethodsSelectorResult
+
+        - id: projection.targetsMissingArtifact
+          sources:
+            target:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: projection.target
+          where:
+            $expr:
+              "!":
+                - var:
+                    - row.target.attributes.artifactPath
+                    - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.target.attributes
+
+        - id: projection.targetsMissingProjectionKind
+          sources:
+            target:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: projection.target
+          where:
+            $expr:
+              "!":
+                - var:
+                    - row.target.attributes.projectionKind
+                    - null
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.target.attributes
+
+      validate:
+        - id: projection.target.validation
+          rules:
+            - id: target-artifact-path-required
+              scope: selector
+              selector: projection.targetsMissingArtifact
+              forEach: true
+              assert:
+                $expr: false
+              code: projection.target.artifactPath.required
+              message: Projection targets must declare artifact.path.
+              details:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: item.owner
+                      target:
+                        var: item.id
+            - id: target-projection-kind-required
+              scope: selector
+              selector: projection.targetsMissingProjectionKind
+              forEach: true
+              assert:
+                $expr: false
+              code: projection.target.projectionKind.required
+              message: Projection targets must declare projectionKind.
+              details:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: item.owner
+                      target:
+                        var: item.id

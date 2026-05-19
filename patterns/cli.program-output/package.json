@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/cli-program-output-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/cli-program-output.pattern.openspec.yml"]
+		}
+	}
+}

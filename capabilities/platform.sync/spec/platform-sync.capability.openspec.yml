@@ -1,0 +1,23 @@
+openspec: "1.0"
+documents:
+  - id: platform.sync.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:platform.sync
+
+      capabilities:
+        - id: platform.sync
+          kind: platform.sync.projection
+          description: Compute an ordered set of platform mutations by diffing the semantic graph (desired state) against current platform state (from an ExternalSourceAdapter). Used by the sync action executor before invoking a PlatformApplyAdapter.
+          methods:
+            sync:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: SyncInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: SyncOutput

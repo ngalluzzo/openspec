@@ -1,0 +1,42 @@
+openspec: "1.0"
+documents:
+  - id: workspace.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: provider.provider:workspace
+
+      capabilities:
+
+        # Build a workspace target — execute all derived planning actions
+        # and write their outputs to storage.
+        - id: workspace.build
+          kind: workspace.build
+          methods:
+            run:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: BuildRequest
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: BuildReport
+
+        # Sync a workspace target — execute all derived sync.action nodes,
+        # compute platform mutations, and optionally apply them.
+        - id: workspace.sync
+          kind: workspace.sync
+          methods:
+            run:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: SyncRequest
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: SyncReport

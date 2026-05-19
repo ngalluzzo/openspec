@@ -1,0 +1,75 @@
+openspec: "1.0"
+documents:
+  - id: capability-model.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: capability.model
+        name: Capability Model Pattern
+      patterns:
+        - id: capability.model
+          owner: pattern.package:capability.model
+          name: Capability model
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .models
+                protocol: openspec.model.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  declarations:
+                    expr:
+                      kind: path
+                      path: input.models
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .capability
+                protocol: openspec.capability.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  capabilities:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      kind:
+                        expr:
+                          kind: path
+                          path: input.kind
+                      description:
+                        expr:
+                          kind: path
+                          path: input.description
+                          optional: true
+                      inputs:
+                        expr:
+                          kind: path
+                          path: input.inputs
+                          optional: true
+                      methods:
+                        expr:
+                          kind: path
+                          path: input.methods
+                      constraints:
+                        expr:
+                          kind: path
+                          path: input.constraints
+                          optional: true

@@ -1,0 +1,12 @@
+{
+	"name": "@openspec/http-dialect",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"documents": [
+			"spec/http-dialect.model.openspec.yml",
+			"spec/http-dialect.graph.openspec.yml"
+		]
+	}
+}

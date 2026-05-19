@@ -1,0 +1,8 @@
+{
+	"plugin": "@std/comparison",
+	"version": "1.0.0",
+	"namespace": "@std",
+	"category": "comparison",
+	"operators": {},
+	"generatedAt": "2026-01-17T01:04:01.634Z"
+}

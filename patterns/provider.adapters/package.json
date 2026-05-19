@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/provider-adapters-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/provider-adapters.pattern.openspec.yml"]
+		}
+	}
+}

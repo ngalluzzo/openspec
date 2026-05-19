@@ -1,0 +1,36 @@
+openspec: "1.0"
+documents:
+  - id: storage.reader.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: storage.reader.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:storage.reader
+            id: storage.reader
+            namespace: storage.reader
+            capability: capability.capability:storage.reader
+            models:
+              - name: ReadQuery
+              - name: ContentRead
+              - name: ReadReport
+            methods:
+              - name: read
+            artifacts:
+              types:
+                path: capabilities/storage.reader/src/sdk/storage-reader-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/storage.reader/src/sdk/storage-reader.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./storage-reader-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: StorageReaderAdapter
+              contractTypeName: StorageReaderAdapterContract
+              contractConstName: storageReaderAdapterContract
+              implementFunctionName: implementStorageReaderAdapter
+              aliasName: StorageReader

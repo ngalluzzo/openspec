@@ -1,0 +1,18 @@
+openspec: "1.0"
+documents:
+  - id: source.postgres.schema.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.source.postgres.schema.v1
+      declarations:
+        - kind: object
+          name: PostgresSchemaSourceDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: sourceId
+              type: nonEmptyString
+            - name: source
+              type: unknown
+            - name: snapshot
+              type: unknown

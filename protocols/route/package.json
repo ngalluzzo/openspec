@@ -1,0 +1,16 @@
+{
+	"name": "@openspec/protocols-route",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/route.protocol.openspec.yml",
+			"spec/route.model.openspec.yml",
+			"spec/route.graph.openspec.yml"
+		]
+	}
+}

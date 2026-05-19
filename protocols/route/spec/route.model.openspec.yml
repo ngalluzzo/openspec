@@ -1,0 +1,159 @@
+openspec: "1.0"
+documents:
+  - id: route.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.route.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: RouteSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: RouteByIdSelectorParams
+          fields:
+            - name: route
+              type: nonEmptyString
+
+        - kind: object
+          name: RouteByKindSelectorParams
+          fields:
+            - name: kind
+              type: nonEmptyString
+
+        # ── Document contract ─────────────────────────────────────────────────
+
+        - kind: object
+          name: RouteDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: routes
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: RouteDeclaration
+
+        # ── Route contracts ───────────────────────────────────────────────────
+        # Routes define address, matching, and parameter extraction semantics.
+        # They do not declare entrypoints, transports, HTTP, stdio, or surfaces.
+
+        - kind: object
+          name: RoutePatternContract
+          fields:
+            - name: value
+              type: nonEmptyString
+            - name: syntax
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: RouteParamContract
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type: unknown
+              required: false
+            - name: source
+              type: nonEmptyString
+              required: false
+            - name: required
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: RouteDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: pattern
+              type:
+                kind: ref
+                name: RoutePatternContract
+            - name: params
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: RouteParamContract
+              required: false
+            - name: priority
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: RouteContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: pattern
+              type:
+                kind: ref
+                name: RoutePatternContract
+            - name: params
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: RouteParamContract
+              required: false
+            - name: priority
+              type: number
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: RouteRoutesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: RouteContract
+
+        - kind: alias
+          name: RouteByIdSelectorResult
+          type:
+            kind: ref
+            name: RouteContract
+
+        - kind: alias
+          name: RouteByKindSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: RouteContract
+
+        - kind: alias
+          name: RouteParamsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: RouteParamContract

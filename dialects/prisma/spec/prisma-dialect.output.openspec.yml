@@ -1,0 +1,60 @@
+openspec: "1.0"
+documents:
+  - id: prisma-dialect.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: prisma.syntax.render.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: dialect.package:prisma
+            id: prisma.syntax.render
+            namespace: prisma.syntax.render
+            capability: capability.capability:prisma.syntax.render
+            models:
+              - name: PrismaSyntaxUnitSelectorParams
+              - name: PrismaSyntaxRenderSelectorParams
+              - name: SyntaxUnitContract
+              - name: AssetContract
+              - name: PrismaFieldContract
+              - name: PrismaModelContract
+              - name: PrismaRelationContract
+              - name: PrismaSyntaxRenderInput
+              - name: PrismaModelsSelectorResult
+              - name: PrismaRelationsSelectorResult
+            methods:
+              - name: render
+            artifacts:
+              types:
+                path: dialects/prisma/src/sdk/prisma-dialect-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: dialects/prisma/src/sdk/prisma-syntax-render.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./prisma-dialect-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: PrismaSyntaxRenderAdapter
+              contractTypeName: PrismaSyntaxRenderAdapterContract
+              contractConstName: prismaSyntaxRenderAdapterContract
+              implementFunctionName: implementPrismaSyntaxRenderAdapter
+              aliasName: PrismaSyntaxRender
+
+  - id: prisma-dialect.type-exports
+    protocol: openspec.facet.v1
+    document:
+      owner: dialect.package:prisma
+      facets:
+        - id: prisma.syntax.render.text-file-recipe-export
+          kind: typescript.declaration
+          target: syntax.unit:prisma.syntax.render.types.types
+          value:
+            unit: syntax.unit:prisma.syntax.render.types.types
+            kind: raw
+            role: external.type.exports
+            order: 10
+            value:
+              kind: raw
+              text: "export type { TextFileArtifactRecipe } from \"@openspec/artifact-render-capability/types\";"

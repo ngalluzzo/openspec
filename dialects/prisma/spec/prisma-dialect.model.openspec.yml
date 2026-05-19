@@ -1,0 +1,165 @@
+openspec: "1.0"
+documents:
+  - id: prisma-dialect.model
+    protocol: openspec.model.v1
+    document:
+      owner: dialect.package:prisma
+      declarations:
+        - kind: object
+          name: PrismaSyntaxUnitSelectorParams
+          fields:
+            - name: unit
+              type: nonEmptyString
+
+        - kind: object
+          name: PrismaSyntaxRenderSelectorParams
+          fields:
+            - name: syntaxUnit
+              type: nonEmptyString
+            - name: asset
+              type: nonEmptyString
+
+        - kind: object
+          name: SyntaxUnitContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+              required: false
+            - name: id
+              type: nonEmptyString
+              required: false
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: subject
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: AssetContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+              required: false
+            - name: id
+              type: nonEmptyString
+              required: false
+            - name: locator
+              type: unknown
+              required: false
+            - name: mediaType
+              type: nonEmptyString
+              required: false
+            - name: disposition
+              type: nonEmptyString
+              required: false
+            - name: language
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: PrismaFieldContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: model
+              type: nonEmptyString
+            - name: storageField
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type: nonEmptyString
+            - name: nullable
+              type: boolean
+            - name: identity
+              type: boolean
+            - name: unique
+              type: boolean
+
+        - kind: object
+          name: PrismaModelContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: storageEntity
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: fields
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: PrismaFieldContract
+
+        - kind: object
+          name: PrismaRelationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: storageRelation
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: cardinality
+              type: nonEmptyString
+            - name: required
+              type: boolean
+              required: false
+
+        - kind: object
+          name: PrismaSyntaxRenderInput
+          fields:
+            - name: unit
+              type:
+                kind: ref
+                name: SyntaxUnitContract
+            - name: asset
+              type:
+                kind: ref
+                name: AssetContract
+            - name: models
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: PrismaModelContract
+            - name: relations
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: PrismaRelationContract
+
+        - kind: alias
+          name: PrismaModelsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: PrismaModelContract
+
+        - kind: alias
+          name: PrismaRelationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: PrismaRelationContract

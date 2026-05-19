@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/obligation",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"models": {
+			"documents": [
+				"spec/obligation.model.openspec.yml"
+			]
+		},
+		"capabilities": {
+			"documents": [
+				"spec/obligation.capability.openspec.yml"
+			]
+		},
+		"graphs": {
+			"documents": [
+				"spec/obligation.graph.openspec.yml"
+			]
+		}
+	}
+}

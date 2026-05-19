@@ -1,0 +1,14 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"entryPoints": [
+		"packages/core",
+		"packages/transform",
+		"packages/adapters",
+		"packages/recipes"
+	],
+	"entryPointStrategy": "packages",
+	"out": ".typedoc/json",
+	"includeVersion": false,
+	"excludeExternals": true,
+	"hideGenerator": true
+}

@@ -1,0 +1,10 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+docs/.vitepress/dist
+.typedoc/
+dist/
+
+# Editor
+.vscode/

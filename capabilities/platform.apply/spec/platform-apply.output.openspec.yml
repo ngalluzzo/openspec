@@ -1,0 +1,37 @@
+openspec: "1.0"
+documents:
+  - id: platform.apply.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: platform.apply.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:platform.apply
+            id: platform.apply
+            namespace: platform.apply
+            capability: capability.capability:platform.apply
+            models:
+              - name: PlatformMutationResult
+              - name: ApplyDiagnostic
+              - name: PlatformApplyInput
+              - name: PlatformApplyOutput
+            methods:
+              - name: apply
+            artifacts:
+              types:
+                path: capabilities/platform.apply/src/sdk/platform-apply-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/platform.apply/src/sdk/platform-apply.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./platform-apply-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: PlatformApplyAdapter
+              contractTypeName: PlatformApplyAdapterContract
+              contractConstName: platformApplyAdapterContract
+              implementFunctionName: implementPlatformApplyAdapter
+              aliasName: PlatformApply

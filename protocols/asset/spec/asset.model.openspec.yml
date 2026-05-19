@@ -1,0 +1,206 @@
+openspec: "1.0"
+documents:
+  - id: asset.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.asset.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: AssetSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: AssetByNodeIdSelectorParams
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+
+        - kind: object
+          name: AssetByNamespaceSelectorParams
+          fields:
+            - name: namespace
+              type: nonEmptyString
+
+        - kind: object
+          name: AssetByKindSelectorParams
+          fields:
+            - name: kind
+              type: nonEmptyString
+
+        - kind: object
+          name: AssetBySubjectSelectorParams
+          fields:
+            - name: subject
+              type: nonEmptyString
+
+        # ── Document contract ─────────────────────────────────────────────────
+
+        - kind: object
+          name: AssetDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: assets
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: AssetDeclaration
+
+        # ── Asset contracts ───────────────────────────────────────────────────
+        # An asset is an addressable material object or output target.
+        # It does not declare how it is produced, exported, invoked, or wired.
+
+        - kind: object
+          name: AssetLocatorContract
+          fields:
+            - name: kind
+              type: nonEmptyString
+            - name: scheme
+              type: nonEmptyString
+              required: false
+            - name: path
+              type: nonEmptyString
+              required: false
+            - name: uri
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: AssetDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: locator
+              type:
+                kind: ref
+                name: AssetLocatorContract
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: disposition
+              type: nonEmptyString
+              required: false
+            - name: mediaType
+              type: nonEmptyString
+              required: false
+            - name: language
+              type: nonEmptyString
+              required: false
+            - name: subjects
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: AssetContract
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: locator
+              type:
+                kind: ref
+                name: AssetLocatorContract
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: disposition
+              type: nonEmptyString
+              required: false
+            - name: mediaType
+              type: nonEmptyString
+              required: false
+            - name: language
+              type: nonEmptyString
+              required: false
+            - name: subjects
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: AssetSubjectSelectorContract
+          fields:
+            - name: asset
+              type: nonEmptyString
+            - name: namespace
+              type: nonEmptyString
+            - name: assetNodeId
+              type: nonEmptyString
+            - name: index
+              type: number
+            - name: subject
+              type: nonEmptyString
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: AssetAssetsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AssetContract
+
+        - kind: alias
+          name: AssetByNodeIdSelectorResult
+          type:
+            kind: ref
+            name: AssetContract
+
+        - kind: alias
+          name: AssetByNamespaceSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AssetContract
+
+        - kind: alias
+          name: AssetByKindSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AssetContract
+
+        - kind: alias
+          name: AssetBySubjectSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AssetContract
+
+        - kind: alias
+          name: AssetSubjectsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: AssetSubjectSelectorContract

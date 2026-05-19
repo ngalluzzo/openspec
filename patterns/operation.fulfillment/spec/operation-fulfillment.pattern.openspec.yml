@@ -1,0 +1,63 @@
+openspec: "1.0"
+documents:
+  - id: operation-fulfillment.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: operation.fulfillment
+        name: Operation Fulfillment Pattern
+      patterns:
+        - id: operation.fulfillment
+          owner: pattern.package:operation.fulfillment
+          name: Operation fulfillment
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .binding
+                protocol: openspec.binding.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  bindings:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      kind: operation.fulfillment
+                      subject:
+                        expr:
+                          kind: path
+                          path: input.operation
+                      slot:
+                        expr:
+                          kind: path
+                          path: input.target
+                      value:
+                        expr:
+                          kind: object
+                          fields:
+                            inputMapping:
+                              kind: path
+                              path: input.inputMapping
+                              optional: true
+                            outputMapping:
+                              kind: path
+                              path: input.outputMapping
+                              optional: true
+                            metadata:
+                              kind: path
+                              path: input.metadata
+                              optional: true
+                      description:
+                        expr:
+                          kind: path
+                          path: input.description
+                          optional: true

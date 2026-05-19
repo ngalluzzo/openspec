@@ -1,0 +1,46 @@
+{
+	"name": "@openspec/typescript-dialect",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "bun test",
+		"typecheck": "tsc -b"
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.ts",
+			"default": "./src/index.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/typescript-dialect-types.generated.ts",
+			"import": "./src/sdk/typescript-dialect-types.generated.ts",
+			"default": "./src/sdk/typescript-dialect-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"dependencies": {
+		"@reforge/adapters": "workspace:*",
+		"@reforge/core": "workspace:*"
+	},
+	"openspec": {
+		"documents": [
+			"spec/typescript-dialect.model.openspec.yml",
+			"spec/typescript-dialect.graph.openspec.yml",
+			"spec/typescript-dialect.derivation.openspec.yml",
+			"spec/typescript-dialect.provider.openspec.yml"
+		],
+		"adapters": {
+			"implementations": [
+				{
+					"id": "typescript.syntax.render",
+					"kind": "projection.syntax.render",
+					"capability": "capability.capability:artifact.render",
+					"module": "./src/index.ts",
+					"export": "typescriptSyntaxRenderAdapter"
+				}
+			]
+		}
+	}
+}

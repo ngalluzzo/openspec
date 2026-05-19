@@ -1,0 +1,141 @@
+openspec: "1.0"
+documents:
+  - id: transport.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.transport.v1
+      owner: protocol.protocol:openspec.transport.v1
+      lowering:
+        - id: transport.transports
+          source:
+            path: transports
+            as: transport
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - transport.transport
+                    - var: transport.id
+              factKind:
+                $expr: transport.transport
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: transport.id
+                      kind:
+                        var: transport.kind
+                      owner:
+                        var: document.owner
+                      address:
+                        var:
+                          - transport.address
+                          - null
+                      config:
+                        var:
+                          - transport.config
+                          - null
+                      metadata:
+                        var:
+                          - transport.metadata
+                          - null
+                      description:
+                        var:
+                          - transport.description
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .transport.
+                    - var: transport.id
+              factKind:
+                $expr: transport.owner.transport
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - transport.transport
+                    - var: transport.id
+
+
+      selectors:
+        - id: transport.transports
+          sources:
+            transport:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: transport.transport
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.transport.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TransportSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:TransportTransportsSelectorResult
+
+        - id: transport.byId
+          sources:
+            transport:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - transport.transport
+                      - var: parameter.transport
+                kind:
+                  $expr: transport.transport
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.transport.attributes
+          paramsContract:
+            kind: model
+            model: model:TransportByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:TransportByIdSelectorResult
+
+        - id: transport.byKind
+          sources:
+            transport:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: transport.transport
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.transport.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.transport.attributes.kind
+                  - var: parameter.kind
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:TransportByKindSelectorParams
+          returnsContract:
+            kind: model
+            model: model:TransportByKindSelectorResult
+

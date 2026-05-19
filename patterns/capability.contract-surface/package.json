@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/capability-contract-surface-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/capability-contract-surface.pattern.openspec.yml"]
+		}
+	}
+}

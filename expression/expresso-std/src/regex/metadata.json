@@ -1,0 +1,8 @@
+{
+	"plugin": "@std/regex",
+	"version": "1.0.0",
+	"namespace": "@std",
+	"category": "regex",
+	"operators": {},
+	"generatedAt": "2026-01-17T03:14:19.471Z"
+}

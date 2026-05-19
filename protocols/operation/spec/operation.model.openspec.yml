@@ -1,0 +1,191 @@
+openspec: "1.0"
+documents:
+  - id: operation.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.operation.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: OperationSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: OperationGroupSelectorParams
+          fields:
+            - name: group
+              type: nonEmptyString
+
+        - kind: object
+          name: OperationByIdSelectorParams
+          fields:
+            - name: operation
+              type: nonEmptyString
+
+        # ── I/O contracts ──────────────────────────────────────────────────────
+        # `model` is a canonical model nodeId (e.g. model:CreateUserInput).
+        # `cardinality` is one or many. `presence` is required or optional.
+
+        - kind: object
+          name: OperationIOContract
+          fields:
+            - name: model
+              type: nonEmptyString
+              required: false
+            - name: cardinality
+              type: nonEmptyString
+              required: false
+            - name: presence
+              type: nonEmptyString
+              required: false
+
+        # ── Operation contract ─────────────────────────────────────────────────
+        # `id` is the compound group.name identifier.
+        # `kind` is a semantic type tag (e.g. query.list, mutation.create).
+        # `subject` is the entity nodeId this operation acts upon.
+        # `requires` lists capability nodeIds this operation depends on.
+        # `emits` lists signal nodeIds this operation may emit.
+        # `effects` lists state machine nodeIds this operation may advance.
+
+        - kind: object
+          name: OperationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: group
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: subject
+              type: nonEmptyString
+              required: false
+            - name: input
+              type:
+                kind: ref
+                name: OperationIOContract
+              required: false
+            - name: output
+              type:
+                kind: ref
+                name: OperationIOContract
+              required: false
+            - name: requires
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: emits
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: effects
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: OperationFulfillmentContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: operation
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: value
+              type: unknown
+              required: false
+
+        # ── Group contract ─────────────────────────────────────────────────────
+        # A group is a named namespace that organizes related operations.
+        # Group names double as the first segment of operation IDs.
+
+        - kind: object
+          name: OperationGroupContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: OperationGroupWithOperationsContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: operations
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: OperationContract
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: OperationGroupsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: OperationGroupContract
+
+        - kind: alias
+          name: OperationOperationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: OperationContract
+
+        - kind: alias
+          name: OperationCatalogSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: OperationGroupWithOperationsContract
+
+        - kind: alias
+          name: OperationGroupSelectorResult
+          type:
+            kind: ref
+            name: OperationGroupWithOperationsContract
+
+        - kind: alias
+          name: OperationByIdSelectorResult
+          type:
+            kind: ref
+            name: OperationContract
+
+        - kind: alias
+          name: OperationFulfillmentsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: OperationFulfillmentContract

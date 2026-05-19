@@ -1,0 +1,140 @@
+openspec: "1.0"
+documents:
+  - id: adapter-implementation-surface.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: adapter.implementation-surface
+        name: Adapter Implementation Surface Pattern
+      patterns:
+        - id: adapter.implementation-surface
+          owner: pattern.package:adapter.implementation-surface
+          name: Adapter implementation surface
+          metadata:
+            composes:
+              - openspec.adapter.v1
+              - openspec.capability.v1
+              - openspec.syntax.v1
+            relation: Creates target-neutral syntax symbols and slots for adapter implementation handlers.
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .syntax
+                protocol: openspec.syntax.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  namespace:
+                    expr:
+                      kind: path
+                      path: input.namespace
+                      optional: true
+                      default:
+                        kind: path
+                        path: input.id
+                  units:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.unit.id
+                          optional: true
+                          default:
+                            kind: path
+                            path: input.id
+                      kind: adapter.implementation.surface
+                      subject:
+                        expr:
+                          kind: path
+                          path: input.adapter
+                      role: adapter.implementation.surface
+                      metadata:
+                        expr:
+                          kind: path
+                          path: input.metadata
+                          optional: true
+                  symbols:
+                    expr:
+                      kind: map
+                      path: input.methods
+                      as: method
+                      optional: true
+                      value:
+                        kind: object
+                        fields:
+                          id:
+                            kind: path
+                            path: method.name
+                          unit:
+                            kind: path
+                            path: input.unit.id
+                            optional: true
+                            default:
+                              kind: path
+                              path: input.id
+                          kind:
+                            kind: literal
+                            value: adapter.implementation.handler
+                          name:
+                            kind: path
+                            path: method.name
+                          target:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.adapter
+                              - kind: literal
+                                value: "."
+                              - kind: path
+                                path: method.name
+                          role:
+                            kind: literal
+                            value: implementation.handler
+                  slots:
+                    expr:
+                      kind: map
+                      path: input.methods
+                      as: method
+                      optional: true
+                      value:
+                        kind: object
+                        fields:
+                          id:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: method.name
+                              - kind: literal
+                                value: .implementation
+                          unit:
+                            kind: path
+                            path: input.unit.id
+                            optional: true
+                            default:
+                              kind: path
+                              path: input.id
+                          kind:
+                            kind: literal
+                            value: implementation.handler
+                          target:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.adapter
+                              - kind: literal
+                                value: "."
+                              - kind: path
+                                path: method.name
+                          symbol:
+                            kind: path
+                            path: method.name
+                          role:
+                            kind: literal
+                            value: implementation.handler

@@ -1,0 +1,160 @@
+openspec: "1.0"
+documents:
+  - id: model-type-output.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: model.type-output
+        name: Model Type Output Pattern
+      patterns:
+        - id: model.type-output
+          owner: pattern.package:model.type-output
+          name: Model type output
+          metadata:
+            composes:
+              - openspec.model.v1
+              - openspec.syntax.v1
+              - openspec.asset.v1
+              - openspec.projection.v1
+            relation: Creates a model-owned type syntax surface and requests rendering for it.
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .syntax.application
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .syntax
+                      pattern: pattern.declaration:model.syntax
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: path
+                            path: input.unit.id
+                            optional: true
+                            default:
+                              kind: path
+                              path: input.id
+                        namespace:
+                          expr:
+                            kind: path
+                            path: input.namespace
+                            optional: true
+                            default:
+                              kind: path
+                              path: input.id
+                        subject:
+                          expr:
+                            kind: path
+                            path: input.subject
+                            optional: true
+                            default:
+                              kind: path
+                              path: input.owner
+                        role:
+                          expr:
+                            kind: literal
+                            value: model.type.surface
+                        unit:
+                          expr:
+                            kind: object
+                            fields:
+                              id:
+                                kind: path
+                                path: input.unit.id
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                              kind:
+                                kind: literal
+                                value: model.type.surface
+                        declarations:
+                          expr:
+                            kind: path
+                            path: input.declarations
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .projection.application
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      pattern: pattern.declaration:syntax.projection
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: path
+                            path: input.id
+                        syntaxUnit:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: literal
+                                value: "syntax.unit:"
+                              - kind: path
+                                path: input.namespace
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                              - kind: literal
+                                value: "."
+                              - kind: path
+                                path: input.unit.id
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                        dialect:
+                          expr:
+                            kind: path
+                            path: input.dialect
+                            optional: true
+                            default:
+                              kind: literal
+                              value: typescript
+                        provider:
+                          expr:
+                            kind: path
+                            path: input.provider
+                            optional: true
+                        params:
+                          expr:
+                            kind: path
+                            path: input.params
+                            optional: true
+                        artifact:
+                          expr:
+                            kind: path
+                            path: input.artifact

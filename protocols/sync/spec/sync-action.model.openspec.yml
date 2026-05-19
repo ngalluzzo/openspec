@@ -1,0 +1,33 @@
+openspec: "1.0"
+documents:
+  - id: sync.action.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.sync.action.v1
+      declarations:
+        - kind: object
+          name: EnvConfigRef
+          fields:
+            - name: env
+              type: nonEmptyString
+
+        - kind: object
+          name: SyncActionDocument
+          fields:
+            - name: id
+              type: nonEmptyString
+              required: false
+            - name: owner
+              type: nonEmptyString
+            - name: syncKind
+              type: nonEmptyString
+            - name: externalSource
+              type: nonEmptyString
+            - name: syncAdapter
+              type: nonEmptyString
+            - name: platformTarget
+              type: nonEmptyString
+              required: false
+            - name: config
+              type: unknown
+              required: false

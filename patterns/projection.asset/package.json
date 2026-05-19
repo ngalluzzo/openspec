@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/projection-asset-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/projection-asset.pattern.openspec.yml"]
+		}
+	}
+}

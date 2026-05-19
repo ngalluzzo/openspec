@@ -1,0 +1,96 @@
+openspec: "1.0"
+documents:
+  - id: platform.sync.model
+    protocol: openspec.model.v1
+    document:
+      owner: capability.package:platform.sync
+
+      declarations:
+        - kind: object
+          name: PlatformMutation
+          description: A single intended change to a live platform's schema or configuration. The envelope is typed for preview rendering and ordering; the payload is adapter-defined.
+          fields:
+            - name: operation
+              type: nonEmptyString
+              description: "One of: create, update, delete, rename, noop"
+            - name: kind
+              type: nonEmptyString
+              description: Platform entity kind being mutated (e.g. 'object', 'field', 'relation', 'view'). Adapter-defined vocabulary.
+            - name: id
+              type: nonEmptyString
+              description: Semantic ID from the graph for this mutation target. Used to correlate results back to graph nodes.
+            - name: label
+              type: nonEmptyString
+              description: Human-readable description for preview rendering (e.g. "Create object 'Contacts'").
+            - name: breaking
+              type: boolean
+              description: True when the mutation is destructive or hard to reverse (deletes, renames, type changes).
+            - name: supported
+              type: boolean
+              required: false
+              description: False when the desired change can be described for preview but must never be passed to a platform apply adapter.
+            - name: payload
+              type: unknown
+              description: Adapter-specific mutation data. Schema is owned by the platform adapter pair and must be consistent between the sync and apply adapters.
+
+        - kind: object
+          name: SyncAction
+          description: Parallel to ProjectionAction. Carries the resolved sync context into a SyncProjectionAdapter.
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: syncKind
+              type: nonEmptyString
+              description: Identifies the SyncProjectionAdapter to invoke.
+            - name: externalState
+              type: unknown
+              description: Current platform state snapshot read by the paired ExternalSourceAdapter.
+            - name: config
+              type: unknown
+              required: false
+              description: Execution-time resolved config. Secret values must not appear in graph facts.
+
+        - kind: object
+          name: SyncDiagnostic
+          fields:
+            - name: severity
+              type: nonEmptyString
+              required: false
+            - name: code
+              type: nonEmptyString
+            - name: message
+              type: string
+            - name: details
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyncInput
+          fields:
+            - name: action
+              type:
+                kind: ref
+                name: SyncAction
+            - name: graph
+              type: unknown
+            - name: runtime
+              type: unknown
+              required: false
+
+        - kind: object
+          name: SyncOutput
+          fields:
+            - name: mutations
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: PlatformMutation
+              description: Ordered list of mutations to apply. Producer is responsible for dependency ordering (e.g. create object before adding fields to it).
+            - name: diagnostics
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: SyncDiagnostic
+              description: Warnings and errors — including drift detected between graph state and current platform state.

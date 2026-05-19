@@ -1,0 +1,168 @@
+openspec: "1.0"
+documents:
+  - id: drizzle-dialect.derivation
+    protocol: openspec.derivation.v1
+    document:
+      owner: provider.provider:drizzle
+      rules:
+        - id: drizzle.storage.tables
+          source:
+            selector: storage.schemaEntities
+            as: table
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "drizzle.table:"
+                  - kind: path
+                    path: table.id
+              factKind: drizzle.table
+              target:
+                kind: path
+                path: table.surface
+              value:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - "drizzle.table:"
+                      - kind: path
+                        path: table.id
+                  unit:
+                    kind: path
+                    path: table.surface
+                  storageEntity:
+                    kind: path
+                    path: table.id
+                  name:
+                    kind: path
+                    path: table.name
+
+        - id: drizzle.storage.columns
+          source:
+            selector: storage.schemaFields
+            as: column
+          after:
+            - drizzle.storage.tables
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "drizzle.column:"
+                  - kind: path
+                    path: column.id
+              factKind: drizzle.column
+              target:
+                kind: path
+                path: column.entity
+              value:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - "drizzle.column:"
+                      - kind: path
+                        path: column.id
+                  unit:
+                    kind: path
+                    path: column.surface
+                  table:
+                    kind: path
+                    path: column.entity
+                  storageField:
+                    kind: path
+                    path: column.id
+                  name:
+                    kind: path
+                    path: column.name
+                  type:
+                    kind: match
+                    value:
+                      kind: path
+                      path: column.type
+                      optional: true
+                    cases:
+                      string:
+                        kind: literal
+                        value: text
+                      number:
+                        kind: literal
+                        value: real
+                      integer:
+                        kind: literal
+                        value: integer
+                      boolean:
+                        kind: literal
+                        value: boolean
+                      date:
+                        kind: literal
+                        value: timestamp
+                      datetime:
+                        kind: literal
+                        value: timestamp
+                    default:
+                      kind: literal
+                      value: text
+                  nullable:
+                    kind: path
+                    path: column.nullable
+                  identity:
+                    kind: path
+                    path: column.identity
+                  unique:
+                    kind: path
+                    path: column.unique
+
+        - id: drizzle.storage.relations
+          source:
+            selector: storage.schemaRelations
+            as: relation
+          after:
+            - drizzle.storage.tables
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "drizzle.relation:"
+                  - kind: path
+                    path: relation.id
+              factKind: drizzle.relation
+              target:
+                kind: path
+                path: relation.surface
+              value:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - "drizzle.relation:"
+                      - kind: path
+                        path: relation.id
+                  unit:
+                    kind: path
+                    path: relation.surface
+                  storageRelation:
+                    kind: path
+                    path: relation.id
+                  name:
+                    kind: path
+                    path: relation.name
+                  from:
+                    kind: path
+                    path: relation.from
+                  to:
+                    kind: path
+                    path: relation.to
+                  cardinality:
+                    kind: path
+                    path: relation.cardinality
+                  required:
+                    kind: path
+                    path: relation.required
+                    optional: true

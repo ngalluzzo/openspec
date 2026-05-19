@@ -1,0 +1,35 @@
+{
+  "name": "ospec",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "engines/*",
+    "dialects/*",
+    "patterns/*",
+    "capabilities/*",
+    "bootstrap/*",
+    "protocols/*",
+    "providers/*",
+    "sources/*",
+    "reforge/**",
+    "extensions/**",
+    "expression/**"
+  ],
+  "scripts": {
+    "lint": "biome lint .",
+    "lint:fix": "biome lint . --write",
+    "format": "biome format . --write",
+    "test": "bun run --filter './bootstrap/*' --filter './capabilities/*' --filter './dialects/*' --filter './engines/*' --filter './patterns/*' --filter './protocols/*' --filter './providers/*' --filter './sources/*' test",
+    "typecheck": "bun run --filter './bootstrap/*' --filter './capabilities/*' --filter './dialects/*' --filter './engines/*' --filter './patterns/*' --filter './protocols/*' --filter './providers/*' --filter './sources/*' typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.14",
+    "@types/bun": "latest",
+    "commander": "^12.1.0",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,833 @@
+openspec: "1.0"
+documents:
+  - id: entity.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.entity.v1
+      owner: protocol.protocol:openspec.entity.v1
+      lowering:
+        - id: entity.declarations
+          source:
+            path: entities
+            as: entity
+          facts:
+            # entity.declaration node
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - entity
+                    - var: entity.id
+              factKind:
+                $expr: entity.declaration
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: entity.id
+                      name:
+                        var: entity.name
+                      owner:
+                        var: document.owner
+                      plural:
+                        var:
+                          - entity.plural
+                          - null
+                      description:
+                        var:
+                          - entity.description
+                          - null
+
+            # entity.owner.declaration edge — owner → entity
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .entity.
+                    - var: entity.id
+              factKind:
+                $expr: entity.owner.declaration
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - entity
+                    - var: entity.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      entity:
+                        var: entity.id
+
+            # entity.field nodes and entity.declaration.field edges
+            - kind: forEach
+              path: entity.fields
+              as: field
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - entity
+                        - var: entity.id
+                        - field
+                        - var: field.name
+                  factKind:
+                    $expr: entity.field
+                  attributes:
+                    $expr:
+                      os_object:
+                        - name:
+                            var: field.name
+                          type:
+                            var: field.type
+                          required:
+                            var:
+                              - field.required
+                              - true
+                          identity:
+                            var:
+                              - field.identity
+                              - false
+                          unique:
+                            var:
+                              - field.unique
+                              - false
+                          computed:
+                            var:
+                              - field.computed
+                              - false
+                          description:
+                            var:
+                              - field.description
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - entity
+                            - var: entity.id
+                        - .field.
+                        - var: field.name
+                  factKind:
+                    $expr: entity.declaration.field
+                  from:
+                    $expr:
+                      os_node_id:
+                        - entity
+                        - var: entity.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - entity
+                        - var: entity.id
+                        - field
+                        - var: field.name
+                  attributes:
+                    $expr:
+                      os_object:
+                        - entity:
+                            var: entity.id
+                          field:
+                            var: field.name
+
+      selectors:
+        # All declared entities.
+        - id: entity.all
+          sources:
+            entity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entity.declaration
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.entity.id
+              filter:
+                kind:
+                  $expr: entity.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+          groupBy:
+            $expr:
+              var: row.entity.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.entity.attributes.id
+                    name:
+                      var: row.entity.attributes.name
+                    owner:
+                      var: row.entity.attributes.owner
+                    plural:
+                      var:
+                        - row.entity.attributes.plural
+                        - null
+                    description:
+                      var:
+                        - row.entity.attributes.description
+                        - null
+                    fields:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - entity:
+                                var: row.entity.attributes.id
+                              name:
+                                var: item.field.attributes.name
+                              type:
+                                var: item.field.attributes.type
+                              required:
+                                var: item.field.attributes.required
+                              identity:
+                                var: item.field.attributes.identity
+                              unique:
+                                var: item.field.attributes.unique
+                              computed:
+                                var: item.field.attributes.computed
+                              description:
+                                var:
+                                  - item.field.attributes.description
+                                  - null
+                        - false
+                        - var:
+                            - item.field
+                            - null
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:EntitySelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:EntityAllSelectorResult
+
+        # Single entity by ID.
+        - id: entity.byId
+          sources:
+            entity:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  os_node_id:
+                    - entity
+                    - var: parameter.entity
+              filter:
+                kind:
+                  $expr: entity.declaration
+                direction:
+                  $expr: out
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.entity.id
+              filter:
+                kind:
+                  $expr: entity.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+          groupBy:
+            $expr:
+              var: row.entity.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.entity.attributes.id
+                    name:
+                      var: row.entity.attributes.name
+                    owner:
+                      var: row.entity.attributes.owner
+                    plural:
+                      var:
+                        - row.entity.attributes.plural
+                        - null
+                    description:
+                      var:
+                        - row.entity.attributes.description
+                        - null
+                    fields:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - entity:
+                                var: row.entity.attributes.id
+                              name:
+                                var: item.field.attributes.name
+                              type:
+                                var: item.field.attributes.type
+                              required:
+                                var: item.field.attributes.required
+                              identity:
+                                var: item.field.attributes.identity
+                              unique:
+                                var: item.field.attributes.unique
+                              computed:
+                                var: item.field.attributes.computed
+                              description:
+                                var:
+                                  - item.field.attributes.description
+                                  - null
+                        - false
+                        - var:
+                            - item.field
+                            - null
+          paramsContract:
+            kind: model
+            model: model:EntityByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:EntityByIdSelectorResult
+
+        # All fields across all entities — used by validation and generators.
+        - id: entity.fields
+          sources:
+            field:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entity.field
+            entity:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.field.id
+              filter:
+                kind:
+                  $expr: entity.declaration.field
+                direction:
+                  $expr: in
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - entity:
+                      var: row.entity.attributes.id
+                    name:
+                      var: row.field.attributes.name
+                    type:
+                      var: row.field.attributes.type
+                    required:
+                      var: row.field.attributes.required
+                    identity:
+                      var: row.field.attributes.identity
+                    unique:
+                      var: row.field.attributes.unique
+                    computed:
+                      var: row.field.attributes.computed
+                    description:
+                      var:
+                        - row.field.attributes.description
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.entity
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:EntitySelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:EntityFieldsSelectorResult
+
+        # Normalized entity rows used by cross-protocol derivations that produce
+        # canonical model records. Authoring stays on entity facts; model facts
+        # are mechanical output.
+        - id: entity.modelRows
+          sources:
+            entity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entity.declaration
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.entity.id
+              filter:
+                kind:
+                  $expr: entity.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+          groupBy:
+            $expr:
+              var: row.entity.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - entity:
+                      var: row.entity.attributes.id
+                    owner:
+                      var: row.entity.attributes.owner
+                    model:
+                      cat:
+                        - pascal_case:
+                            - var: row.entity.attributes.id
+                        - Record
+                    fields:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - entity:
+                                var: row.entity.attributes.id
+                              declaration:
+                                cat:
+                                  - pascal_case:
+                                      - var: row.entity.attributes.id
+                                  - Record
+                              name:
+                                var: item.field.attributes.name
+                              type:
+                                var: item.field.attributes.type
+                              required:
+                                var: item.field.attributes.required
+                              identity:
+                                var:
+                                  - item.field.attributes.identity
+                                  - null
+                              unique:
+                                var:
+                                  - item.field.attributes.unique
+                                  - null
+                              computed:
+                                var:
+                                  - item.field.attributes.computed
+                                  - null
+                              description:
+                                var:
+                                  - item.field.attributes.description
+                                  - null
+                        - false
+                        - var:
+                            - item.field
+                            - null
+          orderBy:
+            - $expr:
+                var: row.value.entity
+          paramsContract:
+            kind: model
+            model: model:EntitySelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:EntityModelRowsSelectorResult
+
+        # Resolved entities include declared fields plus accepted field
+        # facets. Declared fields win: an facet with the same field
+        # name is ignored rather than overriding the owning declaration.
+        - id: entity.resolved
+          sources:
+            entity:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: entity.declaration
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.entity.id
+              filter:
+                kind:
+                  $expr: entity.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: entity.field
+                target:
+                  $expr:
+                    var: row.entity.id
+              optional: true
+          groupBy:
+            $expr:
+              var: row.entity.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.entity.attributes.id
+                    name:
+                      var: row.entity.attributes.name
+                    owner:
+                      var: row.entity.attributes.owner
+                    plural:
+                      var:
+                        - row.entity.attributes.plural
+                        - null
+                    description:
+                      var:
+                        - row.entity.attributes.description
+                        - null
+                    fields:
+                      os_let:
+                        - fieldEntries
+                        - kind: arrayConcat
+                          items:
+                            - kind: uniqueMap
+                              path: group.rows
+                              as: item
+                              key:
+                                kind: path
+                                path: item.field.attributes.name
+                              when:
+                                kind: path
+                                path: item.field
+                                optional: true
+                              value:
+                                kind: object
+                                fields:
+                                  entity:
+                                    kind: path
+                                    path: row.entity.attributes.id
+                                  name:
+                                    kind: path
+                                    path: item.field.attributes.name
+                                  type:
+                                    kind: path
+                                    path: item.field.attributes.type
+                                  required:
+                                    kind: path
+                                    path: item.field.attributes.required
+                                  identity:
+                                    kind: path
+                                    path: item.field.attributes.identity
+                                  unique:
+                                    kind: path
+                                    path: item.field.attributes.unique
+                                  computed:
+                                    kind: path
+                                    path: item.field.attributes.computed
+                                  description:
+                                    kind: path
+                                    path: item.field.attributes.description
+                                    optional: true
+                            - kind: uniqueMap
+                              path: group.rows
+                              as: item
+                              key:
+                                kind: path
+                                path: item.facet.value.name
+                              when:
+                                kind: and
+                                items:
+                                  - kind: path
+                                    path: item.facet
+                                    optional: true
+                                  - kind: equals
+                                    left:
+                                      kind: path
+                                      path: item.facet.kind
+                                    right:
+                                      kind: literal
+                                      value: entity.field
+                                  - kind: isEmpty
+                                    value:
+                                      kind: find
+                                      path: group.rows
+                                      as: candidate
+                                      optional: true
+                                      condition:
+                                        kind: equals
+                                        left:
+                                          kind: path
+                                          path: candidate.field.attributes.name
+                                          optional: true
+                                        right:
+                                          kind: path
+                                          path: item.facet.value.name
+                              value:
+                                kind: object
+                                fields:
+                                  entity:
+                                    kind: path
+                                    path: item.facet.value.entity
+                                    optional: true
+                                    default:
+                                      kind: path
+                                      path: row.entity.attributes.id
+                                  name:
+                                    kind: path
+                                    path: item.facet.value.name
+                                  type:
+                                    kind: path
+                                    path: item.facet.value.type
+                                  required:
+                                    kind: path
+                                    path: item.facet.value.required
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: true
+                                  identity:
+                                    kind: path
+                                    path: item.facet.value.identity
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: false
+                                  unique:
+                                    kind: path
+                                    path: item.facet.value.unique
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: false
+                                  computed:
+                                    kind: path
+                                    path: item.facet.value.computed
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: false
+                                  description:
+                                    kind: path
+                                    path: item.facet.value.description
+                                    optional: true
+                        - os_values:
+                            kind: objectFromEntries
+                            path: fieldEntries
+                            as: field
+                            key:
+                              kind: path
+                              path: field.name
+                            value:
+                              kind: path
+                              path: field
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:EntitySelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:EntityAllSelectorResult
+
+        - id: entity.resolvedById
+          sources:
+            entity:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - entity
+                      - var: parameter.entity
+                kind:
+                  $expr: entity.declaration
+            field:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.entity.id
+              filter:
+                kind:
+                  $expr: entity.declaration.field
+                direction:
+                  $expr: out
+              optional: true
+            facet:
+              kind: facets
+              filter:
+                kind:
+                  $expr: entity.field
+                target:
+                  $expr:
+                    var: row.entity.id
+              optional: true
+          groupBy:
+            $expr:
+              var: row.entity.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.entity.attributes.id
+                    name:
+                      var: row.entity.attributes.name
+                    owner:
+                      var: row.entity.attributes.owner
+                    plural:
+                      var:
+                        - row.entity.attributes.plural
+                        - null
+                    description:
+                      var:
+                        - row.entity.attributes.description
+                        - null
+                    fields:
+                      os_let:
+                        - fieldEntries
+                        - kind: arrayConcat
+                          items:
+                            - kind: uniqueMap
+                              path: group.rows
+                              as: item
+                              key:
+                                kind: path
+                                path: item.field.attributes.name
+                              when:
+                                kind: path
+                                path: item.field
+                                optional: true
+                              value:
+                                kind: object
+                                fields:
+                                  entity:
+                                    kind: path
+                                    path: row.entity.attributes.id
+                                  name:
+                                    kind: path
+                                    path: item.field.attributes.name
+                                  type:
+                                    kind: path
+                                    path: item.field.attributes.type
+                                  required:
+                                    kind: path
+                                    path: item.field.attributes.required
+                                  identity:
+                                    kind: path
+                                    path: item.field.attributes.identity
+                                  unique:
+                                    kind: path
+                                    path: item.field.attributes.unique
+                                  computed:
+                                    kind: path
+                                    path: item.field.attributes.computed
+                                  description:
+                                    kind: path
+                                    path: item.field.attributes.description
+                                    optional: true
+                            - kind: uniqueMap
+                              path: group.rows
+                              as: item
+                              key:
+                                kind: path
+                                path: item.facet.value.name
+                              when:
+                                kind: and
+                                items:
+                                  - kind: path
+                                    path: item.facet
+                                    optional: true
+                                  - kind: equals
+                                    left:
+                                      kind: path
+                                      path: item.facet.kind
+                                    right:
+                                      kind: literal
+                                      value: entity.field
+                                  - kind: isEmpty
+                                    value:
+                                      kind: find
+                                      path: group.rows
+                                      as: candidate
+                                      optional: true
+                                      condition:
+                                        kind: equals
+                                        left:
+                                          kind: path
+                                          path: candidate.field.attributes.name
+                                          optional: true
+                                        right:
+                                          kind: path
+                                          path: item.facet.value.name
+                              value:
+                                kind: object
+                                fields:
+                                  entity:
+                                    kind: path
+                                    path: item.facet.value.entity
+                                    optional: true
+                                    default:
+                                      kind: path
+                                      path: row.entity.attributes.id
+                                  name:
+                                    kind: path
+                                    path: item.facet.value.name
+                                  type:
+                                    kind: path
+                                    path: item.facet.value.type
+                                  required:
+                                    kind: path
+                                    path: item.facet.value.required
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: true
+                                  identity:
+                                    kind: path
+                                    path: item.facet.value.identity
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: false
+                                  unique:
+                                    kind: path
+                                    path: item.facet.value.unique
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: false
+                                  computed:
+                                    kind: path
+                                    path: item.facet.value.computed
+                                    optional: true
+                                    default:
+                                      kind: literal
+                                      value: false
+                                  description:
+                                    kind: path
+                                    path: item.facet.value.description
+                                    optional: true
+                        - os_values:
+                            kind: objectFromEntries
+                            path: fieldEntries
+                            as: field
+                            key:
+                              kind: path
+                              path: field.name
+                            value:
+                              kind: path
+                              path: field
+          paramsContract:
+            kind: model
+            model: model:EntityByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:EntityByIdSelectorResult

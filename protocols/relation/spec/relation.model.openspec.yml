@@ -1,0 +1,114 @@
+openspec: "1.0"
+documents:
+  - id: relation.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.relation.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: RelationSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: RelationByIdSelectorParams
+          fields:
+            - name: relation
+              type: nonEmptyString
+
+        - kind: object
+          name: RelationByEntitySelectorParams
+          fields:
+            - name: entity
+              type: nonEmptyString
+
+        # ── Cardinality, direction, ownership ─────────────────────────────────
+
+        - kind: enum
+          name: RelationCardinality
+          values:
+            - one-to-one
+            - one-to-many
+            - many-to-many
+
+        - kind: enum
+          name: RelationDirection
+          values:
+            - unidirectional
+            - bidirectional
+
+        - kind: enum
+          name: RelationOwnership
+          values:
+            - none
+            - owned
+            - shared
+
+        # ── Core contract ──────────────────────────────────────────────────────
+        # The full resolved shape of a relation returned by selectors.
+        # `from` and `to` are entity node IDs.
+        # `via` is the scalar field on the `from` entity that holds the foreign key.
+        # `inverse` is the name of the inverse relation on the `to` entity (bidirectional only).
+
+        - kind: object
+          name: RelationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: cardinality
+              type:
+                kind: ref
+                name: RelationCardinality
+            - name: direction
+              type:
+                kind: ref
+                name: RelationDirection
+              required: false
+            - name: ownership
+              type:
+                kind: ref
+                name: RelationOwnership
+              required: false
+            - name: via
+              type: nonEmptyString
+              required: false
+            - name: inverse
+              type: nonEmptyString
+              required: false
+            - name: required
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: RelationAllSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: RelationContract
+
+        - kind: alias
+          name: RelationByIdSelectorResult
+          type:
+            kind: ref
+            name: RelationContract
+
+        - kind: alias
+          name: RelationByEntitySelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: RelationContract

@@ -1,0 +1,440 @@
+openspec: "1.0"
+documents:
+  - id: pattern.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.pattern.v1
+      owner: protocol.protocol:openspec.pattern.v1
+      lowering:
+        - id: pattern.package
+          source:
+            as: document
+          facts:
+            - kind: node
+              when:
+                $expr:
+                  var:
+                    - document.namespace.id
+                    - null
+              id:
+                $expr:
+                  os_node_id:
+                    - pattern.package
+                    - var: document.namespace.id
+              factKind:
+                $expr: pattern.package
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: document.namespace.id
+                      name:
+                        var:
+                          - document.namespace.name
+                          - null
+                      version:
+                        var:
+                          - document.namespace.version
+                          - null
+                      metadata:
+                        var:
+                          - document.namespace.metadata
+                          - null
+
+        - id: pattern.declarations
+          source:
+            path: patterns
+            as: pattern
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - pattern.declaration
+                    - var: pattern.id
+              factKind:
+                $expr: pattern.declaration
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: pattern.id
+                      owner:
+                        var: pattern.owner
+                      name:
+                        var:
+                          - pattern.name
+                          - null
+                      version:
+                        var:
+                          - pattern.version
+                          - null
+                      input:
+                        var:
+                          - pattern.input
+                          - null
+                      expands:
+                        var: pattern.expands
+                      metadata:
+                        var:
+                          - pattern.metadata
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: pattern.owner
+                    - .pattern.
+                    - var: pattern.id
+              factKind:
+                $expr: pattern.owner.declaration
+              from:
+                $expr:
+                  var: pattern.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - pattern.declaration
+                    - var: pattern.id
+
+            - kind: edge
+              when:
+                $expr:
+                  var:
+                    - document.namespace.id
+                    - null
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - pattern.package
+                        - var: document.namespace.id
+                    - .declaration.
+                    - var: pattern.id
+              factKind:
+                $expr: pattern.package.declaration
+              from:
+                $expr:
+                  os_node_id:
+                    - pattern.package
+                    - var: document.namespace.id
+              to:
+                $expr:
+                  os_node_id:
+                    - pattern.declaration
+                    - var: pattern.id
+
+            - kind: edge
+              when:
+                $expr:
+                  var:
+                    - pattern.input.model
+                    - null
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - pattern.declaration
+                        - var: pattern.id
+                    - .input.model
+              factKind:
+                $expr: pattern.input.model
+              from:
+                $expr:
+                  os_node_id:
+                    - pattern.declaration
+                    - var: pattern.id
+              to:
+                $expr:
+                  os_node_id:
+                    - model
+                    - var: pattern.owner
+                    - str_after:
+                        - var: pattern.input.model
+                        - ":"
+
+        - id: pattern.applications
+          source:
+            path: applications
+            as: application
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - pattern.application
+                    - var: application.id
+              factKind:
+                $expr: pattern.application
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: application.id
+                      pattern:
+                        var: application.pattern
+                      inputs:
+                        var:
+                          - application.inputs
+                          - null
+                      metadata:
+                        var:
+                          - application.metadata
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - pattern.application
+                        - var: application.id
+                    - .declaration
+              factKind:
+                $expr: pattern.application.declaration
+              from:
+                $expr:
+                  os_node_id:
+                    - pattern.application
+                    - var: application.id
+              to:
+                $expr:
+                  var: application.pattern
+
+        - id: pattern.views
+          source:
+            path: views
+            as: view
+            optional: true
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - pattern.view
+                    - var: view.id
+              factKind:
+                $expr: pattern.view
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: view.id
+                      owner:
+                        var: view.owner
+                      definition:
+                        os_object:
+                          - sources:
+                              var: view.sources
+                            where:
+                              var:
+                                - view.where
+                                - null
+                            groupBy:
+                              var:
+                                - view.groupBy
+                                - null
+                            result:
+                              var: view.result
+                            orderBy:
+                              var:
+                                - view.orderBy
+                                - null
+                      paramsContract:
+                        var: view.paramsContract
+                      returnsContract:
+                        var: view.returnsContract
+                      metadata:
+                        var:
+                          - view.metadata
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: view.owner
+                    - .view.
+                    - var: view.id
+              factKind:
+                $expr: pattern.owner.view
+              from:
+                $expr:
+                  var: view.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - pattern.view
+                    - var: view.id
+
+      selectors:
+        - id: pattern.declarations
+          sources:
+            pattern:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: pattern.declaration
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.pattern.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:PatternSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:PatternDeclarationsSelectorResult
+
+        - id: pattern.byId
+          sources:
+            pattern:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - pattern.declaration
+                      - var: parameter.pattern
+                kind:
+                  $expr: pattern.declaration
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.pattern.attributes
+          paramsContract:
+            kind: model
+            model: model:PatternByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:PatternByIdSelectorResult
+
+        - id: pattern.declarationsForOwner
+          sources:
+            pattern:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: pattern.declaration
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.pattern.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.pattern.attributes.owner
+                  - var: parameter.owner
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:PatternByOwnerSelectorParams
+          returnsContract:
+            kind: model
+            model: model:PatternDeclarationsForOwnerSelectorResult
+
+        - id: pattern.applications
+          sources:
+            application:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: pattern.application
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.application.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:PatternSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:PatternApplicationsSelectorResult
+
+        - id: pattern.applicationById
+          sources:
+            application:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - pattern.application
+                      - var: parameter.application
+                kind:
+                  $expr: pattern.application
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.application.attributes
+          paramsContract:
+            kind: model
+            model: model:PatternApplicationByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:PatternApplicationByIdSelectorResult
+
+        - id: pattern.views
+          sources:
+            view:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: pattern.view
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.view.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:PatternSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:PatternViewsSelectorResult
+
+        - id: pattern.viewsForOwner
+          sources:
+            view:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: pattern.view
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.view.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.view.attributes.owner
+                  - var: parameter.owner
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:PatternByOwnerSelectorParams
+          returnsContract:
+            kind: model
+            model: model:PatternViewsForOwnerSelectorResult

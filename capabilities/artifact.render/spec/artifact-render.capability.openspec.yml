@@ -1,0 +1,23 @@
+openspec: "1.0"
+documents:
+  - id: artifact.render.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:artifact.render
+
+      capabilities:
+        - id: artifact.render
+          kind: artifact.rendering
+          description: Render an OpenSpec artifact recipe into concrete files.
+          methods:
+            render:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ArtifactRenderInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ArtifactRenderOutput

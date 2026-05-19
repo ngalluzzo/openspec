@@ -1,0 +1,172 @@
+openspec: "1.0"
+documents:
+  - id: prisma-dialect.derivation
+    protocol: openspec.derivation.v1
+    document:
+      owner: provider.provider:prisma
+      rules:
+        - id: prisma.storage.models
+          source:
+            selector: storage.materializedEntities
+            as: model
+          after:
+            - storage.schema.entities
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "prisma.model:"
+                  - kind: path
+                    path: model.id
+              factKind: prisma.model
+              target:
+                kind: path
+                path: model.surface
+              value:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - "prisma.model:"
+                      - kind: path
+                        path: model.id
+                  unit:
+                    kind: path
+                    path: model.surface
+                  storageEntity:
+                    kind: path
+                    path: model.id
+                  name:
+                    kind: path
+                    path: model.name
+
+        - id: prisma.storage.fields
+          source:
+            selector: storage.materializedFields
+            as: field
+          after:
+            - prisma.storage.models
+            - storage.schema.fields
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "prisma.field:"
+                  - kind: path
+                    path: field.id
+              factKind: prisma.field
+              target:
+                kind: path
+                path: field.entity
+              value:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - "prisma.field:"
+                      - kind: path
+                        path: field.id
+                  unit:
+                    kind: path
+                    path: field.surface
+                  model:
+                    kind: path
+                    path: field.entity
+                  storageField:
+                    kind: path
+                    path: field.id
+                  name:
+                    kind: path
+                    path: field.name
+                  type:
+                    kind: match
+                    value:
+                      kind: path
+                      path: field.type
+                      optional: true
+                    cases:
+                      string:
+                        kind: literal
+                        value: String
+                      number:
+                        kind: literal
+                        value: Float
+                      integer:
+                        kind: literal
+                        value: Int
+                      boolean:
+                        kind: literal
+                        value: Boolean
+                      date:
+                        kind: literal
+                        value: DateTime
+                      datetime:
+                        kind: literal
+                        value: DateTime
+                    default:
+                      kind: literal
+                      value: String
+                  nullable:
+                    kind: path
+                    path: field.nullable
+                  identity:
+                    kind: path
+                    path: field.identity
+                  unique:
+                    kind: path
+                    path: field.unique
+
+        - id: prisma.storage.relations
+          source:
+            selector: storage.materializedRelations
+            as: relation
+          after:
+            - prisma.storage.models
+            - storage.schema.relations
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "prisma.relation:"
+                  - kind: path
+                    path: relation.id
+              factKind: prisma.relation
+              target:
+                kind: path
+                path: relation.surface
+              value:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - "prisma.relation:"
+                      - kind: path
+                        path: relation.id
+                  unit:
+                    kind: path
+                    path: relation.surface
+                  storageRelation:
+                    kind: path
+                    path: relation.id
+                  name:
+                    kind: path
+                    path: relation.name
+                  from:
+                    kind: path
+                    path: relation.from
+                  to:
+                    kind: path
+                    path: relation.to
+                  cardinality:
+                    kind: path
+                    path: relation.cardinality
+                  required:
+                    kind: path
+                    path: relation.required
+                    optional: true

@@ -1,0 +1,130 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.entrypoint.v1
+package:
+  id: "@openspec/entrypoint"
+documentModels:
+  - model:EntrypointDocument
+validation:
+  - id: entrypoint.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.entrypoint.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: entrypoint.owner.invalid
+        message: Entrypoint documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-entrypoints
+        scope: selector
+        selector: entrypoint.entrypoints
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: entrypoint.declarations.empty
+        message: Entrypoint documents must declare at least one entrypoint.
+
+      - id: entrypoint-id-format
+        scope: selector
+        selector: entrypoint.entrypoints
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: entrypoint.id.invalid
+        message: Entrypoint ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: entrypoint-kind-format
+        scope: selector
+        selector: entrypoint.entrypoints
+        forEach: true
+        when:
+          $expr:
+            "!":
+              - os_is_empty:
+                  - var:
+                      - item.kind
+                      - null
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: entrypoint.kind.invalid
+        message: Entrypoint kind must be a lowercase namespaced identifier.
+        details:
+          $expr:
+            os_object:
+              - entrypoint:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: handler-ref-format
+        scope: selector
+        selector: entrypoint.entrypoints
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.handler
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: entrypoint.handler.invalid
+        message: Entrypoint handler must be a canonical nodeId of the graph node being dispatched to.
+        details:
+          $expr:
+            os_object:
+              - entrypoint:
+                  var: item.id
+                handler:
+                  var: item.handler
+
+      - id: context-ref-format
+        scope: selector
+        selector: entrypoint.entrypoints
+        forEach: true
+        when:
+          $expr:
+            "!":
+              - os_is_empty:
+                  - var:
+                      - item.context
+                      - null
+        assert:
+          $expr:
+            regex_test:
+              - var: item.context
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: entrypoint.context.invalid
+        message: Entrypoint context must be a canonical nodeId of the ambient scope for this entrypoint.
+        details:
+          $expr:
+            os_object:
+              - entrypoint:
+                  var: item.id
+                context:
+                  var: item.context

@@ -1,0 +1,1158 @@
+openspec: "1.0"
+documents:
+  - id: typescript-dialect.model
+    protocol: openspec.model.v1
+    document:
+      owner: dialect.package:typescript
+      declarations:
+        - kind: object
+          name: TypeScriptDialectSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: TypeScriptDialectUnitSelectorParams
+          fields:
+            - name: unit
+              type: nonEmptyString
+
+        - kind: object
+          name: TypeScriptDialectTargetSelectorParams
+          fields:
+            - name: target
+              type: nonEmptyString
+
+        - kind: object
+          name: TypeScriptSyntaxRenderSelectorParams
+          fields:
+            - name: syntaxUnit
+              type: nonEmptyString
+            - name: asset
+              type: nonEmptyString
+
+        - kind: object
+          name: TypeScriptRecipeInvocationFacetValue
+          fields:
+            - name: unit
+              type: nonEmptyString
+              required: false
+            - name: recipe
+              type: nonEmptyString
+            - name: provider
+              type: nonEmptyString
+              required: false
+            - name: adapter
+              type: nonEmptyString
+              required: false
+            - name: providerSelectionRequest
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: input
+              type: unknown
+              required: false
+            - name: inputModel
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: TypeScriptRecipeInvocationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: target
+              type: nonEmptyString
+              required: false
+            - name: unit
+              type: nonEmptyString
+              required: false
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptRecipeInvocationFacetValue
+
+        - kind: object
+          name: TypeScriptRecipeApplyInput
+          fields:
+            - name: invocation
+              type:
+                kind: ref
+                name: TypeScriptRecipeInvocationContract
+            - name: unit
+              type: unknown
+            - name: asset
+              type: unknown
+
+        - kind: object
+          name: TypeScriptRecipeApplyResult
+          fields:
+            - name: edits
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptModuleEdit
+              required: false
+            - name: sourceText
+              type: string
+              required: false
+            - name: diagnostics
+              type: unknown
+              required: false
+
+        - kind: object
+          name: TypeScriptIdentifierExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: identifier
+            - name: name
+              type: nonEmptyString
+
+        - kind: object
+          name: TypeScriptMemberExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: member
+            - name: object
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+            - name: property
+              type: nonEmptyString
+
+        - kind: object
+          name: TypeScriptElementAccessExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: elementAccess
+            - name: object
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+            - name: element
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptCallExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: call
+            - name: callee
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+            - name: arguments
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptValueExpression
+              required: false
+
+        - kind: object
+          name: TypeScriptNewExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: new
+            - name: callee
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+            - name: arguments
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptValueExpression
+              required: false
+
+        - kind: object
+          name: TypeScriptAwaitExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: await
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptUnaryExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: unary
+            - name: operator
+              type: nonEmptyString
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptObjectPropertyExpression
+          fields:
+            - name: key
+              type: nonEmptyString
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptObjectExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: object
+            - name: properties
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptObjectPropertyExpression
+
+        - kind: object
+          name: TypeScriptArrayExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: array
+            - name: items
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptLiteralExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: literal
+            - name: value
+              type:
+                kind: union
+                options:
+                  - string
+                  - number
+                  - boolean
+                  - "null"
+
+        - kind: object
+          name: TypeScriptRawExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: raw
+            - name: text
+              type: string
+
+        - kind: object
+          name: TypeScriptArrowFunctionExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: arrowFunction
+            - name: async
+              type: boolean
+              required: false
+            - name: parameters
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptFunctionParameter
+              required: false
+            - name: body
+              type: unknown
+
+        - kind: alias
+          name: TypeScriptValueExpression
+          type:
+            kind: union
+            options:
+              - kind: ref
+                name: TypeScriptIdentifierExpression
+              - kind: ref
+                name: TypeScriptMemberExpression
+              - kind: ref
+                name: TypeScriptElementAccessExpression
+              - kind: ref
+                name: TypeScriptCallExpression
+              - kind: ref
+                name: TypeScriptNewExpression
+              - kind: ref
+                name: TypeScriptAwaitExpression
+              - kind: ref
+                name: TypeScriptUnaryExpression
+              - kind: ref
+                name: TypeScriptObjectExpression
+              - kind: ref
+                name: TypeScriptArrayExpression
+              - kind: ref
+                name: TypeScriptLiteralExpression
+              - kind: ref
+                name: TypeScriptArrowFunctionExpression
+              - kind: ref
+                name: TypeScriptRawExpression
+
+        - kind: object
+          name: TypeScriptKeywordTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: keyword
+            - name: name
+              type: nonEmptyString
+
+        - kind: object
+          name: TypeScriptRefTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: ref
+            - name: name
+              type: nonEmptyString
+
+        - kind: object
+          name: TypeScriptArrayTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: array
+            - name: item
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+
+        - kind: object
+          name: TypeScriptObjectTypeProperty
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+            - name: optional
+              type: boolean
+              required: false
+            - name: readonly
+              type: boolean
+              required: false
+            - name: comment
+              type: string
+              required: false
+
+        - kind: object
+          name: TypeScriptObjectTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: object
+            - name: properties
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptObjectTypeProperty
+
+        - kind: object
+          name: TypeScriptRecordTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: record
+            - name: key
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+
+        - kind: object
+          name: TypeScriptUnionTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: union
+            - name: options
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptTypeExpression
+
+        - kind: object
+          name: TypeScriptIntersectionTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: intersection
+            - name: options
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptTypeExpression
+
+        - kind: object
+          name: TypeScriptLiteralTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: literal
+            - name: value
+              type:
+                kind: union
+                options:
+                  - string
+                  - number
+                  - boolean
+                  - "null"
+
+        - kind: object
+          name: TypeScriptPromiseTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: promise
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+
+        - kind: object
+          name: TypeScriptTypeQueryExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: typeQuery
+            - name: expression
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptTypeApplicationExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: typeApplication
+            - name: base
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+            - name: arguments
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptTypeExpression
+
+        - kind: object
+          name: TypeScriptRawTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: raw
+            - name: text
+              type: string
+
+        - kind: object
+          name: TypeScriptFunctionTypeExpression
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: function
+            - name: parameters
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptFunctionParameter
+            - name: returnType
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+
+        - kind: alias
+          name: TypeScriptTypeExpression
+          type:
+            kind: union
+            options:
+              - kind: ref
+                name: TypeScriptKeywordTypeExpression
+              - kind: ref
+                name: TypeScriptRefTypeExpression
+              - kind: ref
+                name: TypeScriptArrayTypeExpression
+              - kind: ref
+                name: TypeScriptObjectTypeExpression
+              - kind: ref
+                name: TypeScriptRecordTypeExpression
+              - kind: ref
+                name: TypeScriptUnionTypeExpression
+              - kind: ref
+                name: TypeScriptIntersectionTypeExpression
+              - kind: ref
+                name: TypeScriptLiteralTypeExpression
+              - kind: ref
+                name: TypeScriptPromiseTypeExpression
+              - kind: ref
+                name: TypeScriptTypeQueryExpression
+              - kind: ref
+                name: TypeScriptTypeApplicationExpression
+              - kind: ref
+                name: TypeScriptFunctionTypeExpression
+              - kind: ref
+                name: TypeScriptRawTypeExpression
+
+        - kind: object
+          name: TypeScriptFunctionParameter
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+              required: false
+            - name: optional
+              type: boolean
+              required: false
+            - name: rest
+              type: boolean
+              required: false
+
+        - kind: object
+          name: TypeScriptRawStatement
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: raw
+            - name: text
+              type: string
+
+        - kind: object
+          name: TypeScriptConstStatement
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: const
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+              required: false
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptExpressionStatement
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: expression
+            - name: expression
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptReturnStatement
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: return
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+              required: false
+
+        - kind: object
+          name: TypeScriptThrowStatement
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: throw
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptBlockStatement
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: block
+            - name: statements
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptStatement
+
+        - kind: object
+          name: TypeScriptIfStatement
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: if
+            - name: condition
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+            - name: then
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptStatement
+            - name: else
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptStatement
+              required: false
+
+        - kind: object
+          name: TypeScriptChainedCall
+          fields:
+            - name: method
+              type: nonEmptyString
+            - name: arguments
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptValueExpression
+              required: false
+
+        - kind: object
+          name: TypeScriptChainedCallStatement
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: chainedCall
+            - name: receiver
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+            - name: calls
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptChainedCall
+
+        - kind: alias
+          name: TypeScriptStatement
+          type:
+            kind: union
+            options:
+              - kind: ref
+                name: TypeScriptRawStatement
+              - kind: ref
+                name: TypeScriptConstStatement
+              - kind: ref
+                name: TypeScriptExpressionStatement
+              - kind: ref
+                name: TypeScriptReturnStatement
+              - kind: ref
+                name: TypeScriptThrowStatement
+              - kind: ref
+                name: TypeScriptBlockStatement
+              - kind: ref
+                name: TypeScriptIfStatement
+              - kind: ref
+                name: TypeScriptChainedCallStatement
+
+        - kind: object
+          name: TypeScriptImportBinding
+          fields:
+            - name: imported
+              type: nonEmptyString
+            - name: local
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: TypeScriptImportFacetValue
+          fields:
+            - name: unit
+              type: nonEmptyString
+            - name: module
+              type: nonEmptyString
+            - name: order
+              type: number
+              required: false
+            - name: named
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptImportBinding
+              required: false
+            - name: default
+              type: nonEmptyString
+              required: false
+            - name: namespace
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: TypeScriptExpressionFacetValue
+          fields:
+            - name: unit
+              type: nonEmptyString
+              required: false
+            - name: provider
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: expression
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptTypeFacetValue
+          fields:
+            - name: unit
+              type: nonEmptyString
+              required: false
+            - name: provider
+              type: nonEmptyString
+              required: false
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: type
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+
+        - kind: object
+          name: TypeScriptDeclarationFacetValue
+          fields:
+            - name: unit
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: role
+              type: nonEmptyString
+              required: false
+            - name: order
+              type: number
+              required: false
+            - name: exported
+              type: boolean
+              required: false
+            - name: comment
+              type: string
+              required: false
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+              required: false
+            - name: type
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+              required: false
+            - name: parameters
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptFunctionParameter
+              required: false
+            - name: returnType
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+              required: false
+            - name: body
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptStatement
+              required: false
+
+        - kind: object
+          name: TypeScriptImportModuleEdit
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: import
+            - name: order
+              type: number
+              required: false
+            - name: module
+              type: nonEmptyString
+            - name: named
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptImportBinding
+              required: false
+            - name: default
+              type: nonEmptyString
+              required: false
+            - name: namespace
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: TypeScriptTypeAliasModuleEdit
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: typeAlias
+            - name: order
+              type: number
+              required: false
+            - name: name
+              type: nonEmptyString
+            - name: exported
+              type: boolean
+              required: false
+            - name: type
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+
+        - kind: object
+          name: TypeScriptConstModuleEdit
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: const
+            - name: order
+              type: number
+              required: false
+            - name: name
+              type: nonEmptyString
+            - name: exported
+              type: boolean
+              required: false
+            - name: type
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+              required: false
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptValueExpression
+
+        - kind: object
+          name: TypeScriptFunctionModuleEdit
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: function
+            - name: order
+              type: number
+              required: false
+            - name: name
+              type: nonEmptyString
+            - name: exported
+              type: boolean
+              required: false
+            - name: parameters
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptFunctionParameter
+              required: false
+            - name: returnType
+              type:
+                kind: ref
+                name: TypeScriptTypeExpression
+              required: false
+            - name: body
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptStatement
+
+        - kind: object
+          name: TypeScriptStatementModuleEdit
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: statement
+            - name: order
+              type: number
+              required: false
+            - name: statement
+              type:
+                kind: ref
+                name: TypeScriptStatement
+
+        - kind: object
+          name: TypeScriptFunctionBodyStatementModuleEdit
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: functionBodyStatement
+            - name: order
+              type: number
+              required: false
+            - name: functionName
+              type: nonEmptyString
+            - name: statement
+              type:
+                kind: ref
+                name: TypeScriptStatement
+
+        - kind: object
+          name: TypeScriptRawModuleEdit
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: raw
+            - name: order
+              type: number
+              required: false
+            - name: text
+              type: string
+
+        - kind: alias
+          name: TypeScriptModuleEdit
+          type:
+            kind: union
+            options:
+              - kind: ref
+                name: TypeScriptImportModuleEdit
+              - kind: ref
+                name: TypeScriptTypeAliasModuleEdit
+              - kind: ref
+                name: TypeScriptConstModuleEdit
+              - kind: ref
+                name: TypeScriptFunctionModuleEdit
+              - kind: ref
+                name: TypeScriptStatementModuleEdit
+              - kind: ref
+                name: TypeScriptFunctionBodyStatementModuleEdit
+              - kind: ref
+                name: TypeScriptRawModuleEdit
+
+        - kind: object
+          name: TypeScriptImportFacetContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptImportFacetValue
+
+        - kind: alias
+          name: TypeScriptImportFacetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: TypeScriptImportFacetContract
+
+        - kind: object
+          name: TypeScriptDeclarationFacetContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptDeclarationFacetValue
+
+        - kind: alias
+          name: TypeScriptDeclarationFacetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: TypeScriptDeclarationFacetContract
+
+        - kind: object
+          name: TypeScriptExpressionFacetContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+              required: false
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptExpressionFacetValue
+
+        - kind: alias
+          name: TypeScriptExpressionFacetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: TypeScriptExpressionFacetContract
+
+        - kind: object
+          name: TypeScriptTypeFacetContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: unit
+              type: nonEmptyString
+              required: false
+            - name: value
+              type:
+                kind: ref
+                name: TypeScriptTypeFacetValue
+
+        - kind: alias
+          name: TypeScriptTypeFacetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: TypeScriptTypeFacetContract
+
+        - kind: object
+          name: TypeScriptSyntaxRenderInput
+          fields:
+            - name: unit
+              type:
+                kind: ref
+                name: SyntaxUnitContract
+            - name: asset
+              type:
+                kind: ref
+                name: AssetContract
+            - name: selections
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProviderSelectionContract
+            - name: imports
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptImportFacetContract
+            - name: declarations
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptDeclarationFacetContract
+            - name: recipes
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: TypeScriptRecipeInvocationContract
+
+        - kind: alias
+          name: TypeScriptRecipeInvocationSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: TypeScriptRecipeInvocationContract

@@ -1,0 +1,257 @@
+{
+	"plugin": "@std/numeric",
+	"version": "1.0.0",
+	"namespace": "@std",
+	"category": "numeric",
+	"operators": {
+		"greater-than": {
+			"id": "greater-than",
+			"name": "greater-than",
+			"title": "Greater Than",
+			"description": "Checks if first number is greater than second",
+			"category": "numeric",
+			"tags": ["comparison", "basic"],
+			"examples": [
+				{
+					"description": "5 > 3",
+					"input": {},
+					"rule": { "greater-than": [5, 3] },
+					"output": true
+				},
+				{
+					"description": "3 > 5",
+					"input": {},
+					"rule": { "greater-than": [3, 5] },
+					"output": false
+				}
+			],
+			"complexity": "O(1)",
+			"jsonlogicCompatible": false
+		},
+		"greater-equal": {
+			"id": "greater-equal",
+			"name": "greater-equal",
+			"title": "Greater Than or Equal",
+			"description": "Checks if first number is greater than or equal to second",
+			"category": "numeric",
+			"tags": ["comparison", "basic"],
+			"examples": [
+				{
+					"description": "5 >= 5",
+					"input": {},
+					"rule": { "greater-equal": [5, 5] },
+					"output": true
+				},
+				{
+					"description": "3 >= 5",
+					"input": {},
+					"rule": { "greater-equal": [3, 5] },
+					"output": false
+				}
+			],
+			"complexity": "O(1)",
+			"jsonlogicCompatible": false
+		},
+		"less-than": {
+			"id": "less-than",
+			"name": "less-than",
+			"title": "Less Than",
+			"description": "Checks if first number is less than second",
+			"category": "numeric",
+			"tags": ["comparison", "basic"],
+			"examples": [
+				{
+					"description": "3 < 5",
+					"input": {},
+					"rule": { "less-than": [3, 5] },
+					"output": true
+				},
+				{
+					"description": "5 < 3",
+					"input": {},
+					"rule": { "less-than": [5, 3] },
+					"output": false
+				}
+			],
+			"complexity": "O(1)",
+			"jsonlogicCompatible": false
+		},
+		"less-equal": {
+			"id": "less-equal",
+			"name": "less-equal",
+			"title": "Less Than or Equal",
+			"description": "Checks if first number is less than or equal to second",
+			"category": "numeric",
+			"tags": ["comparison", "basic"],
+			"examples": [
+				{
+					"description": "5 <= 5",
+					"input": {},
+					"rule": { "less-equal": [5, 5] },
+					"output": true
+				},
+				{
+					"description": "5 <= 3",
+					"input": {},
+					"rule": { "less-equal": [5, 3] },
+					"output": false
+				}
+			],
+			"complexity": "O(1)",
+			"jsonlogicCompatible": false
+		},
+		"between": {
+			"id": "between",
+			"name": "between",
+			"title": "Between",
+			"description": "Checks if value is between min and max (inclusive)",
+			"category": "numeric",
+			"tags": ["comparison", "range"],
+			"examples": [
+				{
+					"description": "5 between 0 and 10",
+					"input": {},
+					"rule": { "between": [0, 5, 10] },
+					"output": true
+				},
+				{
+					"description": "15 between 0 and 10",
+					"input": {},
+					"rule": { "between": [0, 15, 10] },
+					"output": false
+				}
+			],
+			"complexity": "O(1)",
+			"jsonlogicCompatible": true
+		},
+		"min": {
+			"id": "min",
+			"name": "min",
+			"title": "Minimum",
+			"description": "Returns the minimum value from an array",
+			"category": "numeric",
+			"tags": ["aggregation", "basic"],
+			"examples": [
+				{
+					"description": "Min of [1, 5, 3]",
+					"input": {},
+					"rule": { "min": [[1, 5, 3]] },
+					"output": 1
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": true
+		},
+		"max": {
+			"id": "max",
+			"name": "max",
+			"title": "Maximum",
+			"description": "Returns the maximum value from an array",
+			"category": "numeric",
+			"tags": ["aggregation", "basic"],
+			"examples": [
+				{
+					"description": "Max of [1, 5, 3]",
+					"input": {},
+					"rule": { "max": [[1, 5, 3]] },
+					"output": 5
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": true
+		},
+		"plus": {
+			"id": "plus",
+			"name": "plus",
+			"title": "Addition (Plus)",
+			"description": "Adds multiple numbers together",
+			"category": "numeric",
+			"tags": ["arithmetic", "basic"],
+			"examples": [
+				{
+					"description": "5 + 3 + 2",
+					"input": {},
+					"rule": { "plus": [5, 3, 2] },
+					"output": 10
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": false
+		},
+		"minus": {
+			"id": "minus",
+			"name": "minus",
+			"title": "Subtraction (Minus)",
+			"description": "Subtracts second number from first",
+			"category": "numeric",
+			"tags": ["arithmetic", "basic"],
+			"examples": [
+				{
+					"description": "5 - 3",
+					"input": {},
+					"rule": { "minus": [5, 3] },
+					"output": 2
+				}
+			],
+			"complexity": "O(1)",
+			"jsonlogicCompatible": false
+		},
+		"multiply": {
+			"id": "multiply",
+			"name": "multiply",
+			"title": "Multiplication",
+			"description": "Multiplies multiple numbers together",
+			"category": "numeric",
+			"tags": ["arithmetic", "basic"],
+			"examples": [
+				{
+					"description": "5 * 3",
+					"input": {},
+					"rule": { "multiply": [5, 3] },
+					"output": 15
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": false
+		},
+		"divide": {
+			"id": "divide",
+			"name": "divide",
+			"title": "Division",
+			"description": "Divides first number by second",
+			"category": "numeric",
+			"tags": ["arithmetic", "basic"],
+			"examples": [
+				{
+					"description": "10 / 2",
+					"input": {},
+					"rule": { "divide": [10, 2] },
+					"output": 5
+				}
+			],
+			"complexity": "O(1)",
+			"performanceNotes": "Checks for division by zero",
+			"jsonlogicCompatible": false
+		},
+		"modulo": {
+			"id": "modulo",
+			"name": "modulo",
+			"title": "Modulo",
+			"description": "Returns remainder of division",
+			"category": "numeric",
+			"tags": ["arithmetic", "basic"],
+			"examples": [
+				{
+					"description": "10 % 3",
+					"input": {},
+					"rule": { "modulo": [10, 3] },
+					"output": 1
+				}
+			],
+			"complexity": "O(1)",
+			"performanceNotes": "Checks for modulo by zero",
+			"jsonlogicCompatible": false
+		}
+	},
+	"generatedAt": "2026-01-16T23:00:00Z"
+}

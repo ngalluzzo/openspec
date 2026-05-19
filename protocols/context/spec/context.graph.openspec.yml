@@ -1,0 +1,403 @@
+openspec: "1.0"
+documents:
+  - id: context.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.context.v1
+      owner: protocol.protocol:openspec.context.v1
+      lowering:
+        - id: context.scopes
+          source:
+            path: scopes
+            as: scope
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - context.scope
+                    - var: scope.id
+              factKind:
+                $expr: context.scope
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: scope.id
+                      name:
+                        var:
+                          - scope.name
+                          - scope.id
+                      kind:
+                        var: scope.kind
+                      extends:
+                        var:
+                          - scope.extends
+                          - null
+                      description:
+                        var:
+                          - scope.description
+                          - null
+                      owner:
+                        var: document.owner
+
+            - kind: edge
+              when:
+                $expr:
+                  "!":
+                    - os_is_empty:
+                        - var:
+                            - scope.extends
+                            - null
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - context.scope
+                        - var: scope.id
+                    - .parent
+              factKind:
+                $expr: context.scope.parent
+              from:
+                $expr:
+                  os_node_id:
+                    - context.scope
+                    - var: scope.id
+              to:
+                $expr:
+                  os_node_id:
+                    - context.scope
+                    - var: scope.extends
+              attributes:
+                $expr:
+                  os_object:
+                    - scope:
+                        var: scope.id
+                      parent:
+                        var: scope.extends
+
+            - kind: forEach
+              path: scope.slots
+              as: slot
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - context.scope
+                        - var: scope.id
+                        - slot
+                        - var: slot.name
+                  factKind:
+                    $expr: context.slot
+                  attributes:
+                    $expr:
+                      os_object:
+                        - scope:
+                            var: scope.id
+                          name:
+                            var: slot.name
+                          type:
+                            var: slot.type
+                          source:
+                            var: slot.source
+                          expression:
+                            var:
+                              - slot.expression
+                              - null
+                          required:
+                            var:
+                              - slot.required
+                              - true
+                          description:
+                            var:
+                              - slot.description
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - context.scope
+                            - var: scope.id
+                        - .slot.
+                        - var: slot.name
+                  factKind:
+                    $expr: context.scope.slot
+                  from:
+                    $expr:
+                      os_node_id:
+                        - context.scope
+                        - var: scope.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - context.scope
+                        - var: scope.id
+                        - slot
+                        - var: slot.name
+                  attributes:
+                    $expr:
+                      os_object:
+                        - scope:
+                            var: scope.id
+                          slot:
+                            var: slot.name
+
+      selectors:
+        - id: context.all
+          sources:
+            scope:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: context.scope
+            slot:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.scope.id
+              filter:
+                kind:
+                  $expr: context.scope.slot
+                direction:
+                  $expr: out
+              optional: true
+          groupBy:
+            $expr:
+              var: row.scope.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.scope.attributes.id
+                    name:
+                      var: row.scope.attributes.name
+                    kind:
+                      var: row.scope.attributes.kind
+                    extends:
+                      var:
+                        - row.scope.attributes.extends
+                        - null
+                    description:
+                      var:
+                        - row.scope.attributes.description
+                        - null
+                    slots:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - name:
+                                var: item.slot.attributes.name
+                              type:
+                                var: item.slot.attributes.type
+                              source:
+                                var: item.slot.attributes.source
+                              expression:
+                                var:
+                                  - item.slot.attributes.expression
+                                  - null
+                              required:
+                                var: item.slot.attributes.required
+                              description:
+                                var:
+                                  - item.slot.attributes.description
+                                  - null
+                        - false
+                        - var:
+                            - item.slot
+                            - null
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:ContextSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ContextAllSelectorResult
+
+        - id: context.byId
+          sources:
+            scope:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  os_node_id:
+                    - context.scope
+                    - var: parameter.context
+              filter:
+                kind:
+                  $expr: context.scope
+                direction:
+                  $expr: out
+            slot:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.scope.id
+              filter:
+                kind:
+                  $expr: context.scope.slot
+                direction:
+                  $expr: out
+              optional: true
+          groupBy:
+            $expr:
+              var: row.scope.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.scope.attributes.id
+                    name:
+                      var: row.scope.attributes.name
+                    kind:
+                      var: row.scope.attributes.kind
+                    extends:
+                      var:
+                        - row.scope.attributes.extends
+                        - null
+                    description:
+                      var:
+                        - row.scope.attributes.description
+                        - null
+                    slots:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - name:
+                                var: item.slot.attributes.name
+                              type:
+                                var: item.slot.attributes.type
+                              source:
+                                var: item.slot.attributes.source
+                              expression:
+                                var:
+                                  - item.slot.attributes.expression
+                                  - null
+                              required:
+                                var: item.slot.attributes.required
+                              description:
+                                var:
+                                  - item.slot.attributes.description
+                                  - null
+                        - false
+                        - var:
+                            - item.slot
+                            - null
+          paramsContract:
+            kind: model
+            model: model:ContextByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ContextByIdSelectorResult
+
+        - id: context.byScope
+          sources:
+            scope:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: context.scope
+            slot:
+              kind: neighbors
+              nodeId:
+                $expr:
+                  var: row.scope.id
+              filter:
+                kind:
+                  $expr: context.scope.slot
+                direction:
+                  $expr: out
+              optional: true
+          where:
+            $expr:
+              ===:
+                - var: row.scope.attributes.kind
+                - var: parameter.scope
+          groupBy:
+            $expr:
+              var: row.scope.id
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.scope.attributes.id
+                    name:
+                      var: row.scope.attributes.name
+                    kind:
+                      var: row.scope.attributes.kind
+                    extends:
+                      var:
+                        - row.scope.attributes.extends
+                        - null
+                    description:
+                      var:
+                        - row.scope.attributes.description
+                        - null
+                    slots:
+                      os_map:
+                        - var: group.rows
+                        - item
+                        - os_object:
+                            - name:
+                                var: item.slot.attributes.name
+                              type:
+                                var: item.slot.attributes.type
+                              source:
+                                var: item.slot.attributes.source
+                              expression:
+                                var:
+                                  - item.slot.attributes.expression
+                                  - null
+                              required:
+                                var: item.slot.attributes.required
+                              description:
+                                var:
+                                  - item.slot.attributes.description
+                                  - null
+                        - false
+                        - var:
+                            - item.slot
+                            - null
+          paramsContract:
+            kind: model
+            model: model:ContextByScopeSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ContextByScopeSelectorResult
+
+        - id: context.slots
+          sources:
+            slot:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: context.slot
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.slot.attributes
+          orderBy:
+            - $expr:
+                var: row.value.scope
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:ContextSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ContextSlotsSelectorResult

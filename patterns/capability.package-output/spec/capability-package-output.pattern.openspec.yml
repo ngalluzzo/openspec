@@ -1,0 +1,236 @@
+openspec: "1.0"
+documents:
+  - id: capability-package-output.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: capability.package-output
+        name: Capability Package Output Pattern
+      patterns:
+        - id: capability.package-output
+          owner: pattern.package:capability.package-output
+          name: Capability package output
+          metadata:
+            composes:
+              - openspec.model.v1
+              - openspec.capability.v1
+              - openspec.syntax.v1
+              - openspec.asset.v1
+              - openspec.projection.v1
+            relation: Generates the public TypeScript model and adapter contract surface for a capability package.
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .types.application
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .types
+                      pattern: pattern.declaration:model.type-output
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.id
+                              - kind: literal
+                                value: .types
+                        namespace:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.namespace
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                              - kind: literal
+                                value: .types
+                        unit:
+                          expr:
+                            kind: object
+                            fields:
+                              id:
+                                kind: literal
+                                value: types
+                        declarations:
+                          expr:
+                            kind: path
+                            path: input.models
+                            optional: true
+                        artifact:
+                          expr:
+                            kind: path
+                            path: input.artifacts.types
+
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .contract.application
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .capability-contract
+                      pattern: pattern.declaration:capability.contract-surface
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.id
+                              - kind: literal
+                                value: .capability-contract
+                        namespace:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.namespace
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                              - kind: literal
+                                value: .capability-contract
+                        capability:
+                          expr:
+                            kind: path
+                            path: input.capability
+                        methods:
+                          expr:
+                            kind: path
+                            path: input.methods
+
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .adapter-contract
+                      pattern: pattern.declaration:capability.adapter-contract-surface
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.id
+                              - kind: literal
+                                value: .adapter-contract
+                        namespace:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.namespace
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                              - kind: literal
+                                value: .adapter-contract
+                        capability:
+                          expr:
+                            kind: path
+                            path: input.capability
+                        unit:
+                          expr:
+                            kind: object
+                            fields:
+                              id:
+                                kind: literal
+                                value: adapter
+                        methods:
+                          expr:
+                            kind: path
+                            path: input.methods
+                        metadata:
+                          expr:
+                            kind: path
+                            path: input.adapterContract
+
+                    - id:
+                        expr:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: input.id
+                            - kind: literal
+                              value: .adapter-output
+                      pattern: pattern.declaration:syntax.projection
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.id
+                              - kind: literal
+                                value: .adapter
+                        syntaxUnit:
+                          expr:
+                            kind: concat
+                            items:
+                              - kind: literal
+                                value: "syntax.unit:"
+                              - kind: path
+                                path: input.namespace
+                                optional: true
+                                default:
+                                  kind: path
+                                  path: input.id
+                              - kind: literal
+                                value: .adapter-contract.adapter
+                        dialect:
+                          expr:
+                            kind: literal
+                            value: typescript
+                        artifact:
+                          expr:
+                            kind: path
+                            path: input.artifacts.adapter

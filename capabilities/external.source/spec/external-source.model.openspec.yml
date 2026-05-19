@@ -1,0 +1,28 @@
+openspec: "1.0"
+documents:
+  - id: external.source.model
+    protocol: openspec.model.v1
+    document:
+      owner: capability.package:external.source
+
+      declarations:
+        - kind: object
+          name: ExternalSourceInput
+          fields:
+            - name: root
+              type: nonEmptyString
+            - name: config
+              type: unknown
+              required: false
+            - name: graph
+              type: unknown
+            - name: runtime
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ExternalSourceOutput
+          fields:
+            - name: state
+              type: unknown
+              description: Free-form external state snapshot. Schema is owned by the adapter implementation and must match what the consuming projection adapter expects.

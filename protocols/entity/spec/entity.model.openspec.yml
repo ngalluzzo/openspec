@@ -1,0 +1,157 @@
+openspec: "1.0"
+documents:
+  - id: entity.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.entity.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: EntitySelectorNoParams
+          fields: []
+
+        - kind: object
+          name: EntityByIdSelectorParams
+          fields:
+            - name: entity
+              type: nonEmptyString
+
+        - kind: object
+          name: EntityByOwnerSelectorParams
+          fields:
+            - name: owner
+              type: nonEmptyString
+
+        # ── Field contract ─────────────────────────────────────────────────────
+        # `type` is a model type expression — scalar shorthand or a structured
+        # type object. Never a cross-entity reference; those are relations.
+        # `identity` marks the field as the primary key of the entity.
+        # `unique` declares a uniqueness constraint on the field's value.
+        # `computed` declares the field is derived rather than stored.
+
+        - kind: object
+          name: EntityFieldContract
+          fields:
+            - name: entity
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type: unknown
+            - name: required
+              type: boolean
+            - name: identity
+              type: boolean
+              required: false
+            - name: unique
+              type: boolean
+              required: false
+            - name: computed
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: EntityModelFieldContract
+          fields:
+            - name: entity
+              type: nonEmptyString
+            - name: declaration
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: type
+              type: unknown
+            - name: required
+              type: boolean
+            - name: identity
+              type: boolean
+              required: false
+            - name: unique
+              type: boolean
+              required: false
+            - name: computed
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: EntityModelRowContract
+          fields:
+            - name: entity
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: model
+              type: nonEmptyString
+            - name: fields
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: EntityModelFieldContract
+
+        # ── Entity contract ────────────────────────────────────────────────────
+        # `id` is the unique identifier used as the graph node ID.
+        # `name` is the human-readable display name.
+        # `plural` is the plural display name (optional, defaults to name + "s").
+        # `fields` includes all declared fields with their resolved contracts.
+
+        - kind: object
+          name: EntityContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: plural
+              type: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: fields
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: EntityFieldContract
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: EntityAllSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: EntityContract
+
+        - kind: alias
+          name: EntityByIdSelectorResult
+          type:
+            kind: ref
+            name: EntityContract
+
+        - kind: alias
+          name: EntityFieldsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: EntityFieldContract
+
+        - kind: alias
+          name: EntityModelRowsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: EntityModelRowContract

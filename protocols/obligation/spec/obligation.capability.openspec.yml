@@ -1,0 +1,22 @@
+openspec: "1.0"
+documents:
+  - id: obligation.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: protocol.protocol:openspec.obligation.v1
+      capabilities:
+        - id: obligation.assertion.evaluator
+          kind: obligation.assertion.evaluation
+          description: Evaluate obligation assertions against a target value.
+          methods:
+            evaluate:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ObligationAssertionEvaluatorInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ObligationAssertionEvaluatorResult

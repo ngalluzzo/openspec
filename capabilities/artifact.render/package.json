@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/artifact-render-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/artifact-render.generated.ts",
+			"import": "./src/sdk/artifact-render.generated.ts",
+			"default": "./src/sdk/artifact-render.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/artifact-render-types.generated.ts",
+			"import": "./src/sdk/artifact-render-types.generated.ts",
+			"default": "./src/sdk/artifact-render-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/artifact-render.model.openspec.yml",
+			"spec/artifact-render.capability.openspec.yml",
+			"spec/artifact-render.output.openspec.yml"
+		]
+	}
+}

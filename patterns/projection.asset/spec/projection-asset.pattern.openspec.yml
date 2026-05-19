@@ -1,0 +1,75 @@
+openspec: "1.0"
+documents:
+  - id: projection-asset.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: projection.asset
+        name: Projection Asset Pattern
+      patterns:
+        - id: projection.asset
+          owner: pattern.package:projection.asset
+          name: Projection asset
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .fulfillment.request
+                protocol: openspec.pattern.v1
+                document:
+                  applications:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      pattern: pattern.declaration:capability.fulfillment
+                      inputs:
+                        owner:
+                          expr:
+                            kind: path
+                            path: input.owner
+                        id:
+                          expr:
+                            kind: path
+                            path: input.id
+                        capability:
+                          expr:
+                            kind: path
+                            path: input.capability
+                            optional: true
+                            default:
+                              kind: literal
+                              value: capability.capability:model.schema.projection
+                        adapter:
+                          expr:
+                            kind: path
+                            path: input.adapter
+                            optional: true
+                        artifact:
+                          expr:
+                            kind: path
+                            path: input.artifact
+                        projection:
+                          expr:
+                            kind: path
+                            path: input.projection
+                        params:
+                          expr:
+                            kind: path
+                            path: input.params
+                            optional: true
+                        value:
+                          expr:
+                            kind: path
+                            path: input.value
+                            optional: true
+                        metadata:
+                          expr:
+                            kind: path
+                            path: input.metadata
+                            optional: true

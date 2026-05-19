@@ -1,0 +1,1198 @@
+openspec: "1.0"
+documents:
+  - id: source.knack.objects.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.source.knack.objects.v1
+      owner: protocol.protocol:openspec.source.knack.objects.v1
+      lowering:
+        - id: source.knack.origin
+          source:
+            as: import
+          facts:
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "origin.origin:"
+                  - kind: path
+                    path: document.sourceId
+              factKind: origin.origin
+              attributes:
+                kind: object
+                fields:
+                  nodeId:
+                    kind: path
+                    path: document.owner
+                  id:
+                    kind: path
+                    path: document.sourceId
+                  kind:
+                    kind: literal
+                    value: source.knack.objects
+                  owner:
+                    kind: path
+                    path: document.owner
+                  name:
+                    kind: literal
+                    value: Knack CRM objects
+                  locator:
+                    kind: path
+                    path: document.source.path
+                    optional: true
+                  metadata:
+                    kind: object
+                    fields:
+                      source:
+                        kind: path
+                        path: document.source
+                        optional: true
+
+        - id: source.knack.object.elements
+          source:
+            path: snapshot.application.objects
+            as: object
+          facts:
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "origin.element:"
+                  - kind: path
+                    path: document.sourceId
+                  - ".object."
+                  - kind: path
+                    path: object.key
+              factKind: origin.element
+              attributes:
+                kind: object
+                fields:
+                  nodeId:
+                    kind: concat
+                    items:
+                      - "origin.element:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".object."
+                      - kind: path
+                        path: object.key
+                  id:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: document.sourceId
+                      - ".object."
+                      - kind: path
+                        path: object.key
+                  origin:
+                    kind: path
+                    path: document.owner
+                  kind:
+                    kind: literal
+                    value: knack.object
+                  owner:
+                    kind: path
+                    path: document.owner
+                  name:
+                    kind: path
+                    path: object.name
+                  nativeId:
+                    kind: path
+                    path: object.key
+                  metadata:
+                    kind: object
+                    fields:
+                      raw:
+                        kind: path
+                        path: object
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "entity:"
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+              factKind: entity.declaration
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                  name:
+                    kind: path
+                    path: object.name
+                  owner:
+                    kind: path
+                    path: document.owner
+            - kind: edge
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: document.owner
+                  - ".entity."
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+              factKind: entity.owner.declaration
+              from:
+                kind: path
+                path: document.owner
+              to:
+                kind: concat
+                items:
+                  - "entity:"
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+              attributes:
+                kind: object
+                fields:
+                  owner:
+                    kind: path
+                    path: document.owner
+            - kind: node
+              id:
+                kind: concat
+                items:
+                  - "entity:"
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+                  - ".field.id"
+              factKind: entity.field
+              attributes:
+                kind: object
+                fields:
+                  name:
+                    kind: literal
+                    value: id
+                  type:
+                    kind: literal
+                    value: string
+                  required:
+                    kind: literal
+                    value: true
+                  identity:
+                    kind: literal
+                    value: true
+                  unique:
+                    kind: literal
+                    value: true
+            - kind: edge
+              id:
+                kind: concat
+                items:
+                  - "entity:"
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+                  - ".field.id"
+              factKind: entity.declaration.field
+              from:
+                kind: concat
+                items:
+                  - "entity:"
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+              to:
+                kind: concat
+                items:
+                  - "entity:"
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+                  - ".field.id"
+              attributes:
+                kind: object
+                fields:
+                  field:
+                    kind: literal
+                    value: id
+            - kind: edge
+              id:
+                kind: concat
+                items:
+                  - "origin.lineage:"
+                  - kind: path
+                    path: document.sourceId
+                  - ".entity."
+                  - kind: path
+                    path: object.key
+              factKind: origin.lineage
+              from:
+                kind: concat
+                items:
+                  - "entity:"
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+              to:
+                kind: concat
+                items:
+                  - "origin.element:"
+                  - kind: path
+                    path: document.sourceId
+                  - ".object."
+                  - kind: path
+                    path: object.key
+              attributes:
+                kind: object
+                fields:
+                  kind:
+                    kind: literal
+                    value: import.normalized
+            - kind: edge
+              id:
+                kind: concat
+                items:
+                  - "origin.lineage:"
+                  - kind: path
+                    path: document.sourceId
+                  - ".identity."
+                  - kind: path
+                    path: object.key
+              factKind: origin.lineage
+              from:
+                kind: concat
+                items:
+                  - "entity:"
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+                  - ".field.id"
+              to:
+                kind: when
+                condition:
+                  kind: find
+                  path: object.fields
+                  as: identityField
+                  condition:
+                    kind: equals
+                    left:
+                      kind: path
+                      path: identityField.dbColumn
+                      optional: true
+                    right:
+                      kind: literal
+                      value: id
+                  value:
+                    kind: literal
+                    value: true
+                  default:
+                    kind: literal
+                    value: false
+                then:
+                  kind: concat
+                  items:
+                    - "origin.element:"
+                    - kind: path
+                      path: document.sourceId
+                    - ".field."
+                    - kind: find
+                      path: object.fields
+                      as: identityField
+                      condition:
+                        kind: equals
+                        left:
+                          kind: path
+                          path: identityField.dbColumn
+                          optional: true
+                        right:
+                          kind: literal
+                          value: id
+                      value:
+                        kind: path
+                        path: identityField.key
+                else:
+                  kind: concat
+                  items:
+                    - "origin.element:"
+                    - kind: path
+                      path: document.sourceId
+                    - ".object."
+                    - kind: path
+                      path: object.key
+              attributes:
+                kind: object
+                fields:
+                  kind:
+                    kind: literal
+                    value: import.normalized
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "facet:"
+                  - kind: path
+                    path: document.sourceId
+                  - ".object."
+                  - kind: path
+                    path: object.key
+              factKind: knack.object.key
+              target:
+                kind: concat
+                items:
+                  - "entity:"
+                  - kind: path
+                    path: document.sourceId
+                  - "."
+                  - kind: kebab
+                    value:
+                      kind: path
+                      path: object.name
+              value:
+                kind: path
+                path: object.key
+            - kind: forEach
+              path: object.fields
+              as: field
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    kind: concat
+                    items:
+                      - "origin.element:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".field."
+                      - kind: path
+                        path: field.key
+                  factKind: origin.element
+                  attributes:
+                    kind: object
+                    fields:
+                      id:
+                        kind: concat
+                        items:
+                          - kind: path
+                            path: document.sourceId
+                          - ".field."
+                          - kind: path
+                            path: field.key
+                      origin:
+                        kind: path
+                        path: document.owner
+                      kind:
+                        kind: literal
+                        value: knack.field
+                      owner:
+                        kind: path
+                        path: document.owner
+                      name:
+                        kind: path
+                        path: field.name
+                      nativeId:
+                        kind: path
+                        path: field.key
+                      metadata:
+                        kind: object
+                        fields:
+                          object:
+                            kind: path
+                            path: object.key
+                          raw:
+                            kind: path
+                            path: field
+                - kind: node
+                  when:
+                    kind: match
+                    value:
+                      kind: path
+                      path: field.type
+                    cases:
+                      connection: false
+                    default:
+                      kind: match
+                      value:
+                        kind: path
+                        path: field.code
+                        optional: true
+                      cases:
+                        id: false
+                      default:
+                        kind: match
+                        value:
+                          kind: path
+                          path: field.dbColumn
+                          optional: true
+                        cases:
+                          id: false
+                        default: true
+                  id:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - ".field."
+                      - kind: camel
+                        value:
+                          kind: path
+                          path: field.name
+                      - "."
+                      - kind: path
+                        path: field.key
+                  factKind: entity.field
+                  attributes:
+                    kind: object
+                    fields:
+                      name:
+                        kind: camel
+                        value:
+                          kind: path
+                          path: field.name
+                      type:
+                        kind: match
+                        value:
+                          kind: path
+                          path: field.type
+                        cases:
+                          yes_no: boolean
+                          number: number
+                          currency: number
+                          auto_increment: number
+                        default: string
+                      required:
+                        kind: path
+                        path: field.required
+                        default: false
+                      identity:
+                        kind: literal
+                        value: false
+                      computed:
+                        kind: match
+                        value:
+                          kind: path
+                          path: field.type
+                        cases:
+                          sum: true
+                          count: true
+                        default: false
+                - kind: edge
+                  when:
+                    kind: match
+                    value:
+                      kind: path
+                      path: field.type
+                    cases:
+                      connection: false
+                    default:
+                      kind: match
+                      value:
+                        kind: path
+                        path: field.code
+                        optional: true
+                      cases:
+                        id: false
+                      default:
+                        kind: match
+                        value:
+                          kind: path
+                          path: field.dbColumn
+                          optional: true
+                        cases:
+                          id: false
+                        default: true
+                  id:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - ".field."
+                      - kind: camel
+                        value:
+                          kind: path
+                          path: field.name
+                      - "."
+                      - kind: path
+                        path: field.key
+                  factKind: entity.declaration.field
+                  from:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                  to:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - ".field."
+                      - kind: camel
+                        value:
+                          kind: path
+                          path: field.name
+                      - "."
+                      - kind: path
+                        path: field.key
+                  attributes:
+                    kind: object
+                    fields:
+                      field:
+                        kind: camel
+                        value:
+                          kind: path
+                          path: field.name
+                - kind: edge
+                  when:
+                    kind: match
+                    value:
+                      kind: path
+                      path: field.type
+                    cases:
+                      connection: false
+                    default:
+                      kind: match
+                      value:
+                        kind: path
+                        path: field.code
+                        optional: true
+                      cases:
+                        id: false
+                      default:
+                        kind: match
+                        value:
+                          kind: path
+                          path: field.dbColumn
+                          optional: true
+                        cases:
+                          id: false
+                        default: true
+                  id:
+                    kind: concat
+                    items:
+                      - "origin.lineage:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".field."
+                      - kind: path
+                        path: field.key
+                  factKind: origin.lineage
+                  from:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - ".field."
+                      - kind: camel
+                        value:
+                          kind: path
+                          path: field.name
+                      - "."
+                      - kind: path
+                        path: field.key
+                  to:
+                    kind: concat
+                    items:
+                      - "origin.element:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".field."
+                      - kind: path
+                        path: field.key
+                  attributes:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: import.normalized
+                - kind: facet
+                  when:
+                    kind: match
+                    value:
+                      kind: path
+                      path: field.type
+                    cases:
+                      connection: false
+                    default:
+                      kind: match
+                      value:
+                        kind: path
+                        path: field.code
+                        optional: true
+                      cases:
+                        id: false
+                      default:
+                        kind: match
+                        value:
+                          kind: path
+                          path: field.dbColumn
+                          optional: true
+                        cases:
+                          id: false
+                        default: true
+                  id:
+                    kind: concat
+                    items:
+                      - "facet:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".field."
+                      - kind: path
+                        path: field.key
+                  factKind: knack.field.key
+                  target:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - ".field."
+                      - kind: camel
+                        value:
+                          kind: path
+                          path: field.name
+                      - "."
+                      - kind: path
+                        path: field.key
+                  value:
+                    kind: path
+                    path: field.key
+                - kind: facet
+                  when:
+                    kind: match
+                    value:
+                      kind: path
+                      path: field.type
+                    cases:
+                      connection: false
+                    default:
+                      kind: match
+                      value:
+                        kind: path
+                        path: field.code
+                        optional: true
+                      cases:
+                        id: false
+                      default:
+                        kind: match
+                        value:
+                          kind: path
+                          path: field.dbColumn
+                          optional: true
+                        cases:
+                          id: false
+                        default: true
+                  id:
+                    kind: concat
+                    items:
+                      - "facet:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".field-type."
+                      - kind: path
+                        path: field.key
+                  factKind: knack.field.type
+                  target:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - ".field."
+                      - kind: camel
+                        value:
+                          kind: path
+                          path: field.name
+                      - "."
+                      - kind: path
+                        path: field.key
+                  value:
+                    kind: path
+                    path: field.type
+            - kind: forEach
+              path: object.connections.outbound
+              as: connection
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    kind: concat
+                    items:
+                      - "origin.element:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".connection."
+                      - kind: path
+                        path: connection.key
+                  factKind: origin.element
+                  attributes:
+                    kind: object
+                    fields:
+                      id:
+                        kind: concat
+                        items:
+                          - kind: path
+                            path: document.sourceId
+                          - ".connection."
+                          - kind: path
+                            path: connection.key
+                      origin:
+                        kind: path
+                        path: document.owner
+                      kind:
+                        kind: literal
+                        value: knack.connection
+                      owner:
+                        kind: path
+                        path: document.owner
+                      name:
+                        kind: path
+                        path: connection.name
+                      nativeId:
+                        kind: path
+                        path: connection.key
+                      metadata:
+                        kind: object
+                        fields:
+                          object:
+                            kind: path
+                            path: object.key
+                          targetObject:
+                            kind: path
+                            path: connection.object
+                          raw:
+                            kind: path
+                            path: connection
+                - kind: node
+                  id:
+                    kind: concat
+                    items:
+                      - "relation:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: connection.name
+                      - "."
+                      - kind: path
+                        path: connection.key
+                  factKind: relation.declaration
+                  attributes:
+                    kind: object
+                    fields:
+                      id:
+                        kind: concat
+                        items:
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: object.name
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: connection.name
+                          - "."
+                          - kind: path
+                            path: connection.key
+                      name:
+                        kind: path
+                        path: connection.name
+                      from:
+                        kind: concat
+                        items:
+                          - "entity:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: path
+                              path: object.name
+                      to:
+                        kind: concat
+                        items:
+                          - "entity:"
+                          - kind: path
+                            path: document.sourceId
+                          - "."
+                          - kind: kebab
+                            value:
+                              kind: find
+                              path: document.snapshot.application.objects
+                              as: targetObject
+                              condition:
+                                kind: equals
+                                left:
+                                  kind: path
+                                  path: targetObject.key
+                                right:
+                                  kind: path
+                                  path: connection.object
+                              value:
+                                kind: path
+                                path: targetObject.name
+                              default:
+                                kind: path
+                                path: connection.object
+                      cardinality:
+                        kind: match
+                        value:
+                          kind: concat
+                          items:
+                            - kind: path
+                              path: connection.has
+                            - ":"
+                            - kind: path
+                              path: connection.belongs_to
+                        cases:
+                          "one:one": one-to-one
+                          "one:many": one-to-many
+                          "many:one": one-to-many
+                          "many:many": many-to-many
+                        default: one-to-many
+                      direction:
+                        kind: literal
+                        value: unidirectional
+                      via:
+                        kind: path
+                        path: connection.key
+                - kind: edge
+                  id:
+                    kind: concat
+                    items:
+                      - "relation:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: connection.name
+                      - "."
+                      - kind: path
+                        path: connection.key
+                      - ".from"
+                  factKind: relation.endpoint.from
+                  from:
+                    kind: concat
+                    items:
+                      - "relation:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: connection.name
+                      - "."
+                      - kind: path
+                        path: connection.key
+                  to:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                - kind: edge
+                  id:
+                    kind: concat
+                    items:
+                      - "relation:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: connection.name
+                      - "."
+                      - kind: path
+                        path: connection.key
+                      - ".to"
+                  factKind: relation.endpoint.to
+                  from:
+                    kind: concat
+                    items:
+                      - "relation:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: connection.name
+                      - "."
+                      - kind: path
+                        path: connection.key
+                  to:
+                    kind: concat
+                    items:
+                      - "entity:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: find
+                          path: document.snapshot.application.objects
+                          as: targetObject
+                          condition:
+                            kind: equals
+                            left:
+                              kind: path
+                              path: targetObject.key
+                            right:
+                              kind: path
+                              path: connection.object
+                          value:
+                            kind: path
+                            path: targetObject.name
+                          default:
+                            kind: path
+                            path: connection.object
+                - kind: edge
+                  id:
+                    kind: concat
+                    items:
+                      - "origin.lineage:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".relation."
+                      - kind: path
+                        path: connection.key
+                  factKind: origin.lineage
+                  from:
+                    kind: concat
+                    items:
+                      - "relation:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: connection.name
+                      - "."
+                      - kind: path
+                        path: connection.key
+                  to:
+                    kind: concat
+                    items:
+                      - "origin.element:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".connection."
+                      - kind: path
+                        path: connection.key
+                  attributes:
+                    kind: object
+                    fields:
+                      kind:
+                        kind: literal
+                        value: import.normalized
+                - kind: facet
+                  id:
+                    kind: concat
+                    items:
+                      - "facet:"
+                      - kind: path
+                        path: document.sourceId
+                      - ".connection."
+                      - kind: path
+                        path: connection.key
+                  factKind: knack.connection.key
+                  target:
+                    kind: concat
+                    items:
+                      - "relation:"
+                      - kind: path
+                        path: document.sourceId
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: object.name
+                      - "."
+                      - kind: kebab
+                        value:
+                          kind: path
+                          path: connection.name
+                      - "."
+                      - kind: path
+                        path: connection.key
+                  value:
+                    kind: path
+                    path: connection.key
+
+      selectors:
+        - id: source.knack.objects.origins
+          sources:
+            origin:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: origin.origin
+          where:
+            $expr:
+              ===:
+                - var: row.origin.attributes.kind
+                - source.knack.objects
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.origin.attributes
+
+      validate:
+        - id: source.knack.objects.validation
+          rules:
+            - id: owner-source-id-consistent
+              selector: source.knack.objects.origins
+              forEach: true
+              assert:
+                $expr:
+                  and:
+                    - ===:
+                        - var: item.nodeId
+                        - cat:
+                            - "origin.origin:"
+                            - var: item.id
+                    - ===:
+                        - var: item.owner
+                        - var: item.nodeId
+              code: source.knack.objects.ownerSourceId.mismatch
+              message: Knack object source documents must keep owner and sourceId consistent.
+              details:
+                $expr:
+                  os_object:
+                    - owner:
+                        var:
+                          - item.owner
+                          - null
+                      sourceId:
+                        var:
+                          - item.id
+                          - null
+                      nodeId:
+                        var:
+                          - item.nodeId
+                          - null

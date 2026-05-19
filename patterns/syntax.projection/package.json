@@ -1,0 +1,9 @@
+{
+	"name": "@openspec/syntax-projection-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"documents": ["spec/syntax-projection.pattern.openspec.yml"]
+	}
+}

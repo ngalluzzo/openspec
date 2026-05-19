@@ -1,0 +1,49 @@
+openspec: "1.0"
+documents:
+  - id: drizzle-dialect.provider
+    protocol: openspec.provider.v1
+    document:
+      owner: dialect.package:drizzle
+      providers:
+        - id: drizzle
+          name: Drizzle Dialect
+          exports:
+            adapters:
+              - adapter.adapter:drizzle.syntax.render
+      offerings:
+        - id: drizzle.syntax.render
+          provider: provider.provider:drizzle
+          role: module.render
+          dialect: drizzle
+          adapter: adapter.adapter:drizzle.syntax.render
+          projectionKind: projection.syntax.render
+          params:
+            dialect: drizzle
+
+  - id: drizzle-dialect.adapter
+    protocol: openspec.adapter.v1
+    document:
+      owner: provider.provider:drizzle
+      adapters:
+        - id: drizzle.syntax.render
+          capability: capability.capability:artifact.render
+          kind: projection.syntax.render
+          params:
+            dialect: drizzle
+          description: Renders Drizzle syntax facets into TypeScript schema text.
+
+  - id: drizzle-dialect.projection
+    protocol: openspec.projection.v1
+    document:
+      owner: provider.provider:drizzle
+      materializers:
+        - id: drizzle.syntax.render
+          projectionKind: projection.syntax.render
+          adapter: adapter.adapter:drizzle.syntax.render
+          selector: selector.declaration:drizzle.syntaxRenderInput
+          paramsSource: projectionInputs
+          inputShape: model:DrizzleSyntaxRenderInput
+          outputShape: model:TextFileArtifactRecipe
+          implementationMethod: render
+          inputMode: selectorResult
+          description: Renders one storage schema syntax unit as a Drizzle TypeScript schema file.

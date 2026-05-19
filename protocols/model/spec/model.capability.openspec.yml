@@ -1,0 +1,54 @@
+openspec: "1.0"
+documents:
+  - id: model.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: protocol.protocol:openspec.model.v1
+      capabilities:
+        - id: model.value.parser
+          kind: model.value.parsing
+          description: Parse an unknown value through a model declaration contract.
+          methods:
+            parse:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ModelValueParserInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ModelValueParserResult
+
+        - id: model.value.validator
+          kind: model.value.validation
+          description: Validate an unknown value against model declarations and model-owned rules.
+          methods:
+            validate:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ModelValueValidatorInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ModelValueValidatorResult
+
+        - id: model.schema.projection
+          kind: model.schema.projection
+          description: Project model declarations into an external schema representation.
+          methods:
+            project:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ModelSchemaProjectionInput
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ModelSchemaProjectionResult

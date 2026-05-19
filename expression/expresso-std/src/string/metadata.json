@@ -1,0 +1,237 @@
+{
+	"plugin": "@std/string",
+	"version": "1.0.0",
+	"namespace": "@std",
+	"category": "string",
+	"operators": {
+		"split": {
+			"id": "split",
+			"name": "split",
+			"title": "Split",
+			"description": "Split string by delimiter",
+			"category": "string",
+			"tags": ["string", "manipulation"],
+			"examples": [
+				{
+					"description": "Split string by comma",
+					"input": {},
+					"rule": { "split": ["hello,world", ","] },
+					"output": ["hello", "world"]
+				},
+				{
+					"description": "Split string by space",
+					"input": {},
+					"rule": { "split": ["hello world", " "] },
+					"output": ["hello", "world"]
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": true
+		},
+		"trim": {
+			"id": "trim",
+			"name": "trim",
+			"title": "Trim",
+			"description": "Remove whitespace from both ends",
+			"category": "string",
+			"tags": ["string", "whitespace"],
+			"examples": [
+				{
+					"description": "Trim whitespace from string",
+					"input": {},
+					"rule": { "trim": ["  hello  "] },
+					"output": "hello"
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": false
+		},
+		"to_lower": {
+			"id": "to_lower",
+			"name": "to_lower",
+			"title": "To Lower",
+			"description": "Convert to lowercase",
+			"category": "string",
+			"tags": ["string", "case"],
+			"examples": [
+				{
+					"description": "Convert string to lowercase",
+					"input": {},
+					"rule": { "to_lower": ["HELLO"] },
+					"output": "hello"
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": false
+		},
+		"to_upper": {
+			"id": "to_upper",
+			"name": "to_upper",
+			"title": "To Upper",
+			"description": "Convert to uppercase",
+			"category": "string",
+			"tags": ["string", "case"],
+			"examples": [
+				{
+					"description": "Convert string to uppercase",
+					"input": {},
+					"rule": { "to_upper": ["hello"] },
+					"output": "HELLO"
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": false
+		},
+		"in": {
+			"id": "in",
+			"name": "in",
+			"title": "In",
+			"description": "Check if substring/container includes value",
+			"category": "string",
+			"tags": ["string", "search", "array"],
+			"examples": [
+				{
+					"description": "Check if substring exists in string",
+					"input": {},
+					"rule": { "in": ["world", "hello world"] },
+					"output": true
+				},
+				{
+					"description": "Check if value exists in array",
+					"input": {},
+					"rule": { "in": [2, [1, 2, 3]] },
+					"output": true
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": true
+		},
+		"cat": {
+			"id": "cat",
+			"name": "cat",
+			"title": "Concatenate",
+			"description": "Concatenate strings",
+			"category": "string",
+			"tags": ["string", "manipulation"],
+			"examples": [
+				{
+					"description": "Concatenate strings",
+					"input": {},
+					"rule": { "cat": ["hello", " ", "world"] },
+					"output": "hello world"
+				},
+				{
+					"description": "Concatenate numbers as strings",
+					"input": {},
+					"rule": { "cat": [1, 2, 3] },
+					"output": "123"
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": true
+		},
+		"substr": {
+			"id": "substr",
+			"name": "substr",
+			"title": "Substring",
+			"description": "Extract substring",
+			"category": "string",
+			"tags": ["string", "extraction"],
+			"examples": [
+				{
+					"description": "Extract substring from start",
+					"input": {},
+					"rule": { "substr": ["hello", 1] },
+					"output": "ello"
+				},
+				{
+					"description": "Extract substring with length",
+					"input": {},
+					"rule": { "substr": ["hello", 1, 2] },
+					"output": "el"
+				},
+				{
+					"description": "Extract substring with negative index",
+					"input": {},
+					"rule": { "substr": ["hello", -2] },
+					"output": "lo"
+				}
+			],
+			"complexity": "O(n)",
+			"jsonlogicCompatible": true
+		},
+		"is_empty": {
+			"id": "is_empty",
+			"name": "is_empty",
+			"title": "Is Empty",
+			"description": "Check if empty",
+			"category": "string",
+			"tags": ["string", "validation", "array"],
+			"examples": [
+				{
+					"description": "Check if string is empty",
+					"input": {},
+					"rule": { "is_empty": [""] },
+					"output": true
+				},
+				{
+					"description": "Check if string is not empty",
+					"input": {},
+					"rule": { "is_empty": ["hello"] },
+					"output": false
+				},
+				{
+					"description": "Check if array is empty",
+					"input": {},
+					"rule": { "is_empty": [[]] },
+					"output": true
+				},
+				{
+					"description": "Check if null is empty",
+					"input": {},
+					"rule": { "is_empty": [null] },
+					"output": false
+				}
+			],
+			"complexity": "O(1)",
+			"jsonlogicCompatible": false
+		},
+		"type": {
+			"id": "type",
+			"name": "type",
+			"title": "Type",
+			"description": "Get type of value",
+			"category": "string",
+			"tags": ["utility", "type-check"],
+			"examples": [
+				{
+					"description": "Get type of string",
+					"input": {},
+					"rule": { "type": ["hello"] },
+					"output": "string"
+				},
+				{
+					"description": "Get type of number",
+					"input": {},
+					"rule": { "type": [42] },
+					"output": "number"
+				},
+				{
+					"description": "Get type of array",
+					"input": {},
+					"rule": { "type": [[1, 2, 3]] },
+					"output": "array"
+				},
+				{
+					"description": "Get type of null",
+					"input": {},
+					"rule": { "type": [null] },
+					"output": "null"
+				}
+			],
+			"complexity": "O(1)",
+			"jsonlogicCompatible": false
+		}
+	},
+	"generatedAt": "2026-01-16T23:00:00Z"
+}

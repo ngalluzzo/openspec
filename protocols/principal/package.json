@@ -1,0 +1,16 @@
+{
+	"name": "@openspec/protocols-principal",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/principal.protocol.openspec.yml",
+			"spec/principal.model.openspec.yml",
+			"spec/principal.graph.openspec.yml"
+		]
+	}
+}

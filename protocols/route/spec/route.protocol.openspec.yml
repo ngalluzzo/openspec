@@ -1,0 +1,118 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.route.v1
+package:
+  id: "@openspec/route"
+documentModels:
+  - model:RouteDocument
+validation:
+  - id: route.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.route.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: route.owner.invalid
+        message: Route documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-routes
+        scope: selector
+        selector: route.routes
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: route.declarations.empty
+        message: Route documents must declare at least one route.
+
+      - id: route-id-format
+        scope: selector
+        selector: route.routes
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: route.id.invalid
+        message: Route ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: route-kind-format
+        scope: selector
+        selector: route.routes
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: route.kind.invalid
+        message: >
+          Route kind must be a lowercase namespaced identifier
+          (e.g. path, command, topic, queue.key).
+        details:
+          $expr:
+            os_object:
+              - route:
+                  var: item.id
+                kind:
+                  var: item.kind
+
+      - id: route-pattern-present
+        scope: selector
+        selector: route.routes
+        forEach: true
+        assert:
+          $expr:
+            "!":
+              - os_is_empty:
+                  - var:
+                      - item.pattern.value
+                      - null
+        code: route.pattern.empty
+        message: Routes must declare a non-empty pattern.value.
+        details:
+          $expr:
+            os_object:
+              - route:
+                  var: item.id
+
+      - id: route-param-name-format
+        scope: selector
+        selector: route.params
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.name
+              - ^[a-z][A-Za-z0-9]*$
+        code: route.param.name.invalid
+        message: Route parameter names must be camelCase identifiers.
+        details:
+          $expr:
+            os_object:
+              - route:
+                  var: item.route
+                param:
+                  var: item.name

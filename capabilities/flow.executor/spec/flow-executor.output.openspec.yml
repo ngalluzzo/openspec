@@ -1,0 +1,36 @@
+openspec: "1.0"
+documents:
+  - id: flow.executor.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: flow.executor.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:flow.executor
+            id: flow.executor
+            namespace: flow.executor
+            capability: capability.capability:flow.executor
+            models:
+              - name: ExecuteFlowRequest
+              - name: FlowDiagnostic
+              - name: ExecuteFlowResult
+            methods:
+              - name: execute
+            artifacts:
+              types:
+                path: capabilities/flow.executor/src/sdk/flow-executor-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/flow.executor/src/sdk/flow-executor.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./flow-executor-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: FlowExecutorAdapter
+              contractTypeName: FlowExecutorAdapterContract
+              contractConstName: flowExecutorAdapterContract
+              implementFunctionName: implementFlowExecutorAdapter
+              aliasName: FlowExecutor

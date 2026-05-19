@@ -1,0 +1,220 @@
+openspec: "1.0"
+documents:
+  - id: procedure.model
+    protocol: openspec.model.v1
+    document:
+      owner: pattern.package:procedure
+      declarations:
+        # -- Pattern input ------------------------------------------------------
+
+        - kind: object
+          name: ProcedurePortInput
+          fields:
+            - name: model
+              type: nonEmptyString
+              required: false
+            - name: source
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProcedureOutcomeInput
+          fields:
+            - name: name
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: output
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProcedureStepInput
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: method
+              type: nonEmptyString
+              description: Canonical capability.method nodeId invoked by this activity.
+            - name: input
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: ProcedurePortInput
+              required: false
+            - name: output
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: ProcedurePortInput
+              required: false
+            - name: outcomes
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: ProcedureOutcomeInput
+              required: false
+            - name: inputMapping
+              type: unknown
+              required: false
+            - name: outputMapping
+              type: unknown
+              required: false
+            - name: condition
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProcedureLinkInput
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: from
+              type: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: sourcePort
+              type: nonEmptyString
+              required: false
+            - name: targetPort
+              type: nonEmptyString
+              required: false
+            - name: condition
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProcedureInput
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: input
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: ProcedurePortInput
+              required: false
+            - name: output
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: ProcedurePortInput
+              required: false
+            - name: outputMapping
+              type: unknown
+              required: false
+            - name: steps
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProcedureStepInput
+            - name: links
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProcedureLinkInput
+              required: false
+            - name: outcomes
+              type:
+                kind: record
+                value:
+                  kind: ref
+                  name: ProcedureOutcomeInput
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        # -- Pattern-owned view contracts --------------------------------------
+
+        - kind: object
+          name: ProcedureSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: ProcedureInvocationsForFlowParams
+          fields:
+            - name: flow
+              type: nonEmptyString
+
+        - kind: object
+          name: ProcedureInvocationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: flow
+              type: nonEmptyString
+            - name: activity
+              type: nonEmptyString
+            - name: activityNodeId
+              type: nonEmptyString
+            - name: method
+              type: nonEmptyString
+            - name: inputMapping
+              type: unknown
+              required: false
+            - name: outputMapping
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: alias
+          name: ProcedureInvocationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProcedureInvocationContract

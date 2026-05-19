@@ -1,0 +1,281 @@
+openspec: "1.0"
+documents:
+  - id: capability.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.capability.v1
+      owner: protocol.protocol:openspec.capability.v1
+      lowering:
+        - id: capability.capabilities
+          source:
+            path: capabilities
+            as: capability
+          facts:
+            # capability node — stores methods and inputs inline from the document
+            # so capability.capabilities can be queried without a complex join.
+            # Separate capability.method nodes are also produced for flat queries.
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - capability.capability
+                    - var: capability.id
+              factKind:
+                $expr: capability.capability
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: capability.id
+                      kind:
+                        var: capability.kind
+                      owner:
+                        var: document.owner
+                      description:
+                        var:
+                          - capability.description
+                          - null
+                      inputs:
+                        var:
+                          - capability.inputs
+                          - null
+                      methods:
+                        var:
+                          - capability.methods
+                          - null
+                      constraints:
+                        var:
+                          - capability.constraints
+                          - null
+
+            # capability.owner.capability edge — owner → capability
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .capability.
+                    - var: capability.id
+              factKind:
+                $expr: capability.owner.capability
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - capability.capability
+                    - var: capability.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      capability:
+                        var: capability.id
+
+            # capability.method nodes — produced for flat cross-capability queries.
+            # Methods are stored as a record keyed by method name on the
+            # capability node; these flat nodes enable the capability.methods
+            # selector and validation rules without parsing the record.
+            - kind: forEachEntry
+              path: capability.methods
+              keyAs: methodName
+              valueAs: method
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - capability.method
+                        - var: capability.id
+                        - var: methodName
+                  factKind:
+                    $expr: capability.method
+                  attributes:
+                    $expr:
+                      os_object:
+                        - capability:
+                            var: capability.id
+                          owner:
+                            var: document.owner
+                          name:
+                            var: methodName
+                          inputs:
+                            var:
+                              - method.inputs
+                              - null
+                          output:
+                            var:
+                              - method.output
+                              - null
+                          constraints:
+                            var:
+                              - method.constraints
+                              - null
+                          description:
+                            var:
+                              - method.description
+                              - null
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - capability.capability
+                            - var: capability.id
+                        - .method.
+                        - var: methodName
+                  factKind:
+                    $expr: capability.capability.method
+                  from:
+                    $expr:
+                      os_node_id:
+                        - capability.capability
+                        - var: capability.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - capability.method
+                        - var: capability.id
+                        - var: methodName
+                  attributes:
+                    $expr:
+                      os_object:
+                        - capability:
+                            var: capability.id
+                          method:
+                            var: methodName
+
+      selectors:
+        # All declared capabilities.
+        - id: capability.capabilities
+          sources:
+            capability:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.capability
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.capability.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:CapabilitySelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:CapabilityCapabilitiesSelectorResult
+
+        # Single capability by its namespaced ID.
+        - id: capability.byId
+          sources:
+            capability:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - capability.capability
+                      - var: parameter.capability
+                kind:
+                  $expr: capability.capability
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.capability.attributes
+          paramsContract:
+            kind: model
+            model: model:CapabilityByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:CapabilityByIdSelectorResult
+
+        # All capabilities of a given kind — used by adapter generators.
+        - id: capability.byKind
+          sources:
+            capability:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.capability
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.capability.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.capability.attributes.kind
+                  - var: parameter.kind
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:CapabilityByKindSelectorParams
+          returnsContract:
+            kind: model
+            model: model:CapabilityByKindSelectorResult
+
+        # All methods across all capabilities — for validation and generators.
+        - id: capability.methods
+          sources:
+            method:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.method
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.method.attributes
+          orderBy:
+            - $expr:
+                var: row.value.capability
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:CapabilitySelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:CapabilityMethodsSelectorResult
+
+        - id: capability.methods.byOwner
+          sources:
+            method:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: capability.method
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.method.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.method.attributes.owner
+                  - var: parameter.owner
+          orderBy:
+            - $expr:
+                var: row.value.capability
+            - $expr:
+                var: row.value.name
+          paramsContract:
+            kind: model
+            model: model:CapabilityMethodsByOwnerSelectorParams
+          returnsContract:
+            kind: model
+            model: model:CapabilityMethodsSelectorResult

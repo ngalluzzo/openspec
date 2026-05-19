@@ -1,0 +1,105 @@
+openspec: "1.0"
+documents:
+  - id: zod-dialect.derivation
+    protocol: openspec.derivation.v1
+    document:
+      owner: provider.provider:zod
+      rules:
+        - id: zod.storage.schemas
+          source:
+            selector: storage.materializedEntities
+            as: entity
+          after:
+            - storage.schema.entities
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "zod.schema:"
+                  - kind: path
+                    path: entity.id
+              factKind: zod.schema
+              target:
+                kind: path
+                path: entity.surface
+              value:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - "zod.schema:"
+                      - kind: path
+                        path: entity.id
+                  unit:
+                    kind: path
+                    path: entity.surface
+                  storageEntity:
+                    kind: path
+                    path: entity.id
+                  name:
+                    kind: path
+                    path: entity.name
+
+        - id: zod.storage.fields
+          source:
+            selector: storage.materializedFields
+            as: field
+          after:
+            - zod.storage.schemas
+            - storage.schema.fields
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "zod.field:"
+                  - kind: path
+                    path: field.id
+              factKind: zod.field
+              target:
+                kind: path
+                path: field.entity
+              value:
+                kind: object
+                fields:
+                  id:
+                    kind: concat
+                    items:
+                      - "zod.field:"
+                      - kind: path
+                        path: field.id
+                  unit:
+                    kind: path
+                    path: field.surface
+                  schema:
+                    kind: path
+                    path: field.entity
+                  storageField:
+                    kind: path
+                    path: field.id
+                  name:
+                    kind: path
+                    path: field.name
+                  type:
+                    kind: match
+                    value:
+                      kind: path
+                      path: field.type
+                      optional: true
+                    cases:
+                      string: string
+                      nonEmptyString: string
+                      number: number
+                      integer: number.int
+                      boolean: boolean
+                      date: date
+                      datetime: date
+                    default: unknown
+                  nullable:
+                    kind: path
+                    path: field.nullable
+                  identity:
+                    kind: path
+                    path: field.identity

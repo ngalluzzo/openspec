@@ -1,0 +1,124 @@
+openspec: "1.0"
+documents:
+  - id: derivation.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.derivation.v1
+      owner: protocol.protocol:openspec.derivation.v1
+      lowering:
+        - id: derivation.rules
+          source:
+            path: rules
+            as: rule
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - graph.derive.rule
+                    - openspec.derivation.v1
+                    - var: rule.id
+              factKind:
+                $expr: graph.derive.rule
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: rule.id
+                      owner:
+                        var: document.owner
+                      subject:
+                        $expr: openspec.derivation.v1
+                      selector:
+                        var: rule.source.selector
+                      as:
+                        var: rule.source.as
+                      optional:
+                        var:
+                          - rule.source.optional
+                          - null
+                      after:
+                        var:
+                          - rule.after
+                          - null
+                      facts:
+                        var: rule.facts
+                      description:
+                        var:
+                          - rule.description
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .derivation.rule.
+                    - var: rule.id
+              factKind:
+                $expr: derivation.owner.rule
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - graph.derive.rule
+                    - openspec.derivation.v1
+                    - var: rule.id
+
+      selectors:
+        - id: derivation.rules
+          sources:
+            rule:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: graph.derive.rule
+          where:
+            $expr:
+              ===:
+                - var: row.rule.attributes.subject
+                - openspec.derivation.v1
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.rule.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:DerivationSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:DerivationRulesSelectorResult
+
+        - id: derivation.ruleById
+          sources:
+            rule:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: graph.derive.rule
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.rule.attributes.subject
+                    - openspec.derivation.v1
+                - ===:
+                    - var: row.rule.attributes.id
+                    - var: parameter.id
+          result:
+            cardinality: one
+            value:
+              $expr:
+                var: row.rule.attributes
+          paramsContract:
+            kind: model
+            model: model:DerivationRuleByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:DerivationRuleByIdSelectorResult

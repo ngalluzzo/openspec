@@ -1,0 +1,310 @@
+openspec: "1.0"
+documents:
+  - id: protocol.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.protocol.v1
+      declarations:
+        - kind: object
+          name: ProtocolSelectorNoParams
+          fields: []
+        - kind: object
+          name: ProtocolProtocolsSelectorItem
+          additionalFields: unknown
+          fields: []
+        - kind: alias
+          name: ProtocolProtocolsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProtocolProtocolContract
+        - kind: object
+          name: ProtocolPackagesSelectorItem
+          additionalFields: unknown
+          fields: []
+        - kind: alias
+          name: ProtocolPackagesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProtocolPackageContract
+        - kind: object
+          name: ProtocolByIdSelectorParams
+          fields:
+            - name: id
+              type: nonEmptyString
+        - kind: object
+          name: ProtocolDeclarationByNodeIdSelectorParams
+          fields:
+            - name: nodeId
+              type: nonEmptyString
+        - kind: object
+          name: ProtocolByIdSelectorItem
+          additionalFields: unknown
+          fields: []
+        - kind: alias
+          name: ProtocolByIdSelectorResult
+          type:
+            kind: ref
+            name: ProtocolProtocolContract
+        - kind: object
+          name: ProtocolDeclarationsSelectorItem
+          additionalFields: unknown
+          fields: []
+        - kind: alias
+          name: ProtocolDeclarationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProtocolDeclarationsSelectorItem
+        - kind: alias
+          name: ProtocolDeclarationByNodeIdSelectorResult
+          type:
+            kind: ref
+            name: ProtocolDeclarationContract
+        - kind: object
+          name: ProtocolLoweringMapsSelectorItem
+          additionalFields: unknown
+          fields: []
+        - kind: alias
+          name: ProtocolLoweringMapsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProtocolLoweringMapContract
+        - kind: object
+          name: ProtocolSelectorSetsSelectorItem
+          additionalFields: unknown
+          fields: []
+        - kind: alias
+          name: ProtocolSelectorSetsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProtocolSelectorSetContract
+        - kind: object
+          name: ProtocolValidationSuitesSelectorItem
+          additionalFields: unknown
+          fields: []
+        - kind: alias
+          name: ProtocolValidationSuitesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProtocolValidationSuiteContract
+        - kind: object
+          name: ProtocolFactsContract
+          fields:
+            - name: required
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+            - name: optional
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+        - kind: object
+          name: ProtocolMissingSatisfiesItem
+          fields:
+            - name: edge
+              type: nonEmptyString
+            - name: protocol
+              type: nonEmptyString
+        - kind: alias
+          name: ProtocolMissingSatisfiesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: ProtocolMissingSatisfiesItem
+        - kind: object
+          name: ProtocolProtocolContract
+          additionalFields: unknown
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: version
+              type: nonEmptyString
+              required: false
+            - name: package
+              type: nonEmptyString
+            - name: documentModels
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+            - name: facts
+              type:
+                kind: ref
+                name: ProtocolFactsContract
+              required: false
+            - name: satisfies
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+              required: false
+        - kind: object
+          name: ProtocolDeclarationPackageDependencyContract
+          additionalFields: unknown
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: version
+              type: nonEmptyString
+              required: false
+        - kind: object
+          name: ProtocolDeclarationPackageContract
+          additionalFields: unknown
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: version
+              type: nonEmptyString
+              required: false
+            - name: dependencies
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProtocolDeclarationPackageDependencyContract
+              required: false
+        - kind: object
+          name: ProtocolVocabularyUseContract
+          additionalFields: unknown
+          fields:
+            - name: protocol
+              type: nonEmptyString
+            - name: emits
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+              required: false
+            - name: consumes
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+              required: false
+        - kind: object
+          name: ProtocolDeclarationContract
+          additionalFields: unknown
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: version
+              type: nonEmptyString
+              required: false
+            - name: package
+              type:
+                kind: ref
+                name: ProtocolDeclarationPackageContract
+            - name: documentModels
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+              required: false
+            - name: facts
+              type:
+                kind: ref
+                name: ProtocolFactsContract
+              required: false
+            - name: satisfies
+              type:
+                kind: array
+                item:
+                  kind: scalar
+                  name: nonEmptyString
+              required: false
+            - name: uses
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ProtocolVocabularyUseContract
+              required: false
+            - name: expressions
+              type: unknown
+              required: false
+            - name: lowering
+              type:
+                kind: array
+                item: unknown
+            - name: selectors
+              type:
+                kind: array
+                item: unknown
+              required: false
+            - name: validation
+              type:
+                kind: array
+                item: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+        - kind: object
+          name: ProtocolPackageContract
+          additionalFields: unknown
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: version
+              type: nonEmptyString
+              required: false
+            - name: dependencies
+              type: nonEmptyString
+              required: false
+        - kind: object
+          name: ProtocolLoweringMapContract
+          additionalFields: unknown
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: protocol
+              type: nonEmptyString
+            - name: source
+              type: nonEmptyString
+            - name: facts
+              type: nonEmptyString
+        - kind: object
+          name: ProtocolSelectorSetContract
+          additionalFields: unknown
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: protocol
+              type: nonEmptyString
+            - name: selectors
+              type: nonEmptyString
+        - kind: object
+          name: ProtocolValidationSuiteContract
+          additionalFields: unknown
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: protocol
+              type: nonEmptyString
+            - name: rules
+              type: nonEmptyString

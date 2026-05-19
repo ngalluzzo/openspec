@@ -1,0 +1,391 @@
+openspec: "1.0"
+documents:
+  - id: pattern.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.pattern.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: PatternSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: PatternByIdSelectorParams
+          fields:
+            - name: pattern
+              type: nonEmptyString
+
+        - kind: object
+          name: PatternApplicationByIdSelectorParams
+          fields:
+            - name: application
+              type: nonEmptyString
+
+        - kind: object
+          name: PatternByOwnerSelectorParams
+          fields:
+            - name: owner
+              type: nonEmptyString
+
+        # ── Document contract ─────────────────────────────────────────────────
+
+        - kind: object
+          name: PatternDocument
+          fields:
+            - name: namespace
+              type:
+                kind: ref
+                name: PatternNamespaceContract
+              required: false
+            - name: patterns
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: PatternDeclaration
+              required: false
+            - name: applications
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: PatternApplication
+              required: false
+            - name: views
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: PatternViewDeclaration
+              required: false
+
+        # ── Pattern namespace and expansion contracts ─────────────────────────
+
+        - kind: object
+          name: PatternNamespaceContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: version
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: PatternInputContract
+          fields:
+            - name: model
+              type: nonEmptyString
+
+        - kind: alias
+          name: PatternTemplateValue
+          type: unknown
+
+        - kind: alias
+          name: PatternApplicationInputs
+          type: unknown
+
+        - kind: object
+          name: PatternExpansionDocumentContract
+          fields:
+            # Expansion entries are expression templates. The pattern engine
+            # evaluates them into ordinary portable document envelopes before
+            # semantic protocol lowering.
+            - name: id
+              type:
+                kind: ref
+                name: PatternTemplateValue
+              required: false
+            - name: protocol
+              type:
+                kind: ref
+                name: PatternTemplateValue
+            - name: document
+              type:
+                kind: ref
+                name: PatternTemplateValue
+            - name: metadata
+              type:
+                kind: ref
+                name: PatternTemplateValue
+              required: false
+
+        - kind: object
+          name: PatternExpansionContract
+          fields:
+            - name: documents
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: PatternExpansionDocumentContract
+
+        # ── Pattern declarations and applications ─────────────────────────────
+
+        - kind: object
+          name: PatternDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: version
+              type: nonEmptyString
+              required: false
+            - name: input
+              type:
+                kind: ref
+                name: PatternInputContract
+              required: false
+            - name: expands
+              type:
+                kind: ref
+                name: PatternExpansionContract
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: PatternApplication
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: pattern
+              type: nonEmptyString
+            - name: inputs
+              type:
+                kind: ref
+                name: PatternApplicationInputs
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        # ── Pattern-owned views ────────────────────────────────────────────────
+        # Pattern views are static namespace APIs that read graph facts.
+        # Applications never emit views. Executable selector declaration
+        # materialization belongs to openspec.graph.v1, not pattern.
+
+        - kind: object
+          name: PatternSelectorModelContract
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: model
+            - name: model
+              type: nonEmptyString
+
+        - kind: alias
+          name: PatternViewSources
+          type: unknown
+
+        - kind: alias
+          name: PatternViewExpression
+          type: unknown
+
+        - kind: alias
+          name: PatternViewResult
+          type: unknown
+
+        - kind: alias
+          name: PatternViewOrdering
+          type: unknown
+
+        - kind: object
+          name: PatternViewDefinition
+          fields:
+            - name: sources
+              type:
+                kind: ref
+                name: PatternViewSources
+            - name: where
+              type:
+                kind: ref
+                name: PatternViewExpression
+              required: false
+            - name: groupBy
+              type:
+                kind: ref
+                name: PatternViewExpression
+              required: false
+            - name: result
+              type:
+                kind: ref
+                name: PatternViewResult
+            - name: orderBy
+              type:
+                kind: ref
+                name: PatternViewOrdering
+              required: false
+
+        - kind: object
+          name: PatternViewDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: sources
+              type:
+                kind: ref
+                name: PatternViewSources
+            - name: where
+              type:
+                kind: ref
+                name: PatternViewExpression
+              required: false
+            - name: groupBy
+              type:
+                kind: ref
+                name: PatternViewExpression
+              required: false
+            - name: result
+              type:
+                kind: ref
+                name: PatternViewResult
+            - name: orderBy
+              type:
+                kind: ref
+                name: PatternViewOrdering
+              required: false
+            - name: paramsContract
+              type:
+                kind: ref
+                name: PatternSelectorModelContract
+            - name: returnsContract
+              type:
+                kind: ref
+                name: PatternSelectorModelContract
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: PatternDeclarationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: version
+              type: nonEmptyString
+              required: false
+            - name: input
+              type:
+                kind: ref
+                name: PatternInputContract
+              required: false
+            - name: expands
+              type:
+                kind: ref
+                name: PatternExpansionContract
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: PatternApplicationContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: pattern
+              type: nonEmptyString
+            - name: inputs
+              type:
+                kind: ref
+                name: PatternApplicationInputs
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: PatternViewContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: definition
+              type:
+                kind: ref
+                name: PatternViewDefinition
+            - name: paramsContract
+              type:
+                kind: ref
+                name: PatternSelectorModelContract
+            - name: returnsContract
+              type:
+                kind: ref
+                name: PatternSelectorModelContract
+            - name: metadata
+              type: unknown
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: PatternDeclarationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: PatternDeclarationContract
+
+        - kind: alias
+          name: PatternByIdSelectorResult
+          type:
+            kind: ref
+            name: PatternDeclarationContract
+
+        - kind: alias
+          name: PatternDeclarationsForOwnerSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: PatternDeclarationContract
+
+        - kind: alias
+          name: PatternApplicationsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: PatternApplicationContract
+
+        - kind: alias
+          name: PatternApplicationByIdSelectorResult
+          type:
+            kind: ref
+            name: PatternApplicationContract
+
+        - kind: alias
+          name: PatternViewsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: PatternViewContract
+
+        - kind: alias
+          name: PatternViewsForOwnerSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: PatternViewContract

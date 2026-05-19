@@ -1,0 +1,147 @@
+openspec: "1.0"
+documents:
+  - id: procedure.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: pattern.package:procedure
+      owner: pattern.package:procedure
+      selectors:
+        - id: procedure.invocations
+          sources:
+            binding:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: binding.binding
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+                from:
+                  $expr:
+                    var: row.binding.id
+            slot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.binding.id
+          where:
+            $expr:
+              ===:
+                - var: row.binding.attributes.kind
+                - flow.activity.invocation
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.binding.attributes.id
+                    owner:
+                      var: row.binding.attributes.owner
+                    flow:
+                      var: row.binding.attributes.value.flow
+                    activity:
+                      var: row.binding.attributes.value.activity
+                    activityNodeId:
+                      var: row.subject.to
+                    method:
+                      var: row.slot.to
+                    inputMapping:
+                      var:
+                        - row.binding.attributes.value.inputMapping
+                        - null
+                    outputMapping:
+                      var:
+                        - row.binding.attributes.value.outputMapping
+                        - null
+                    metadata:
+                      var:
+                        - row.binding.attributes.value.metadata
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.flow
+            - $expr:
+                var: row.value.activity
+          paramsContract:
+            kind: model
+            model: model:ProcedureSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ProcedureInvocationsSelectorResult
+
+        - id: procedure.invocationsForFlow
+          sources:
+            binding:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: binding.binding
+            subject:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.subject
+                from:
+                  $expr:
+                    var: row.binding.id
+            slot:
+              kind: edges
+              filter:
+                kind:
+                  $expr: binding.slot
+                from:
+                  $expr:
+                    var: row.binding.id
+          where:
+            $expr:
+              and:
+                - ===:
+                    - var: row.binding.attributes.kind
+                    - flow.activity.invocation
+                - ===:
+                    - var: row.binding.attributes.value.flow
+                    - var: parameter.flow
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.binding.attributes.id
+                    owner:
+                      var: row.binding.attributes.owner
+                    flow:
+                      var: row.binding.attributes.value.flow
+                    activity:
+                      var: row.binding.attributes.value.activity
+                    activityNodeId:
+                      var: row.subject.to
+                    method:
+                      var: row.slot.to
+                    inputMapping:
+                      var:
+                        - row.binding.attributes.value.inputMapping
+                        - null
+                    outputMapping:
+                      var:
+                        - row.binding.attributes.value.outputMapping
+                        - null
+                    metadata:
+                      var:
+                        - row.binding.attributes.value.metadata
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.activity
+          paramsContract:
+            kind: model
+            model: model:ProcedureInvocationsForFlowParams
+          returnsContract:
+            kind: model
+            model: model:ProcedureInvocationsSelectorResult

@@ -1,0 +1,230 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.pattern.v1
+package:
+  id: "@openspec/pattern"
+documentModels:
+  - model:PatternDocument
+validation:
+  - id: pattern.validation
+    rules:
+      - id: has-pattern-content
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.pattern.v1
+        assert:
+          $expr:
+            or:
+              - "!":
+                  - os_is_empty:
+                      - var:
+                          - document.document.patterns
+                          - null
+              - "!":
+                  - os_is_empty:
+                      - var:
+                          - document.document.applications
+                          - null
+              - "!":
+                  - os_is_empty:
+                      - var:
+                          - document.document.views
+                          - null
+        code: pattern.document.empty
+        message: Pattern documents must declare patterns, applications, or views.
+
+      - id: namespace-id-format
+        scope: document
+        when:
+          $expr:
+            and:
+              - ===:
+                  - var: document.protocol
+                  - openspec.pattern.v1
+              - "!":
+                  - os_is_empty:
+                      - var:
+                          - document.document.namespace.id
+                          - null
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.namespace.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: pattern.namespace.id.invalid
+        message: Pattern namespaces must use lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - namespace:
+                  var:
+                    - document.document.namespace.id
+                    - null
+
+      - id: pattern-id-format
+        scope: selector
+        selector: pattern.declarations
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: pattern.id.invalid
+        message: Pattern ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: pattern-owner-format
+        scope: selector
+        selector: pattern.declarations
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: pattern.owner.invalid
+        message: Pattern owners must be canonical nodeIds.
+        details:
+          $expr:
+            os_object:
+              - pattern:
+                  var: item.id
+                owner:
+                  var: item.owner
+
+      - id: pattern-input-model-format
+        scope: selector
+        selector: pattern.declarations
+        forEach: true
+        when:
+          $expr:
+            "!":
+              - os_is_empty:
+                  - var:
+                      - item.input.model
+                      - null
+        assert:
+          $expr:
+            regex_test:
+              - var: item.input.model
+              - ^model:.+$
+        code: pattern.input.model.invalid
+        message: Pattern input model refs must reference model nodeIds.
+        details:
+          $expr:
+            os_object:
+              - pattern:
+                  var: item.id
+                model:
+                  var:
+                    - item.input.model
+                    - null
+
+      - id: pattern-expands-documents
+        scope: selector
+        selector: pattern.declarations
+        forEach: true
+        assert:
+          $expr:
+            var:
+              - item.expands.documents.0
+              - null
+        code: pattern.expands.documents.empty
+        message: Pattern declarations must expand at least one portable document.
+        details:
+          $expr:
+            os_object:
+              - pattern:
+                  var: item.id
+
+      - id: application-id-format
+        scope: selector
+        selector: pattern.applications
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: pattern.application.id.invalid
+        message: Pattern application ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: application-pattern-format
+        scope: selector
+        selector: pattern.applications
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.pattern
+              - ^pattern\.declaration:.+$
+        code: pattern.application.pattern.invalid
+        message: Pattern applications must reference pattern.declaration nodeIds.
+        details:
+          $expr:
+            os_object:
+              - application:
+                  var: item.id
+                pattern:
+                  var: item.pattern
+
+      - id: view-owner-format
+        scope: selector
+        selector: pattern.views
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: pattern.view.owner.invalid
+        message: Pattern view owners must be canonical nodeIds.
+        details:
+          $expr:
+            os_object:
+              - view:
+                  var: item.id
+                owner:
+                  var: item.owner
+
+      - id: view-contracts-model-refs
+        scope: selector
+        selector: pattern.views
+        forEach: true
+        assert:
+          $expr:
+            and:
+              - regex_test:
+                  - var: item.paramsContract.model
+                  - ^model:.+$
+              - regex_test:
+                  - var: item.returnsContract.model
+                  - ^model:.+$
+        code: pattern.view.contract.invalid
+        message: Pattern view contracts must reference model nodeIds.
+        details:
+          $expr:
+            os_object:
+              - view:
+                  var: item.id
+                params:
+                  var:
+                    - item.paramsContract.model
+                    - null
+                returns:
+                  var:
+                    - item.returnsContract.model
+                    - null

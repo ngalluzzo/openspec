@@ -1,0 +1,40 @@
+openspec: "1.0"
+documents:
+  - id: artifact.render.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: artifact.render.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: capability.package:artifact.render
+            id: artifact.render
+            namespace: artifact.render
+            capability: capability.capability:artifact.render
+            models:
+              - name: ArtifactRenderDisposition
+              - name: ArtifactRenderFile
+              - name: ArtifactRenderDiagnostic
+              - name: TextFileArtifactRecipe
+              - name: ArtifactRenderRecipe
+              - name: ArtifactRenderInput
+              - name: ArtifactRenderOutput
+            methods:
+              - name: render
+            artifacts:
+              types:
+                path: capabilities/artifact.render/src/sdk/artifact-render-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: capabilities/artifact.render/src/sdk/artifact-render.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./artifact-render-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: ArtifactRenderAdapter
+              contractTypeName: ArtifactRenderAdapterContract
+              contractConstName: artifactRenderAdapterContract
+              implementFunctionName: implementArtifactRenderAdapter
+              aliasName: ArtifactRender

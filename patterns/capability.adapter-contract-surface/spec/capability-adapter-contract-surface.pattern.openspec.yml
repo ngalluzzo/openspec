@@ -1,0 +1,139 @@
+openspec: "1.0"
+documents:
+  - id: capability-adapter-contract-surface.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: capability.adapter-contract-surface
+        name: Capability Adapter Contract Surface Pattern
+      patterns:
+        - id: capability.adapter-contract-surface
+          owner: pattern.package:capability.adapter-contract-surface
+          name: Capability adapter contract surface
+          metadata:
+            composes:
+              - openspec.capability.v1
+              - openspec.syntax.v1
+            relation: Creates target-neutral syntax symbols and slots for the public adapter contract a capability package exports.
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .syntax
+                protocol: openspec.syntax.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  namespace:
+                    expr:
+                      kind: path
+                      path: input.namespace
+                      optional: true
+                      default:
+                        kind: path
+                        path: input.id
+                  units:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.unit.id
+                          optional: true
+                          default:
+                            kind: path
+                            path: input.id
+                      kind: capability.adapter-contract.surface
+                      subject:
+                        expr:
+                          kind: path
+                          path: input.capability
+                      role: capability.adapter-contract.surface
+                      metadata:
+                        expr:
+                          kind: path
+                          path: input.metadata
+                          optional: true
+                  symbols:
+                    expr:
+                      kind: map
+                      path: input.methods
+                      as: method
+                      optional: true
+                      value:
+                        kind: object
+                        fields:
+                          id:
+                            kind: path
+                            path: method.name
+                          unit:
+                            kind: path
+                            path: input.unit.id
+                            optional: true
+                            default:
+                              kind: path
+                              path: input.id
+                          kind:
+                            kind: literal
+                            value: capability.adapter-contract.method
+                          name:
+                            kind: path
+                            path: method.name
+                          target:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.capability
+                              - kind: literal
+                                value: "."
+                              - kind: path
+                                path: method.name
+                          role:
+                            kind: literal
+                            value: adapter.contract.method
+                  slots:
+                    expr:
+                      kind: map
+                      path: input.methods
+                      as: method
+                      optional: true
+                      value:
+                        kind: object
+                        fields:
+                          id:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: method.name
+                              - kind: literal
+                                value: .adapter-contract
+                          unit:
+                            kind: path
+                            path: input.unit.id
+                            optional: true
+                            default:
+                              kind: path
+                              path: input.id
+                          kind:
+                            kind: literal
+                            value: adapter.contract.method
+                          target:
+                            kind: concat
+                            items:
+                              - kind: path
+                                path: input.capability
+                              - kind: literal
+                                value: "."
+                              - kind: path
+                                path: method.name
+                          symbol:
+                            kind: path
+                            path: method.name
+                          role:
+                            kind: literal
+                            value: adapter.contract.method

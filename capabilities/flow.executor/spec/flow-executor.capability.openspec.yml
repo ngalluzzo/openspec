@@ -1,0 +1,25 @@
+openspec: "1.0"
+documents:
+  - id: flow.executor.capability
+    protocol: openspec.capability.v1
+    document:
+      owner: capability.package:flow.executor
+
+      capabilities:
+        - id: flow.executor
+          kind: flow.execution
+          description: >
+            Execute a declared procedure flow. Reads procedure.invocations, evaluates
+            inputMappings, and dispatches each step to its bound capability adapter.
+          methods:
+            execute:
+              inputs:
+                input:
+                  type:
+                    kind: ref
+                    name: ExecuteFlowRequest
+                  required: true
+              output:
+                type:
+                  kind: ref
+                  name: ExecuteFlowResult

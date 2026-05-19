@@ -1,0 +1,130 @@
+openspec: "1.0"
+documents:
+  - id: entity.model.derivation
+    protocol: openspec.derivation.v1
+    document:
+      owner: protocol.protocol:openspec.entity.v1
+      rules:
+        - id: entity.model.record
+          description: Derive canonical model record declarations from entity declarations.
+          source:
+            selector: entity.modelRows
+            as: entityModel
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - model
+                    - var: entityModel.owner
+                    - var: entityModel.model
+              factKind:
+                $expr: model.declaration
+              attributes:
+                $expr:
+                  os_object:
+                    - name:
+                        var: entityModel.model
+                      owner:
+                        var: entityModel.owner
+                      declarationKind: object
+                      sourceEntity:
+                        var: entityModel.entity
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: entityModel.owner
+                    - .model.
+                    - var: entityModel.model
+              factKind:
+                $expr: model.owner.declaration
+              from:
+                $expr:
+                  var: entityModel.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - model
+                    - var: entityModel.owner
+                    - var: entityModel.model
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: entityModel.owner
+                      declaration:
+                        var: entityModel.model
+
+            - kind: forEach
+              path: entityModel.fields
+              as: field
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - model
+                        - var: entityModel.owner
+                        - var: entityModel.model
+                        - field
+                        - var: field.name
+                  factKind:
+                    $expr: model.field
+                  attributes:
+                    $expr:
+                      os_object:
+                        - declaration:
+                            var: entityModel.model
+                          name:
+                            var: field.name
+                          required:
+                            var: field.required
+                          type:
+                            var: field.type
+                          unique:
+                            var:
+                              - field.unique
+                              - null
+                          identity:
+                            var:
+                              - field.identity
+                              - null
+                          computed:
+                            var:
+                              - field.computed
+                              - null
+                          description:
+                            var:
+                              - field.description
+                              - null
+                          sourceEntity:
+                            var: entityModel.entity
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - model
+                            - var: entityModel.owner
+                            - var: entityModel.model
+                        - .field.
+                        - var: field.name
+                  factKind:
+                    $expr: model.declaration.field
+                  from:
+                    $expr:
+                      os_node_id:
+                        - model
+                        - var: entityModel.owner
+                        - var: entityModel.model
+                  to:
+                    $expr:
+                      os_node_id:
+                        - model
+                        - var: entityModel.owner
+                        - var: entityModel.model
+                        - field
+                        - var: field.name

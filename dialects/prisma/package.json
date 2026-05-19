@@ -1,0 +1,47 @@
+{
+	"name": "@openspec/prisma-dialect",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "bun test",
+		"typecheck": "tsc -b"
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.ts",
+			"default": "./src/index.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/prisma-dialect-types.generated.ts",
+			"import": "./src/sdk/prisma-dialect-types.generated.ts",
+			"default": "./src/sdk/prisma-dialect-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"dependencies": {
+		"@openspec/artifact-render-capability": "workspace:*"
+	},
+	"openspec": {
+		"documents": [
+			"spec/prisma-dialect.model.openspec.yml",
+			"spec/prisma-dialect.capability.openspec.yml",
+			"spec/prisma-dialect.graph.openspec.yml",
+			"spec/prisma-dialect.derivation.openspec.yml",
+			"spec/prisma-dialect.provider.openspec.yml",
+			"spec/prisma-dialect.output.openspec.yml"
+		],
+		"adapters": {
+			"implementations": [
+				{
+					"id": "prisma.syntax.render",
+					"kind": "projection.syntax.render",
+					"capability": "capability.capability:artifact.render",
+					"module": "./src/index.ts",
+					"export": "prismaSyntaxRenderAdapter"
+				}
+			]
+		}
+	}
+}

@@ -1,0 +1,84 @@
+openspec: "1.0"
+documents:
+  - id: facet.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.facet.v1
+      declarations:
+        - kind: object
+          name: FacetSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: FacetTargetSelectorParams
+          fields:
+            - name: target
+              type: nonEmptyString
+
+        - kind: object
+          name: FacetTargetKindSelectorParams
+          fields:
+            - name: target
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+
+        - kind: object
+          name: FacetDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: value
+              type: unknown
+
+        - kind: object
+          name: FacetDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: facets
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: FacetDeclaration
+
+        - kind: object
+          name: FacetContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: value
+              type: unknown
+
+        - kind: alias
+          name: FacetAllSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: FacetContract
+
+        - kind: alias
+          name: FacetForTargetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: FacetContract
+
+        - kind: alias
+          name: FacetForTargetKindSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: FacetContract

@@ -1,0 +1,334 @@
+openspec: "1.0"
+documents:
+  - id: asset.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.asset.v1
+      owner: protocol.protocol:openspec.asset.v1
+      lowering:
+        - id: asset.declarations
+          source:
+            path: assets
+            as: asset
+          facts:
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - asset.asset
+                    - var: document.namespace
+                    - var: asset.id
+              factKind:
+                $expr: asset.asset
+              attributes:
+                $expr:
+                  os_object:
+                    - nodeId:
+                        os_node_id:
+                          - asset.asset
+                          - var: document.namespace
+                          - var: asset.id
+                      id:
+                        var: asset.id
+                      namespace:
+                        var: document.namespace
+                      kind:
+                        var: asset.kind
+                      owner:
+                        var: document.owner
+                      locator:
+                        var: asset.locator
+                      role:
+                        var:
+                          - asset.role
+                          - null
+                      disposition:
+                        var:
+                          - asset.disposition
+                          - null
+                      mediaType:
+                        var:
+                          - asset.mediaType
+                          - null
+                      language:
+                        var:
+                          - asset.language
+                          - null
+                      subjects:
+                        var:
+                          - asset.subjects
+                          - null
+                      metadata:
+                        var:
+                          - asset.metadata
+                          - null
+
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .asset.
+                    - var: document.namespace
+                    - .
+                    - var: asset.id
+              factKind:
+                $expr: asset.owner.asset
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - asset.asset
+                    - var: document.namespace
+                    - var: asset.id
+
+            - kind: forEach
+              path: asset.subjects
+              as: subject
+              indexAs: subjectIndex
+              optional: true
+              facts:
+                - kind: node
+                  id:
+                    $expr:
+                      os_node_id:
+                        - asset.subject
+                        - var: document.namespace
+                        - var: asset.id
+                        - var: subjectIndex
+                  factKind:
+                    $expr: asset.subject
+                  attributes:
+                    $expr:
+                      os_object:
+                        - asset:
+                            var: asset.id
+                          namespace:
+                            var: document.namespace
+                          assetNodeId:
+                            os_node_id:
+                              - asset.asset
+                              - var: document.namespace
+                              - var: asset.id
+                          index:
+                            var: subjectIndex
+                          subject:
+                            var: subject
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - asset.asset
+                            - var: document.namespace
+                            - var: asset.id
+                        - .subject.
+                        - var: subjectIndex
+                  factKind:
+                    $expr: asset.asset.subject
+                  from:
+                    $expr:
+                      os_node_id:
+                        - asset.asset
+                        - var: document.namespace
+                        - var: asset.id
+                  to:
+                    $expr:
+                      os_node_id:
+                        - asset.subject
+                        - var: document.namespace
+                        - var: asset.id
+                        - var: subjectIndex
+                  attributes:
+                    $expr:
+                      os_object:
+                        - subject:
+                            var: subject
+
+                - kind: edge
+                  id:
+                    $expr:
+                      cat:
+                        - os_node_id:
+                            - asset.asset
+                            - var: document.namespace
+                            - var: asset.id
+                        - .references.
+                        - var: subjectIndex
+                  factKind:
+                    $expr: asset.asset.referencesSubject
+                  from:
+                    $expr:
+                      os_node_id:
+                        - asset.asset
+                        - var: document.namespace
+                        - var: asset.id
+                  to:
+                    $expr:
+                      var: subject
+                  attributes:
+                    $expr:
+                      os_object:
+                        - subject:
+                            var: subject
+
+      selectors:
+        - id: asset.assets
+          sources:
+            asset:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: asset.asset
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.asset.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:AssetSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:AssetAssetsSelectorResult
+
+        - id: asset.byNodeId
+          sources:
+            asset:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: parameter.nodeId
+                kind:
+                  $expr: asset.asset
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                var: row.asset.attributes
+          paramsContract:
+            kind: model
+            model: model:AssetByNodeIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:AssetByNodeIdSelectorResult
+
+        - id: asset.byNamespace
+          sources:
+            asset:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: asset.asset
+          where:
+            $expr:
+              ===:
+                - var: row.asset.attributes.namespace
+                - var: parameter.namespace
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.asset.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:AssetByNamespaceSelectorParams
+          returnsContract:
+            kind: model
+            model: model:AssetByNamespaceSelectorResult
+
+        - id: asset.byKind
+          sources:
+            asset:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: asset.asset
+          where:
+            $expr:
+              ===:
+                - var: row.asset.attributes.kind
+                - var: parameter.kind
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.asset.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:AssetByKindSelectorParams
+          returnsContract:
+            kind: model
+            model: model:AssetByKindSelectorResult
+
+        - id: asset.bySubject
+          sources:
+            subject:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: asset.subject
+            asset:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    var: row.subject.attributes.assetNodeId
+                kind:
+                  $expr: asset.asset
+          where:
+            $expr:
+              ===:
+                - var: row.subject.attributes.subject
+                - var: parameter.subject
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.asset.attributes
+          orderBy:
+            - $expr:
+                var: row.value.nodeId
+          paramsContract:
+            kind: model
+            model: model:AssetBySubjectSelectorParams
+          returnsContract:
+            kind: model
+            model: model:AssetBySubjectSelectorResult
+
+        - id: asset.subjects
+          sources:
+            subject:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: asset.subject
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.subject.attributes
+          orderBy:
+            - $expr:
+                var: row.value.assetNodeId
+            - $expr:
+                var: row.value.index
+          paramsContract:
+            kind: model
+            model: model:AssetSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:AssetSubjectsSelectorResult

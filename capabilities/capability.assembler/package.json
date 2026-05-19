@@ -1,0 +1,25 @@
+{
+	"name": "@openspec/capability-assembler-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/capability-assembler.generated.ts",
+			"import": "./src/sdk/capability-assembler.generated.ts",
+			"default": "./src/sdk/capability-assembler.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/capability-assembler-types.generated.ts",
+			"import": "./src/sdk/capability-assembler-types.generated.ts",
+			"default": "./src/sdk/capability-assembler-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/capability-assembler.capability.openspec.yml",
+			"spec/capability-assembler.output.openspec.yml"
+		]
+	}
+}

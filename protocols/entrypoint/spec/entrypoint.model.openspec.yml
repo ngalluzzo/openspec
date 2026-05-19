@@ -1,0 +1,175 @@
+openspec: "1.0"
+documents:
+  - id: entrypoint.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.entrypoint.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: EntrypointSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: EntrypointByIdSelectorParams
+          fields:
+            - name: entrypoint
+              type: nonEmptyString
+
+        - kind: object
+          name: EntrypointByHandlerSelectorParams
+          fields:
+            - name: handler
+              type: nonEmptyString
+
+        - kind: object
+          name: EntrypointSurfaceDispatchesSelectorParams
+          fields:
+            - name: surfaceKind
+              type: nonEmptyString
+              required: false
+            - name: hostId
+              type: nonEmptyString
+              required: false
+
+        # ── Document contract ─────────────────────────────────────────────────
+
+        - kind: object
+          name: EntrypointDocument
+          fields:
+            - name: owner
+              type: nonEmptyString
+            - name: entrypoints
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: EntrypointDeclaration
+
+        # ── Entrypoint contract ────────────────────────────────────────────────
+        # An entrypoint is a named invocable boundary bound to any graph node.
+        # `handler` is the canonical nodeId of whatever this entrypoint dispatches to.
+        # It does not declare routing, transport, client behavior, or surface shape.
+
+        - kind: object
+          name: EntrypointDeclaration
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: handler
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: context
+              type: nonEmptyString
+              required: false
+            - name: input
+              type: unknown
+              required: false
+            - name: output
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: EntrypointContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: handler
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+              required: false
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: context
+              type: nonEmptyString
+              required: false
+            - name: input
+              type: unknown
+              required: false
+            - name: output
+              type: unknown
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: EntrypointSurfaceDispatchContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: entrypoint
+              type: nonEmptyString
+            - name: operation
+              type: nonEmptyString
+            - name: operationId
+              type: nonEmptyString
+            - name: transport
+              type: nonEmptyString
+            - name: transportKind
+              type: nonEmptyString
+            - name: surfaceKind
+              type: nonEmptyString
+            - name: surface
+              type: unknown
+            - name: method
+              type: nonEmptyString
+            - name: adapter
+              type: nonEmptyString
+            - name: dispatch
+              type: nonEmptyString
+            - name: environment
+              type: nonEmptyString
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: EntrypointEntrypointsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: EntrypointContract
+
+        - kind: alias
+          name: EntrypointByIdSelectorResult
+          type:
+            kind: ref
+            name: EntrypointContract
+
+        - kind: alias
+          name: EntrypointByHandlerSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: EntrypointContract
+
+        - kind: alias
+          name: EntrypointSurfaceDispatchesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: EntrypointSurfaceDispatchContract

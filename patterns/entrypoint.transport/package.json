@@ -1,0 +1,11 @@
+{
+	"name": "@openspec/entrypoint-transport-patterns",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"openspec": {
+		"patterns": {
+			"documents": ["spec/entrypoint-transport.pattern.openspec.yml"]
+		}
+	}
+}

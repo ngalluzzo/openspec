@@ -1,0 +1,81 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.transport.v1
+package:
+  id: "@openspec/transport"
+documentModels:
+  - model:TransportDocument
+validation:
+  - id: transport.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.transport.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: transport.owner.invalid
+        message: Transport documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-transports
+        scope: selector
+        selector: transport.transports
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: transport.declarations.empty
+        message: Transport documents must declare at least one transport.
+
+      - id: transport-id-format
+        scope: selector
+        selector: transport.transports
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: transport.id.invalid
+        message: Transport ids must be lowercase namespaced identifiers.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: transport-kind-format
+        scope: selector
+        selector: transport.transports
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: transport.kind.invalid
+        message: >
+          Transport kind must be a lowercase namespaced identifier.
+          Concrete transports such as http, stdio, or queue are not hardcoded.
+        details:
+          $expr:
+            os_object:
+              - transport:
+                  var: item.id
+                kind:
+                  var: item.kind
+

@@ -1,0 +1,52 @@
+openspec: "1.0"
+documents:
+  - id: entrypoint-transport.pattern
+    protocol: openspec.pattern.v1
+    document:
+      namespace:
+        id: entrypoint.transport
+        name: Entrypoint Transport Pattern
+      patterns:
+        - id: entrypoint.transport
+          owner: pattern.package:entrypoint.transport
+          name: Entrypoint transport
+          expands:
+            documents:
+              - id:
+                  expr:
+                    kind: concat
+                    items:
+                      - kind: path
+                        path: input.id
+                      - kind: literal
+                        value: .binding
+                protocol: openspec.binding.v1
+                document:
+                  owner:
+                    expr:
+                      kind: path
+                      path: input.owner
+                  bindings:
+                    - id:
+                        expr:
+                          kind: path
+                          path: input.id
+                      kind: entrypoint.transport
+                      subject:
+                        expr:
+                          kind: path
+                          path: input.entrypoint
+                      slot:
+                        expr:
+                          kind: path
+                          path: input.transport
+                      value:
+                        expr:
+                          kind: path
+                          path: input.value
+                          optional: true
+                      description:
+                        expr:
+                          kind: path
+                          path: input.description
+                          optional: true

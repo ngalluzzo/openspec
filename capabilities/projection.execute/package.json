@@ -1,0 +1,26 @@
+{
+	"name": "@openspec/projection-execute-capability",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./src/sdk/projection-execute.generated.ts",
+			"import": "./src/sdk/projection-execute.generated.ts",
+			"default": "./src/sdk/projection-execute.generated.ts"
+		},
+		"./types": {
+			"types": "./src/sdk/projection-execute-types.generated.ts",
+			"import": "./src/sdk/projection-execute-types.generated.ts",
+			"default": "./src/sdk/projection-execute-types.generated.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/projection-execute.model.openspec.yml",
+			"spec/projection-execute.capability.openspec.yml",
+			"spec/projection-execute.output.openspec.yml"
+		]
+	}
+}

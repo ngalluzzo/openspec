@@ -1,0 +1,130 @@
+openspec: "1.0"
+documents:
+  - id: commander-dialect.derivation
+    protocol: openspec.derivation.v1
+    document:
+      owner: provider.provider:commander
+      rules:
+        - id: commander.cli.program.recipe.facets
+          after:
+            - provider.selection
+          source:
+            selector: commander.programs
+            as: program
+          facts:
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "commander.program.binding:"
+                  - kind: path
+                    path: program.id
+              factKind: commander.program.binding
+              target:
+                kind: path
+                path: program.target
+              value:
+                kind: object
+                fields:
+                  id:
+                    kind: path
+                    path: program.id
+                  unit:
+                    kind: path
+                    path: program.unit
+                  target:
+                    kind: path
+                    path: program.target
+                  owner:
+                    kind: path
+                    path: program.owner
+                  providerSelection:
+                    kind: path
+                    path: program.providerSelection
+                  factoryName:
+                    kind: path
+                    path: program.factoryName
+                  programName:
+                    kind: path
+                    path: program.programName
+                  description:
+                    kind: path
+                    path: program.description
+                    optional: true
+                  commands:
+                    kind: path
+                    path: program.commands
+
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - "typescript.recipe:"
+                  - kind: path
+                    path: program.id
+                  - ".commander.program"
+              factKind: typescript.recipe
+              target:
+                kind: path
+                path: program.target
+              value:
+                kind: object
+                fields:
+                  unit:
+                    kind: path
+                    path: program.unit
+                  recipe:
+                    kind: literal
+                    value: commander.program
+                  provider:
+                    kind: literal
+                    value: provider.provider:commander
+                  providerSelectionRequest:
+                    kind: path
+                    path: program.providerSelection
+                  adapter:
+                    kind: literal
+                    value: adapter.adapter:commander.program.recipe
+                  role:
+                    kind: literal
+                    value: commander.program.binding
+                  order:
+                    kind: literal
+                    value: 100
+                  input:
+                    kind: object
+                    fields:
+                      program:
+                        kind: object
+                        fields:
+                          id:
+                            kind: path
+                            path: program.id
+                          unit:
+                            kind: path
+                            path: program.unit
+                          target:
+                            kind: path
+                            path: program.target
+                          owner:
+                            kind: path
+                            path: program.owner
+                          providerSelection:
+                            kind: path
+                            path: program.providerSelection
+                          factoryName:
+                            kind: path
+                            path: program.factoryName
+                          programName:
+                            kind: path
+                            path: program.programName
+                          description:
+                            kind: path
+                            path: program.description
+                            optional: true
+                          commands:
+                            kind: path
+                            path: program.commands
+                  inputModel:
+                    kind: literal
+                    value: model:CommanderProgramRecipeInput

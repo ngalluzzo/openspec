@@ -1,0 +1,11 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.source.postgres.schema.v1
+package:
+  id: "@openspec/source-postgres"
+documentModels:
+  - model:PostgresSchemaSourceDocument
+metadata:
+  sourceKind: postgres
+  sourceProtocols:
+    - schema

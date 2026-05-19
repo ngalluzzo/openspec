@@ -1,0 +1,59 @@
+openspec: "1.0"
+documents:
+  - id: zod-dialect.output
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: zod.syntax.render.package-output
+          pattern: pattern.declaration:capability.package-output
+          inputs:
+            owner: dialect.package:zod
+            id: zod.syntax.render
+            namespace: zod.syntax.render
+            capability: capability.capability:zod.syntax.render
+            models:
+              - name: ZodSyntaxUnitSelectorParams
+              - name: ZodSyntaxRenderSelectorParams
+              - name: SyntaxUnitContract
+              - name: AssetContract
+              - name: ProviderSelectionContract
+              - name: ZodFieldContract
+              - name: ZodSchemaContract
+              - name: ZodSyntaxRenderInput
+              - name: ZodSchemasSelectorResult
+            methods:
+              - name: render
+            artifacts:
+              types:
+                path: dialects/zod/src/sdk/zod-dialect-types.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+              adapter:
+                path: dialects/zod/src/sdk/zod-syntax-render.generated.ts
+                language: typescript
+                mediaType: text/x.typescript
+            adapterContract:
+              modelImportPath: ./zod-dialect-types.generated
+              modelNamespace: ModelTypes
+              adapterTypeName: ZodSyntaxRenderAdapter
+              contractTypeName: ZodSyntaxRenderAdapterContract
+              contractConstName: zodSyntaxRenderAdapterContract
+              implementFunctionName: implementZodSyntaxRenderAdapter
+              aliasName: ZodSyntaxRender
+
+  - id: zod-dialect.type-exports
+    protocol: openspec.facet.v1
+    document:
+      owner: dialect.package:zod
+      facets:
+        - id: zod.syntax.render.text-file-recipe-export
+          kind: typescript.declaration
+          target: syntax.unit:zod.syntax.render.types.types
+          value:
+            unit: syntax.unit:zod.syntax.render.types.types
+            kind: raw
+            role: external.type.exports
+            order: 10
+            value:
+              kind: raw
+              text: "export type { TextFileArtifactRecipe } from \"@openspec/artifact-render-capability/types\";"

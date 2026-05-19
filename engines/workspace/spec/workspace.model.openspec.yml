@@ -1,0 +1,124 @@
+openspec: "1.0"
+documents:
+  - id: workspace.model
+    protocol: openspec.model.v1
+    document:
+      owner: provider.provider:workspace
+
+      declarations:
+
+        - kind: object
+          name: BuildRequest
+          fields:
+            - name: root
+              type: nonEmptyString
+              description: Root location passed to storage.writer.
+
+            - name: policy
+              type: nonEmptyString
+              required: false
+
+            - name: environment
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: BuildReport
+          fields:
+            - name: written
+              type:
+                kind: array
+                items:
+                  kind: string
+
+            - name: skipped
+              type:
+                kind: array
+                items:
+                  kind: string
+
+            - name: stale
+              type:
+                kind: array
+                items:
+                  kind: string
+
+            - name: diagnostics
+              type:
+                kind: array
+                items:
+                  kind: unknown
+
+        - kind: object
+          name: SyncRequest
+          fields:
+            - name: root
+              type: nonEmptyString
+              description: Root location for the workspace.
+
+            - name: preview
+              type: boolean
+              required: false
+              description: When true, compute and report mutations but do not call platform.apply adapters. Defaults to false.
+
+            - name: json
+              type: boolean
+              required: false
+              description: When true, emit the sync report as JSON instead of human-readable text.
+
+            - name: forceBreaking
+              type: boolean
+              required: false
+              description: Allow supported breaking mutations to be applied.
+
+            - name: yes
+              type: boolean
+              required: false
+              description: Non-interactive confirmation flag for deliberate automation.
+
+            - name: environment
+              type: nonEmptyString
+              required: false
+
+            - name: target
+              type: nonEmptyString
+              required: false
+              description: Limit sync to a single sync.action by id. When omitted all sync.action nodes in the graph are executed.
+
+        - kind: object
+          name: SyncMutationSummary
+          fields:
+            - name: id
+              type: nonEmptyString
+              description: The sync.action id this summary applies to.
+            - name: created
+              type: number
+            - name: updated
+              type: number
+            - name: deleted
+              type: number
+            - name: noop
+              type: number
+            - name: breaking
+              type: number
+              description: Count of mutations flagged as breaking (subset of the above).
+
+        - kind: object
+          name: SyncReport
+          fields:
+            - name: preview
+              type: boolean
+              description: Whether this was a dry-run (mutations computed but not applied).
+
+            - name: summaries
+              type:
+                kind: array
+                items:
+                  kind: ref
+                  name: SyncMutationSummary
+
+            - name: diagnostics
+              type:
+                kind: array
+                items:
+                  kind: unknown

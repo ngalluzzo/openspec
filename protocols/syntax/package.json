@@ -1,0 +1,16 @@
+{
+	"name": "@openspec/syntax",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json"
+	},
+	"openspec": {
+		"documents": [
+			"spec/syntax.protocol.openspec.yml",
+			"spec/syntax.model.openspec.yml",
+			"spec/syntax.graph.openspec.yml"
+		]
+	}
+}

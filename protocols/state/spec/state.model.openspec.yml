@@ -1,0 +1,172 @@
+openspec: "1.0"
+documents:
+  - id: state.model
+    protocol: openspec.model.v1
+    document:
+      owner: protocol.protocol:openspec.state.v1
+      declarations:
+        # ── Selector params ────────────────────────────────────────────────────
+
+        - kind: object
+          name: StateSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: StateMachineSelectorParams
+          fields:
+            - name: machine
+              type: nonEmptyString
+
+        # ── Trigger contract ───────────────────────────────────────────────────
+        # Declares what causes a transition to fire.
+        # `kind` is one of: signal, operation, manual.
+        # `ref` is the nodeId of the triggering signal or operation.
+
+        - kind: object
+          name: StateTriggerContract
+          fields:
+            - name: kind
+              type: nonEmptyString
+            - name: ref
+              type: nonEmptyString
+              required: false
+
+        # ── Value contract ─────────────────────────────────────────────────────
+        # `machine` is present when returned by the flat state.values selector.
+        # It is absent when values are embedded inside StateMachineContract.
+        # `initial` marks the entry state. `terminal` marks a sink state.
+
+        - kind: object
+          name: StateValueContract
+          fields:
+            - name: machine
+              type: nonEmptyString
+              required: false
+            - name: name
+              type: nonEmptyString
+            - name: label
+              type: nonEmptyString
+              required: false
+            - name: initial
+              type: boolean
+              required: false
+            - name: terminal
+              type: boolean
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Transition contract ────────────────────────────────────────────────
+        # `id` and `machine` are present when returned by state.transitions.
+        # They are absent when transitions are embedded inside StateMachineContract.
+        # `from` is the source value name, or an array of source value names.
+
+        - kind: object
+          name: StateTransitionContract
+          fields:
+            - name: id
+              type: nonEmptyString
+              required: false
+            - name: name
+              type: nonEmptyString
+            - name: machine
+              type: nonEmptyString
+              required: false
+            - name: from
+              type:
+                kind: union
+                options:
+                  - nonEmptyString
+                  - kind: array
+                    item: nonEmptyString
+            - name: to
+              type: nonEmptyString
+            - name: trigger
+              type:
+                kind: ref
+                name: StateTriggerContract
+              required: false
+            - name: requires
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: emits
+              type:
+                kind: array
+                item: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+
+        # ── Machine contract ───────────────────────────────────────────────────
+        # `subject` is the entity nodeId this machine governs.
+        # `field` is the attribute name on the subject entity that stores the value.
+        # `values` and `transitions` are stored inline from the authored document.
+        # The flat state.values and state.transitions selectors add machine context.
+
+        - kind: object
+          name: StateMachineContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: name
+              type: nonEmptyString
+              required: false
+            - name: owner
+              type: nonEmptyString
+            - name: subject
+              type: nonEmptyString
+            - name: field
+              type: nonEmptyString
+              required: false
+            - name: description
+              type: nonEmptyString
+              required: false
+            - name: values
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: StateValueContract
+            - name: transitions
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: StateTransitionContract
+              required: false
+
+        # ── Selector results ───────────────────────────────────────────────────
+
+        - kind: alias
+          name: StateMachinesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: StateMachineContract
+
+        - kind: alias
+          name: StateMachineSelectorResult
+          type:
+            kind: ref
+            name: StateMachineContract
+
+        - kind: alias
+          name: StateValuesSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: StateValueContract
+
+        - kind: alias
+          name: StateTransitionsSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: StateTransitionContract

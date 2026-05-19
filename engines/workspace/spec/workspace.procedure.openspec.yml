@@ -1,0 +1,90 @@
+openspec: "1.0"
+documents:
+  - id: workspace.procedure
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+
+        # Declare the workspace.build flow bound to the adapter's run method.
+        # Steps: compile → execute planning actions → write outputs to storage.
+        - id: workspace.build.procedure
+          pattern: pattern.declaration:procedure
+          inputs:
+            owner: provider.provider:workspace
+            id: workspace.build
+            name: Workspace build
+            kind: coordination.procedure
+
+            input:
+              root:
+                model: nonEmptyString
+              policy:
+                model: model:OverwritePolicy
+              environment:
+                model: nonEmptyString
+                required: false
+
+            steps:
+
+              # Compile all OpenSpec documents from the workspace root.
+              # Returns a serialized SemanticGraph used by subsequent steps.
+              - id: compile
+                name: Compile workspace
+                method: capability.method:compiler.compile
+                inputMapping:
+                  root:
+                    var: flow.inputs.root
+                  environment:
+                    var: flow.inputs.environment
+
+              # Execute all derived planning actions using the compiled graph.
+              - id: execute
+                name: Execute planning actions
+                method: capability.method:action.executor.execute
+                inputMapping:
+                  root:
+                    var: flow.inputs.root
+                  environment:
+                    var: flow.inputs.environment
+                  graph:
+                    var: steps.compile.output.graph
+
+              # Write all produced content to storage.
+              - id: write
+                name: Write outputs
+                method: capability.method:storage.writer.write
+                inputMapping:
+                  writes:
+                    var: steps.execute.output
+                  root:
+                    var: flow.inputs.root
+                  policy:
+                    var: flow.inputs.policy
+
+            links:
+              - id: compile.to.execute
+                from: flow.activity:workspace.build.compile
+                to: flow.activity:workspace.build.execute
+              - id: execute.to.write
+                from: flow.activity:workspace.build.execute
+                to: flow.activity:workspace.build.write
+
+            output:
+              written:
+                model: string
+              skipped:
+                model: string
+              stale:
+                model: string
+              diagnostics:
+                model: unknown
+
+            outputMapping:
+              written:
+                var: steps.write.output.written
+              skipped:
+                var: steps.write.output.skipped
+              stale:
+                var: steps.write.output.stale
+              diagnostics:
+                var: steps.write.output.diagnostics

@@ -1,0 +1,149 @@
+openspec: "1.0"
+documents:
+  - id: obligation.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.obligation.v1
+      owner: protocol.protocol:openspec.obligation.v1
+      lowering:
+        - id: obligation.declarations
+          source:
+            path: obligations
+            as: obligation
+          facts:
+            # obligation.declaration node
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - obligation
+                    - var: obligation.id
+              factKind:
+                $expr: obligation.declaration
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: obligation.id
+                      owner:
+                        var: document.owner
+                      target:
+                        var:
+                          - obligation.target
+                          - null
+                      assertion:
+                        var:
+                          - obligation.assertion
+                          - null
+                      failure:
+                        var:
+                          - obligation.failure
+                          - null
+                      description:
+                        var:
+                          - obligation.description
+                          - null
+
+            # obligation.owner.declaration edge — owner → obligation
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .obligation.
+                    - var: obligation.id
+              factKind:
+                $expr: obligation.owner.declaration
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - obligation
+                    - var: obligation.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      obligation:
+                        var: obligation.id
+
+            # obligation.target edge — obligation → target node (when present)
+            - kind: edge
+              when:
+                $expr:
+                  var:
+                    - obligation.target
+                    - null
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - obligation
+                        - var: obligation.id
+                    - .target.
+                    - var: obligation.target
+              factKind:
+                $expr: obligation.target
+              from:
+                $expr:
+                  os_node_id:
+                    - obligation
+                    - var: obligation.id
+              to:
+                $expr:
+                  var: obligation.target
+
+      selectors:
+        # All declared obligations.
+        - id: obligation.all
+          sources:
+            obligation:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: obligation.declaration
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.obligation.attributes
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:ObligationSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:ObligationAllSelectorResult
+
+        # All obligations for a given target nodeId.
+        - id: obligation.byTarget
+          sources:
+            obligation:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: obligation.declaration
+          result:
+            cardinality: many
+            value:
+              $expr:
+                var: row.obligation.attributes
+            when:
+              $expr:
+                ===:
+                  - var: row.obligation.attributes.target
+                  - var: parameter.target
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:ObligationByTargetSelectorParams
+          returnsContract:
+            kind: model
+            model: model:ObligationByTargetSelectorResult

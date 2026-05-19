@@ -1,0 +1,7 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.derivation.v1
+package:
+  id: "@openspec/derivation"
+documentModels:
+  - model:DerivationDocument

@@ -1,0 +1,9 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.correspondence.v1
+package:
+  id: "@openspec/correspondence"
+documentModels:
+  - model:CorrespondenceDocument
+metadata:
+  semanticKind: correspondence

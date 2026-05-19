@@ -1,0 +1,20 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"noEmit": false,
+		"rootDir": ".",
+		"types": ["bun"],
+		"composite": true,
+		"declaration": true,
+		"declarationMap": true,
+		"outDir": "./dist",
+		"tsBuildInfoFile": ".tsbuildinfo",
+		"emitDeclarationOnly": true
+	},
+	"include": ["src", "test"],
+	"references": [
+		{
+			"path": "../expresso"
+		}
+	]
+}

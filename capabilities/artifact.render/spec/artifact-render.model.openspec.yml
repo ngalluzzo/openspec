@@ -1,0 +1,94 @@
+openspec: "1.0"
+documents:
+  - id: artifact.render.model
+    protocol: openspec.model.v1
+    document:
+      owner: capability.package:artifact.render
+
+      declarations:
+        - kind: enum
+          name: ArtifactRenderDisposition
+          values:
+            - generated
+            - scaffold
+
+        - kind: object
+          name: ArtifactRenderFile
+          fields:
+            - name: path
+              type: nonEmptyString
+              required: false
+            - name: text
+              type: string
+            - name: mediaType
+              type: nonEmptyString
+            - name: disposition
+              type:
+                kind: ref
+                name: ArtifactRenderDisposition
+              required: false
+
+        - kind: object
+          name: ArtifactRenderDiagnostic
+          fields:
+            - name: severity
+              type: nonEmptyString
+              required: false
+            - name: code
+              type: nonEmptyString
+            - name: message
+              type: string
+            - name: details
+              type: unknown
+              required: false
+
+        - kind: object
+          name: TextFileArtifactRecipe
+          fields:
+            - name: kind
+              type:
+                kind: literal
+                value: text.file
+            - name: path
+              type: nonEmptyString
+              required: false
+            - name: text
+              type: string
+            - name: mediaType
+              type: nonEmptyString
+              required: false
+            - name: disposition
+              type:
+                kind: ref
+                name: ArtifactRenderDisposition
+              required: false
+
+        - kind: alias
+          name: ArtifactRenderRecipe
+          type:
+            kind: ref
+            name: TextFileArtifactRecipe
+
+        - kind: object
+          name: ArtifactRenderInput
+          fields:
+            - name: recipe
+              type:
+                kind: ref
+                name: ArtifactRenderRecipe
+
+        - kind: object
+          name: ArtifactRenderOutput
+          fields:
+            - name: files
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ArtifactRenderFile
+            - name: diagnostics
+              type:
+                kind: array
+                item:
+                  kind: ref
+                  name: ArtifactRenderDiagnostic

@@ -1,0 +1,74 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.operation.v1
+package:
+  id: "@openspec/operation"
+documentModels:
+  - model:OperationDocument
+validation:
+  - id: operation.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.operation.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: operation.owner.invalid
+        message: Operation documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-groups
+        scope: selector
+        selector: operation.groups
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: operation.groups.empty
+        message: Operation documents must declare at least one group.
+
+      - id: has-operations
+        scope: selector
+        selector: operation.operations
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: operation.operations.empty
+        message: Operation documents must declare at least one operation.
+
+      - id: operation-kind-format
+        scope: selector
+        selector: operation.operations
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.kind
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: operation.kind.invalid
+        message: >
+          Operation kind must be a lowercase namespaced identifier
+          (e.g. query.list, mutation.create).
+        details:
+          $expr:
+            os_object:
+              - operation:
+                  var: item.id
+                kind:
+                  var: item.kind

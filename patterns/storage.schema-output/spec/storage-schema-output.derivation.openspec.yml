@@ -1,0 +1,273 @@
+openspec: "1.0"
+documents:
+  - id: storage-schema-output.derivation
+    protocol: openspec.derivation.v1
+    document:
+      owner: pattern.package:storage.schema-output
+      rules:
+        - id: storage.schema.entities
+          source:
+            selector: storage.schemaEntities
+            as: storageEntity
+          facts:
+            - kind: node
+              id:
+                kind: path
+                path: storageEntity.id
+              factKind: storage.entity
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: path
+                    path: storageEntity.id
+                  surface:
+                    kind: path
+                    path: storageEntity.surface
+                  source:
+                    kind: path
+                    path: storageEntity.source
+                  owner:
+                    kind: path
+                    path: storageEntity.owner
+                  name:
+                    kind: path
+                    path: storageEntity.name
+            - kind: edge
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageEntity.surface
+                  - ".storage.entity."
+                  - kind: path
+                    path: storageEntity.source
+              factKind: storage.schema.entity
+              from:
+                kind: path
+                path: storageEntity.surface
+              to:
+                kind: path
+                path: storageEntity.id
+
+        - id: storage.schema.fields
+          source:
+            selector: storage.schemaFields
+            as: storageField
+          after:
+            - storage.schema.entities
+          facts:
+            - kind: node
+              id:
+                kind: path
+                path: storageField.id
+              factKind: storage.field
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: path
+                    path: storageField.id
+                  surface:
+                    kind: path
+                    path: storageField.surface
+                  entity:
+                    kind: path
+                    path: storageField.entity
+                  source:
+                    kind: path
+                    path: storageField.source
+                  name:
+                    kind: path
+                    path: storageField.name
+                  type:
+                    kind: path
+                    path: storageField.type
+                  nullable:
+                    kind: path
+                    path: storageField.nullable
+                  identity:
+                    kind: path
+                    path: storageField.identity
+                  unique:
+                    kind: path
+                    path: storageField.unique
+                  computed:
+                    kind: path
+                    path: storageField.computed
+            - kind: edge
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageField.entity
+                  - ".storage.field."
+                  - kind: path
+                    path: storageField.name
+              factKind: storage.entity.field
+              from:
+                kind: path
+                path: storageField.entity
+              to:
+                kind: path
+                path: storageField.id
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageField.id
+                  - ".type"
+              factKind: storage.field.type
+              target:
+                kind: path
+                path: storageField.id
+              value:
+                kind: path
+                path: storageField.type
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageField.id
+                  - ".nullable"
+              factKind: storage.field.nullable
+              target:
+                kind: path
+                path: storageField.id
+              value:
+                kind: path
+                path: storageField.nullable
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageField.id
+                  - ".identity"
+              factKind: storage.field.identity
+              target:
+                kind: path
+                path: storageField.id
+              value:
+                kind: path
+                path: storageField.identity
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageField.id
+                  - ".unique"
+              factKind: storage.field.unique
+              target:
+                kind: path
+                path: storageField.id
+              value:
+                kind: path
+                path: storageField.unique
+
+        - id: storage.schema.relations
+          source:
+            selector: storage.schemaRelations
+            as: storageRelation
+          after:
+            - storage.schema.entities
+          facts:
+            - kind: node
+              id:
+                kind: path
+                path: storageRelation.id
+              factKind: storage.relation
+              attributes:
+                kind: object
+                fields:
+                  id:
+                    kind: path
+                    path: storageRelation.id
+                  surface:
+                    kind: path
+                    path: storageRelation.surface
+                  source:
+                    kind: path
+                    path: storageRelation.source
+                  name:
+                    kind: path
+                    path: storageRelation.name
+                  from:
+                    kind: path
+                    path: storageRelation.from
+                  to:
+                    kind: path
+                    path: storageRelation.to
+                  cardinality:
+                    kind: path
+                    path: storageRelation.cardinality
+                  direction:
+                    kind: path
+                    path: storageRelation.direction
+                  ownership:
+                    kind: path
+                    path: storageRelation.ownership
+                  required:
+                    kind: path
+                    path: storageRelation.required
+            - kind: edge
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageRelation.surface
+                  - ".storage.relation."
+                  - kind: path
+                    path: storageRelation.source
+              factKind: storage.schema.relation
+              from:
+                kind: path
+                path: storageRelation.surface
+              to:
+                kind: path
+                path: storageRelation.id
+            - kind: edge
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageRelation.id
+                  - ".from"
+              factKind: storage.relation.from
+              from:
+                kind: path
+                path: storageRelation.id
+              to:
+                kind: path
+                path: storageRelation.from
+            - kind: edge
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageRelation.id
+                  - ".to"
+              factKind: storage.relation.to
+              from:
+                kind: path
+                path: storageRelation.id
+              to:
+                kind: path
+                path: storageRelation.to
+            - kind: facet
+              id:
+                kind: concat
+                items:
+                  - kind: path
+                    path: storageRelation.id
+                  - ".cardinality"
+              factKind: storage.relation.cardinality
+              target:
+                kind: path
+                path: storageRelation.id
+              value:
+                kind: path
+                path: storageRelation.cardinality

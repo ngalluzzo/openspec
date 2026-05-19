@@ -1,0 +1,100 @@
+openspec: "1.0"
+documents:
+  - id: stdio-dialect.model
+    protocol: openspec.model.v1
+    document:
+      owner: dialect.package:stdio
+      declarations:
+        - kind: object
+          name: StdioDialectSelectorNoParams
+          fields: []
+
+        - kind: object
+          name: StdioCommandDispatchSelectorParams
+          fields:
+            - name: hostId
+              type: nonEmptyString
+              required: false
+
+        - kind: object
+          name: StdioTransportFacetValue
+          fields:
+            - name: input
+              type: nonEmptyString
+              required: false
+            - name: output
+              type: nonEmptyString
+              required: false
+            - name: error
+              type: nonEmptyString
+              required: false
+            - name: encoding
+              type: nonEmptyString
+              required: false
+            - name: metadata
+              type: unknown
+              required: false
+
+        - kind: object
+          name: StdioTransportFacetContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: kind
+              type: nonEmptyString
+            - name: target
+              type: nonEmptyString
+            - name: transport
+              type: unknown
+            - name: value
+              type:
+                kind: ref
+                name: StdioTransportFacetValue
+
+        - kind: object
+          name: StdioCommandDispatchContract
+          fields:
+            - name: id
+              type: nonEmptyString
+            - name: owner
+              type: nonEmptyString
+            - name: entrypoint
+              type: nonEmptyString
+            - name: operation
+              type: nonEmptyString
+            - name: operationId
+              type: nonEmptyString
+            - name: transport
+              type: nonEmptyString
+            - name: method
+              type: nonEmptyString
+            - name: adapter
+              type: nonEmptyString
+            - name: dispatch
+              type: nonEmptyString
+            - name: environment
+              type: nonEmptyString
+            - name: command
+              type: nonEmptyString
+            - name: surface
+              type: unknown
+            - name: stdio
+              type:
+                kind: ref
+                name: StdioTransportFacetValue
+
+        - kind: alias
+          name: StdioTransportFacetSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: StdioTransportFacetContract
+
+        - kind: alias
+          name: StdioCommandDispatchSelectorResult
+          type:
+            kind: array
+            item:
+              kind: ref
+              name: StdioCommandDispatchContract

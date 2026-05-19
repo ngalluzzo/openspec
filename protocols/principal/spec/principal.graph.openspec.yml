@@ -1,0 +1,249 @@
+openspec: "1.0"
+documents:
+  - id: principal.graph
+    protocol: openspec.graph.v1
+    document:
+      subject: openspec.principal.v1
+      owner: protocol.protocol:openspec.principal.v1
+      lowering:
+        - id: principal.declarations
+          source:
+            path: principals
+            as: principal
+          facts:
+            # principal.declaration node
+            - kind: node
+              id:
+                $expr:
+                  os_node_id:
+                    - principal
+                    - var: principal.id
+              factKind:
+                $expr: principal.declaration
+              attributes:
+                $expr:
+                  os_object:
+                    - id:
+                        var: principal.id
+                      name:
+                        var:
+                          - principal.name
+                          - null
+                      owner:
+                        var: document.owner
+                      kind:
+                        var: principal.kind
+                      description:
+                        var:
+                          - principal.description
+                          - null
+
+            # principal.owner.declaration edge — owner → principal
+            - kind: edge
+              id:
+                $expr:
+                  cat:
+                    - var: document.owner
+                    - .principal.
+                    - var: principal.id
+              factKind:
+                $expr: principal.owner.declaration
+              from:
+                $expr:
+                  var: document.owner
+              to:
+                $expr:
+                  os_node_id:
+                    - principal
+                    - var: principal.id
+              attributes:
+                $expr:
+                  os_object:
+                    - owner:
+                        var: document.owner
+                      principal:
+                        var: principal.id
+
+            # principal.entity edge — principal → entity node (when declared)
+            - kind: edge
+              when:
+                $expr:
+                  var:
+                    - principal.entity
+                    - null
+              id:
+                $expr:
+                  cat:
+                    - os_node_id:
+                        - principal
+                        - var: principal.id
+                    - .entity.
+                    - var: principal.entity
+              factKind:
+                $expr: principal.entity
+              from:
+                $expr:
+                  os_node_id:
+                    - principal
+                    - var: principal.id
+              to:
+                $expr:
+                  var: principal.entity
+
+      selectors:
+        # All declared principals.
+        - id: principal.all
+          sources:
+            principal:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: principal.declaration
+            entity:
+              kind: edges
+              filter:
+                kind:
+                  $expr: principal.entity
+                from:
+                  $expr:
+                    var: row.principal.id
+              optional: true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.principal.attributes.id
+                    name:
+                      var:
+                        - row.principal.attributes.name
+                        - null
+                    owner:
+                      var: row.principal.attributes.owner
+                    kind:
+                      var: row.principal.attributes.kind
+                    entity:
+                      var:
+                        - row.entity.to
+                        - null
+                    description:
+                      var:
+                        - row.principal.attributes.description
+                        - null
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:PrincipalSelectorNoParams
+          returnsContract:
+            kind: model
+            model: model:PrincipalAllSelectorResult
+
+        # Single principal by ID.
+        - id: principal.byId
+          sources:
+            principal:
+              kind: nodes
+              filter:
+                id:
+                  $expr:
+                    os_node_id:
+                      - principal
+                      - var: parameter.principal
+                kind:
+                  $expr: principal.declaration
+            entity:
+              kind: edges
+              filter:
+                kind:
+                  $expr: principal.entity
+                from:
+                  $expr:
+                    var: row.principal.id
+              optional: true
+          result:
+            cardinality: optionalOne
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.principal.attributes.id
+                    name:
+                      var:
+                        - row.principal.attributes.name
+                        - null
+                    owner:
+                      var: row.principal.attributes.owner
+                    kind:
+                      var: row.principal.attributes.kind
+                    entity:
+                      var:
+                        - row.entity.to
+                        - null
+                    description:
+                      var:
+                        - row.principal.attributes.description
+                        - null
+          paramsContract:
+            kind: model
+            model: model:PrincipalByIdSelectorParams
+          returnsContract:
+            kind: model
+            model: model:PrincipalByIdSelectorResult
+
+        # All principals of a given kind.
+        - id: principal.byKind
+          sources:
+            principal:
+              kind: nodes
+              filter:
+                kind:
+                  $expr: principal.declaration
+            entity:
+              kind: edges
+              filter:
+                kind:
+                  $expr: principal.entity
+                from:
+                  $expr:
+                    var: row.principal.id
+              optional: true
+          result:
+            cardinality: many
+            value:
+              $expr:
+                os_object:
+                  - id:
+                      var: row.principal.attributes.id
+                    name:
+                      var:
+                        - row.principal.attributes.name
+                        - null
+                    owner:
+                      var: row.principal.attributes.owner
+                    kind:
+                      var: row.principal.attributes.kind
+                    entity:
+                      var:
+                        - row.entity.to
+                        - null
+                    description:
+                      var:
+                        - row.principal.attributes.description
+                        - null
+            when:
+              $expr:
+                ===:
+                  - var: row.principal.attributes.kind
+                  - var: parameter.kind
+          orderBy:
+            - $expr:
+                var: row.value.id
+          paramsContract:
+            kind: model
+            model: model:PrincipalByKindSelectorParams
+          returnsContract:
+            kind: model
+            model: model:PrincipalByKindSelectorResult

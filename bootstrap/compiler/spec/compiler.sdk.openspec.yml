@@ -1,0 +1,218 @@
+openspec: "1.0"
+documents:
+  - id: compiler.models
+    protocol: openspec.model.v1
+    document:
+      owner: package.package:openspec.compiler
+      declarations:
+        - kind: object
+          name: CompilerCapabilitySlots
+          fields:
+            - name: dynamicLowering
+              type: unknown
+              required: false
+            - name: dynamicValidation
+              type: unknown
+              required: false
+            - name: expressionEvaluator
+              type: unknown
+              required: false
+            - name: graphProvider
+              type: unknown
+              required: false
+            - name: selectorEvaluator
+              type: unknown
+              required: false
+
+        - kind: object
+          name: CompilerInput
+          fields:
+            - name: capabilities
+              type:
+                kind: ref
+                name: CompilerCapabilitySlots
+              required: false
+            - name: documents
+              type:
+                kind: array
+                item: unknown
+
+        - kind: object
+          name: CompilerResult
+          fields:
+            - name: diagnostics
+              type:
+                kind: array
+                item: unknown
+            - name: graph
+              type: unknown
+            - name: runtime
+              type: unknown
+
+        - kind: object
+          name: DynamicDerivationResult
+          fields:
+            - name: diagnostics
+              type:
+                kind: array
+                item: unknown
+            - name: edges
+              type:
+                kind: array
+                item: unknown
+            - name: facets
+              type:
+                kind: array
+                item: unknown
+            - name: nodes
+              type:
+                kind: array
+                item: unknown
+
+        - kind: object
+          name: GraphProviderInput
+          fields:
+            - name: evaluator
+              type: unknown
+              required: false
+            - name: graph
+              type: unknown
+            - name: protocolSelectors
+              type: unknown
+
+        - kind: object
+          name: GraphProviderResult
+          fields:
+            - name: diagnostics
+              type:
+                kind: array
+                item: unknown
+            - name: graph
+              type: unknown
+            - name: runtime
+              type: unknown
+
+        - kind: object
+          name: GraphDeriveInput
+          fields:
+            - name: evaluator
+              type: unknown
+              required: false
+            - name: graph
+              type: unknown
+            - name: runtime
+              type: unknown
+
+        - kind: object
+          name: GraphValidateInput
+          fields:
+            - name: documents
+              type: unknown
+            - name: evaluator
+              type: unknown
+              required: false
+            - name: graph
+              type: unknown
+            - name: runtime
+              type: unknown
+
+        - kind: alias
+          name: GraphValidationResult
+          type:
+            kind: array
+            item: unknown
+
+        - kind: object
+          name: GraphDocumentLowerPrepareInput
+          fields:
+            - name: evaluator
+              type: unknown
+              required: false
+            - name: graph
+              type: unknown
+
+        - kind: alias
+          name: GraphDocumentLowerHandle
+          type: unknown
+
+        - kind: object
+          name: GraphDocumentLowerInput
+          fields:
+            - name: document
+              type: unknown
+            - name: documentId
+              type: nonEmptyString
+            - name: handle
+              type: unknown
+            - name: protocol
+              type: nonEmptyString
+
+        - kind: alias
+          name: GraphDocumentLowerResult
+          type: unknown
+
+        - kind: object
+          name: GraphSelectorsMaterializeInput
+          fields:
+            - name: graph
+              type: unknown
+
+        - kind: alias
+          name: GraphSelectorsMaterializeResult
+          type: unknown
+
+        - kind: object
+          name: MemoryGraphProviderOptions
+          fields:
+            - name: dynamicDerivation
+              type: unknown
+              required: false
+            - name: graphSelectorMaterializer
+              type: unknown
+              required: false
+            - name: graphTraverser
+              type: unknown
+              required: false
+
+        - kind: object
+          name: ProtocolLowerContext
+          fields:
+            - name: document
+              type: unknown
+            - name: expressionEvaluator
+              type: unknown
+              required: false
+
+  - id: compiler.sdk.patterns
+    protocol: openspec.pattern.v1
+    document:
+      applications:
+        - id: compiler.types
+          pattern: pattern.declaration:projection.asset
+          inputs:
+            owner: package.package:openspec.compiler
+            id: compiler
+            capability: capability.capability:model.schema.projection
+            artifact:
+              path: bootstrap/compiler/src/generated/compiler.types.ts
+              language: typescript
+              mediaType: text/x.typescript
+            projection:
+              kind: projection.model.types
+              inputs:
+                modelOwner: package.package:openspec.compiler
+
+        - id: host.types
+          pattern: pattern.declaration:projection.asset
+          inputs:
+            owner: package.package:openspec.compiler
+            id: host.types
+            capability: capability.capability:model.schema.projection
+            artifact:
+              path: bootstrap/compiler/src/generated/host-types.generated.ts
+              language: typescript
+              mediaType: text/x.typescript
+            projection:
+              kind: projection.model.types
+              inputs:
+                modelOwner: protocol.protocol:openspec.host.v1

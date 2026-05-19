@@ -1,0 +1,90 @@
+openspec: "1.0"
+kind: protocol-declaration
+id: openspec.signal.v1
+package:
+  id: "@openspec/signal"
+documentModels:
+  - model:SignalDocument
+validation:
+  - id: signal.validation
+    rules:
+      - id: owner-format
+        scope: document
+        when:
+          $expr:
+            ===:
+              - var: document.protocol
+              - openspec.signal.v1
+        assert:
+          $expr:
+            regex_test:
+              - var: document.document.owner
+              - ^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)*:.+$
+        code: signal.owner.invalid
+        message: Signal documents must declare a canonical owner nodeId.
+        details:
+          $expr:
+            os_object:
+              - owner:
+                  var:
+                    - document.document.owner
+                    - null
+
+      - id: has-signals
+        scope: selector
+        selector: signal.all
+        assert:
+          $expr:
+            var:
+              - result.0
+              - null
+        code: signal.declarations.empty
+        message: Signal documents must declare at least one signal.
+
+      - id: signal-id-format
+        scope: selector
+        selector: signal.all
+        forEach: true
+        assert:
+          $expr:
+            regex_test:
+              - var: item.id
+              - ^[a-z][a-z0-9]*(\.[a-z0-9-]+)*$
+        code: signal.id.invalid
+        message: >
+          Signal ids must be lowercase namespaced identifiers
+          (e.g. user.created, order.placed, payment.failed).
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+
+      - id: signal-kind-valid
+        scope: selector
+        selector: signal.all
+        forEach: true
+        assert:
+          $expr:
+            or:
+              - ===:
+                  - var: item.kind
+                  - event
+              - ===:
+                  - var: item.kind
+                  - command
+              - ===:
+                  - var: item.kind
+                  - notification
+        code: signal.kind.invalid
+        message: >
+          Signal kind must be one of: event, command, notification.
+          Use event for things that happened, command for requests to act,
+          and notification for informational broadcasts.
+        details:
+          $expr:
+            os_object:
+              - id:
+                  var: item.id
+                kind:
+                  var: item.kind
