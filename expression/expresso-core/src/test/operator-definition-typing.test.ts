@@ -20,14 +20,14 @@ function metadata(name: string) {
 	};
 }
 
-describe("operator definition schema typing", () => {
+describe("operator definition typing", () => {
 	beforeEach(async () => {
 		clearRegistry();
 		pluginRegistry.clear();
 		await init();
 	});
 
-	test("infers handler argument and return types from schemas", async () => {
+	test("registers sync and async operators with runtime schemas", async () => {
 		defineSyncOperator("test.typed_add", {
 			inputSchema: z.tuple([z.number(), z.number()]),
 			outputSchema: z.number(),
@@ -46,7 +46,7 @@ describe("operator definition schema typing", () => {
 		expect(await applyAsync({ "test.typed_async_add": [4, 7] }, {})).toBe(11);
 	});
 
-	test("preserves legacy generic callsites", () => {
+	test("supports explicit operator generics", () => {
 		defineSyncOperator<[number, number], number>("test.legacy_add", {
 			handler: (args) => args[0] + args[1],
 			inputSchema: z.tuple([z.number(), z.number()]),
@@ -57,13 +57,13 @@ describe("operator definition schema typing", () => {
 		expect(apply({ "test.legacy_add": [3, 9] }, {})).toBe(12);
 	});
 
-	test("enforces schema-driven typing at compile time", () => {
+	test("enforces explicit generic output typing at compile time", () => {
 		// biome-ignore lint/correctness/noConstantCondition: type assertions only
 		if (false) {
-			defineSyncOperator("test.type_error", {
+			defineSyncOperator<[number, number], number>("test.type_error", {
 				inputSchema: z.tuple([z.number(), z.number()]),
 				outputSchema: z.number(),
-				// @ts-expect-error handler return type must match output schema
+				// @ts-expect-error handler return type must match explicit output type
 				handler: ([left, right]) => `${left + right}`,
 				metadata: metadata("test.type_error"),
 			});
